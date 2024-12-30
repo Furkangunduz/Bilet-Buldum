@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import morgan from 'morgan';
 import { connectDatabase } from './config/database';
 import { env } from './config/env';
 import v1Routes from './routes/v1';
@@ -11,6 +12,7 @@ const app = express();
 const crawlerService = new CrawlerService();
 
 // Middleware
+app.use(morgan('dev')); // Log requests to the console
 app.use(express.json());
 
 // Routes
