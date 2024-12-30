@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 const API_URL = 'http://localhost:3000/api/v1';
 // Create axios instance
@@ -11,28 +12,28 @@ export const api = axios.create({
 });
 
 // Add request interceptor for auth token and logging
-// api.interceptors.request.use(
-//   async (config: InternalAxiosRequestConfig) => {
-//     const token = await AsyncStorage.getItem('token');
-//     if (token && config.headers) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
+api.interceptors.request.use(
+  async (config: InternalAxiosRequestConfig) => {
+    const token = await AsyncStorage.getItem('token');
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     
-//     // Log the request details
-//     console.log('🚀 API Request:', {
-//       url: config.url,
-//       method: config.method?.toUpperCase(),
-//       headers: config.headers,
-//       data: config.data,
-//     });
+    // Log the request details
+    console.log('🚀 API Request:', {
+      url: config.url,
+      method: config.method?.toUpperCase(),
+      headers: config.headers,
+      data: config.data,
+    });
     
-//     return config;
-//   },
-//   (error: AxiosError) => {
-//     console.error('❌ Request Error:', error);
-//     return Promise.reject(error);
-//   }
-// );
+    return config;
+  },
+  (error: AxiosError) => {
+    console.error('❌ Request Error:', error);
+    return Promise.reject(error);
+  }
+);
 
 // Add response interceptor for logging
 api.interceptors.response.use(
