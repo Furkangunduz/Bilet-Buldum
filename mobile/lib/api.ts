@@ -42,7 +42,7 @@ api.interceptors.response.use(
     console.log('✅ API Response:', {
       url: response.config.url,
       status: response.status,
-      data: response.data,
+      // data: response.data,
     });
     return response;
   },
@@ -74,10 +74,15 @@ export interface Station {
   name: string;
 }
 
+export interface ApiResponse<T> {
+  data: T;
+  success: boolean;
+  message?: string;
+}
+
 export interface CabinClass {
   id: string;
   name: string;
-  code: string;
 }
 
 export interface Train {
@@ -93,32 +98,158 @@ export interface Train {
 
 // Auth API
 export const authApi = {
-  login: (email: string, password: string) => 
-    api.post<LoginResponse>('/auth/login', { email, password }),
+  login: (email: string, password: string) => {
+    try {
+      console.log('🔍 Attempting login for:', email);
+      return api.post<LoginResponse>('/auth/login', { email, password }).then(response => {
+        console.log('✅ Login successful');
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Login error:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in login:', error);
+      throw error;
+    }
+  },
   
-  register: (email: string, password: string) =>
-    api.post<LoginResponse>('/auth/register', { email, password }),
+  register: (email: string, password: string) => {
+    try {
+      console.log('🔍 Attempting registration for:', email);
+      return api.post<LoginResponse>('/auth/register', { email, password }).then(response => {
+        console.log('✅ Registration successful');
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Registration error:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in register:', error);
+      throw error;
+    }
+  },
   
-  getProfile: () => 
-    api.get('/auth/profile'),
+  getProfile: () => {
+    try {
+      console.log('🔍 Fetching user profile...');
+      return api.get('/auth/profile').then(response => {
+        console.log('✅ Profile fetched successfully');
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Error fetching profile:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in getProfile:', error);
+      throw error;
+    }
+  },
 };
 
-// TCDD API
 export const tcddApi = {
   searchTrains: (params: {
     departureStationId: string;
     arrivalStationId: string;
     date: string;
-  }) => api.post<Train[]>('/tcdd/search', params),
+  }) => {
+    try {
+      console.log('🔍 Searching trains with params:', params);
+      return api.post<Train[]>('/tcdd/search', params).then(response => {
+        console.log('✅ Trains search successful:', response.data);
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Error searching trains:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in searchTrains:', error);
+      throw error;
+    }
+  },
   
-  getDepartureStations: () => 
-    api.get<Station[]>('/tcdd/stations/departure'),
+  getDepartureStations: () => {
+    try {
+      console.log('🔍 Fetching departure stations...');
+      return api.get<{ data: Station[] }>('/tcdd/stations/departure').then(response => {
+        console.log('✅ Departure stations fetched successfully:', response.data);
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Error fetching departure stations:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in getDepartureStations:', error);
+      throw error;
+    }
+  },
   
-  getArrivalStations: (departureStationId: string) =>
-    api.get<Station[]>(`/tcdd/stations/arrival/${departureStationId}`),
+  getArrivalStations: (departureStationId: string) => {
+    try {
+      console.log('🔍 Fetching arrival stations for departure:', departureStationId);
+      return api.get<{ data: Station[] }>(`/tcdd/stations/arrival/${departureStationId}`).then(response => {
+        console.log('✅ Arrival stations fetched successfully:', response.data);
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Error fetching arrival stations:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in getArrivalStations:', error);
+      throw error;
+    }
+  },
   
-  getCabinClasses: () => 
-    api.get<CabinClass[]>('/tcdd/cabin-classes'),
+  getCabinClasses: () => {
+    try {
+      console.log('🔍 Fetching cabin classes...');
+      return api.get<ApiResponse<CabinClass[]>>('/tcdd/cabin-classes').then(response => {
+        console.log('✅ Cabin classes fetched successfully:', response.data);
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Error fetching cabin classes:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in getCabinClasses:', error);
+      throw error;
+    }
+  },
 };
 
 // Crawler API
@@ -127,8 +258,45 @@ export const crawlerApi = {
     departureStationId: string;
     arrivalStationId: string;
     date: string;
-  }) => api.post('/crawler/crawl', params),
+  }) => {
+    try {
+      console.log('🔍 Starting crawler with params:', params);
+      return api.post('/crawler/crawl', params).then(response => {
+        console.log('✅ Crawler started successfully:', response.data);
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Error starting crawler:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in startCrawl:', error);
+      throw error;
+    }
+  },
   
-  getSearchHistory: () => 
-    api.get('/crawler/history'),
+  getSearchHistory: () => {
+    try {
+      console.log('🔍 Fetching search history...');
+      return api.get('/crawler/history').then(response => {
+        console.log('✅ Search history fetched successfully:', response.data);
+        return response;
+      }).catch((error: AxiosError) => {
+        console.error('❌ Error fetching search history:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          config: error.config
+        });
+        throw error;
+      });
+    } catch (error) {
+      console.error('❌ Unexpected error in getSearchHistory:', error);
+      throw error;
+    }
+  },
 }; 
