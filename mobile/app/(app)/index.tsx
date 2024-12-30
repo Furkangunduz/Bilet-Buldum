@@ -470,27 +470,6 @@ export default function Home() {
               onDateChange={(date) => setSearchForm(prev => ({ ...prev, date }))}
               spin={spin}
             />
-
-            <TouchableOpacity
-              onPress={handleCreateAlert}
-              disabled={isSubmitting || !searchForm.fromId || !searchForm.toId || !searchForm.date}
-              className={`mt-6 h-14 rounded-xl items-center justify-center shadow-sm flex-row gap-4 ${
-                isSubmitting || !searchForm.fromId || !searchForm.toId || !searchForm.date
-                  ? 'bg-muted'
-                  : 'bg-primary'
-              }`}
-            >
-              {isSubmitting ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <>
-                  <Ionicons name="notifications-outline" size={20} color="white" />
-                  <Text className="text-primary-foreground font-semibold text-base">
-                    Create Alert
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
           </View>
         </BottomSheetView>
       </BottomSheet>
