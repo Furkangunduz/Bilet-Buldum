@@ -1,8 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
-import { BlurView } from 'expo-blur';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Modal, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDebounce } from '~/hooks/useDebounce';
 import { DateTimePickers } from '../../components/home/DateTimePickers';
 import { SearchForm } from '../../components/home/SearchForm';
@@ -251,80 +250,7 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        <BottomSheet
-          ref={bottomSheetRef}
-          snapPoints={snapPoints}
-          index={-1}
-          enablePanDownToClose={true}
-          onClose={() => setIsBottomSheetOpen(false)}
-          enableOverDrag={false}
-          backdropComponent={renderBackdrop}
-          backgroundStyle={{
-            backgroundColor: 'hsl(0 0% 100%)',
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-            borderTopWidth: 1,
-            borderTopColor: 'hsl(240 5.9% 90%)',
-            shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: -4,
-            },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 16,
-          }}
-          handleIndicatorStyle={{
-            backgroundColor: '#999',
-            width: 40,
-          }}
-          handleStyle={{
-            backgroundColor: 'transparent',
-            paddingVertical: 12,
-            borderTopLeftRadius: 24,
-            borderTopRightRadius: 24,
-          }}
-        >
-          <BlurView 
-            intensity={Platform.OS === 'ios' ? 50 : 0} 
-            tint="light" 
-            style={[
-              StyleSheet.absoluteFill, 
-              { 
-                borderTopLeftRadius: 24, 
-                borderTopRightRadius: 24,
-                backgroundColor: Platform.select({
-                  ios: 'rgba(255, 255, 255, 0.8)',
-                  android: 'white'
-                }),
-              }
-            ]} 
-          />
-          <BottomSheetView style={styles.contentContainer}>
-            <View className="flex-1 w-full">
-              <View className="flex-row items-center justify-between mb-8">
-                <Text className="text-2xl font-bold text-foreground">
-                  Create New Alert
-                </Text>
-                <TouchableOpacity 
-                  onPress={handleCloseBottomSheet}
-                  className="p-2"
-                >
-                  <Ionicons name="close" size={24} color="#666" />
-                </TouchableOpacity>
-              </View>
-              
-              <SearchForm
-                searchForm={searchForm}
-                onShowStationModal={setShowStationModal}
-                onShowDatePicker={() => setShowDatePicker(true)}
-                onShowTimePicker={setShowTimePicker}
-                onSwapStations={handleSwapStations}
-                spin={spin}
-              />
-            </View>
-          </BottomSheetView>
-        </BottomSheet>
+       
 
         <Modal
           visible={showStationModal !== null}
@@ -367,6 +293,66 @@ export default function Home() {
           maxDate={maxDate}
         />
       </View>
+      <BottomSheet
+          ref={bottomSheetRef}
+          snapPoints={snapPoints}
+          index={-1}
+          enablePanDownToClose={true}
+          onClose={() => setIsBottomSheetOpen(false)}
+          enableOverDrag={false}
+          backdropComponent={renderBackdrop}
+          backgroundStyle={{
+            backgroundColor: 'hsl(0 0% 100%)',
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            borderTopWidth: 1,
+            borderTopColor: 'hsl(240 5.9% 90%)',
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: -4,
+            },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 16,
+          }}
+          handleIndicatorStyle={{
+            backgroundColor: '#999',
+            width: 40,
+          }}
+          handleStyle={{
+            backgroundColor: 'transparent',
+            paddingVertical: 12,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+          }}
+        >
+          
+          <BottomSheetView style={styles.contentContainer}>
+            <View className="flex-1 w-full">
+              <View className="flex-row items-center justify-between mb-8">
+                <Text className="text-2xl font-bold text-foreground">
+                  Create New Alert
+                </Text>
+                <TouchableOpacity 
+                  onPress={handleCloseBottomSheet}
+                  className="p-2"
+                >
+                  <Ionicons name="close" size={24} color="#666" />
+                </TouchableOpacity>
+              </View>
+              
+              <SearchForm
+                searchForm={searchForm}
+                onShowStationModal={setShowStationModal}
+                onShowDatePicker={() => setShowDatePicker(true)}
+                onShowTimePicker={setShowTimePicker}
+                onSwapStations={handleSwapStations}
+                spin={spin}
+              />
+            </View>
+          </BottomSheetView>
+        </BottomSheet>
     </SafeAreaView>
   );
 }
@@ -374,6 +360,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
   },
 });

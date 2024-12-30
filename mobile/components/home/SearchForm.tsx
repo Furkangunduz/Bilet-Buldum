@@ -32,8 +32,8 @@ export function SearchForm({
 }: SearchFormProps) {
   return (
     <View className="space-y-10 relative">
-      <View className="space-y-3">
-        <Text className="text-sm font-medium text-foreground mb-2 mt-1">From</Text>
+      <View >
+        <Text className="text-sm font-medium text-foreground my-2">From</Text>
         <TouchableOpacity
           onPress={() => onShowStationModal('from')}
           className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
@@ -58,8 +58,8 @@ export function SearchForm({
         </Animated.View>
       </TouchableOpacity>
 
-      <View className="space-y-3">
-        <Text className="text-sm font-medium text-foreground mb-2 mt-1">To</Text>
+      <View >
+        <Text className="text-sm font-medium text-foreground my-2">To</Text>
         <TouchableOpacity
           onPress={() => searchForm.fromId && onShowStationModal('to')}
           className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
@@ -77,8 +77,8 @@ export function SearchForm({
         </TouchableOpacity>
       </View>
 
-      <View className="space-y-3">
-        <Text className="text-sm font-medium text-foreground mb-2 mt-1">Date</Text>
+      <View >
+        <Text className="text-sm font-medium text-foreground my-2">Date</Text>
         <Pressable 
           className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
           onPress={onShowDatePicker}
@@ -90,8 +90,8 @@ export function SearchForm({
         </Pressable>
       </View>
 
-      <View className="space-y-3">
-        <Text className="text-sm font-medium text-foreground mb-2 mt-1">Cabin Class</Text>
+      <View >
+        <Text className="text-sm font-medium text-foreground my-2">Cabin Class</Text>
         <TouchableOpacity
           onPress={() => onShowStationModal('cabin')}
           className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
@@ -106,9 +106,9 @@ export function SearchForm({
         </TouchableOpacity>
       </View>
 
-      <View className="space-y-3">
-        <Text className="text-sm font-medium text-foreground mb-2 mt-1">Departure Time Range</Text>
-        <View className="flex-row space-x-3">
+      <View >
+        <Text className="text-sm font-medium text-foreground my-2">Departure Time Range</Text>
+        <View className="flex-row gap-4">
           <TouchableOpacity
             onPress={() => onShowTimePicker('start')}
             className="flex-1 flex-row items-center bg-card border border-input rounded-xl px-4 h-14"

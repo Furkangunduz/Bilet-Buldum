@@ -1,5 +1,6 @@
-import { X } from 'lucide-react-native';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { Bell, Mail, X } from 'lucide-react-native';
+import { useEffect, useRef } from 'react';
+import { ActivityIndicator, Animated, Text, TouchableOpacity, View } from 'react-native';
 
 interface NotificationsFormProps {
   preferences: {
@@ -21,48 +22,106 @@ export function NotificationsForm({
   isLoading,
   error
 }: NotificationsFormProps) {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.95)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+      })
+    ]).start();
+  }, []);
+
   return (
-    <View className="p-4 space-y-4">
-      <View className="flex-row justify-between items-center">
-        <Text className="text-xl font-semibold text-foreground">Notification Preferences</Text>
-        <TouchableOpacity onPress={onClose}>
-          <X size={24} color="#666" />
+    <Animated.View 
+      style={{ 
+        opacity: fadeAnim,
+        transform: [{ scale: scaleAnim }]
+      }} 
+      className="p-4"
+    >
+      <View className="flex-row justify-between items-center mb-6">
+        <Text className="text-2xl font-bold text-foreground">Notification Preferences</Text>
+        <TouchableOpacity 
+          onPress={onClose}
+          className="p-2 rounded-full bg-muted/10 active:bg-muted/20"
+        >
+          <X size={20} color="#666" />
         </TouchableOpacity>
       </View>
 
-      <View className="space-y-4">
+      <View>
         <TouchableOpacity
           onPress={() => onChangePreferences({ ...preferences, email: !preferences.email })}
-          className="flex-row items-center justify-between p-4 bg-card border border-input rounded-lg"
+          className="flex-row items-center justify-between p-4 bg-card border border-input rounded-xl active:bg-muted/5 mb-4"
         >
-          <Text className="text-foreground font-medium">Email Notifications</Text>
-          <View className={`w-6 h-6 rounded-full ${preferences.email ? 'bg-primary' : 'bg-muted'}`} />
+          <View className="flex-row items-center gap-5">
+            <Mail size={20} color="#666" className="mr-3" />
+            <View>
+              <Text className="text-foreground font-semibold">Email Notifications</Text>
+              <Text className="text-sm text-foreground/60">Receive updates via email</Text>
+            </View>
+          </View>
+          <View 
+            className={`w-6 h-6 rounded-full items-center justify-center ${
+              preferences.email ? 'bg-primary' : 'bg-muted'
+            }`}
+          >
+            {preferences.email && (
+              <View className="w-3 h-3 rounded-full bg-white" />
+            )}
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={() => onChangePreferences({ ...preferences, push: !preferences.push })}
-          className="flex-row items-center justify-between p-4 bg-card border border-input rounded-lg"
+          className="flex-row items-center justify-between p-4 bg-card border border-input  rounded-xl active:bg-muted/5 mb-4"
         >
-          <Text className="text-foreground font-medium">Push Notifications</Text>
-          <View className={`w-6 h-6 rounded-full ${preferences.push ? 'bg-primary' : 'bg-muted'}`} />
+          <View className="flex-row items-center gap-5 ">
+            <Bell size={20} color="#666" className="mr-3" />
+            <View>
+              <Text className="text-foreground font-semibold">Push Notifications</Text>
+              <Text className="text-sm text-foreground/60">Get instant push alerts</Text>
+            </View>
+          </View>
+          <View 
+            className={`w-6 h-6 rounded-full items-center justify-center ${
+              preferences.push ? 'bg-primary' : 'bg-muted'
+            }`}
+          >
+            {preferences.push && (
+              <View className="w-3 h-3 rounded-full bg-white" />
+            )}
+          </View>
         </TouchableOpacity>
 
         {error && (
-          <Text className="text-red-500 text-sm">{error}</Text>
+          <View className="bg-red-500/10 p-3 rounded-lg mb-4">
+            <Text className="text-red-500 text-sm">{error}</Text>
+          </View>
         )}
 
         <TouchableOpacity
           onPress={onSubmit}
           disabled={isLoading}
-          className="bg-primary h-12 rounded-lg items-center justify-center"
+          className={`h-12 rounded-xl items-center justify-center ${
+            isLoading ? 'bg-primary/70' : 'bg-primary active:bg-primary/90'
+          }`}
         >
           {isLoading ? (
             <ActivityIndicator color="white" />
           ) : (
-            <Text className="text-primary-foreground font-medium">Save Changes</Text>
+            <Text className="text-primary-foreground font-semibold">Save Changes</Text>
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
   );
 } 
