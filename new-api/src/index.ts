@@ -3,6 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import { connectDatabase } from './config/database';
 import { env } from './config/env';
+import searchAlertsCron from './cron/searchAlerts.cron';
 import v1Routes from './routes/v1';
 import { CrawlerService } from './services/CrawlerService';
 
@@ -37,25 +38,17 @@ async function runCrawler() {
   }
 }
 
-async function startPeriodicCrawler() {
-  // Run immediately on startup
-  await runCrawler();
-  
-  // Then run every 10 seconds
-  setInterval(runCrawler, 20000);
-}
-
 async function startServer() {
   try {
     await connectDatabase();
     
-    // Start the server
     app.listen(env.PORT, () => {
       console.log(`Server is running on port ${env.PORT}`);
     });
 
-    // Start the periodic crawler
-    // await startPeriodicCrawler();
+    searchAlertsCron.start();
+    console.log('Search alerts cron job started');
+
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
@@ -66,12 +59,14 @@ async function startServer() {
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received. Closing crawler and shutting down...');
   await crawlerService.close();
+  searchAlertsCron.stop();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   console.log('SIGINT received. Closing crawler and shutting down...');
   await crawlerService.close();
+  searchAlertsCron.stop();
   process.exit(0);
 });
 

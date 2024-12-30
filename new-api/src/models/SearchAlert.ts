@@ -36,6 +36,15 @@ const searchAlertSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  status: {
+    type: String,
+    enum: ['PENDING', 'COMPLETED', 'FAILED'],
+    default: 'PENDING'
+  },
+  statusReason: {
+    type: String,
+    default: null
+  },
   lastChecked: {
     type: Date,
     default: null
