@@ -1,6 +1,6 @@
 import { Search as SearchIcon } from 'lucide-react-native';
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function Search() {
   const [from, setFrom] = useState('');
@@ -8,6 +8,7 @@ export default function Search() {
   const [date, setDate] = useState('');
 
   return (
+    <SafeAreaView className='flex-1 bg-background'>
     <ScrollView className="flex-1 bg-background">
       <View className="p-4">
         <View className="space-y-2 mb-6">
@@ -85,5 +86,6 @@ export default function Search() {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 } 

@@ -12,6 +12,11 @@ import { authApi } from './api';
 interface User {
   id: string;
   email: string;
+  name?: string;
+  subscription?: {
+    status: 'active' | 'inactive';
+    expiresAt: string;
+  };
 }
 
 interface AuthContextType {
