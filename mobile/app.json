@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Starter Base",
-    "slug": "starter-base",
+    "name": "Bilet Buldum",
+    "slug": "bilet-buldum",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -17,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.furkan-gunduz.starterbase"
+      "bundleIdentifier": "com.furkan-gunduz.biletbuldum"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.furkan_gunduz.starterbase"
+      "package": "com.furkan_gunduz.biletbuldum"
     },
     "web": {
       "bundler": "metro",
