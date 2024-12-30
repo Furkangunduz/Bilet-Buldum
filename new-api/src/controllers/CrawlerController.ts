@@ -57,4 +57,17 @@ export class CrawlerController extends BaseController {
       this.sendError(res, error);
     }
   };
+
+  public getAllStations = async (_req: Request, res: Response): Promise<void> => {
+    try {
+      await this.crawlerService.getAllStationsAndDestinations();
+      this.sendSuccess(res, { message: 'Stations map has been generated successfully. Check stations_map.json file.' });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        this.sendError(res, error);
+      } else {
+        this.sendError(res, new Error('An unknown error occurred'));
+      }
+    }
+  };
 } 
