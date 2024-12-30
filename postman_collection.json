@@ -68,6 +68,117 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "TCDD",
+			"item": [
+				{
+					"name": "Search Trains",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromStationId\": \"98\",\n    \"toStationId\": \"1135\",\n    \"date\": \"30-12-2024\",\n    \"passengerCount\": \"1\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/v1/tcdd/search-trains",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "tcdd", "search-trains"]
+						}
+					}
+				},
+				{
+					"name": "Get Search History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/tcdd/history",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "tcdd", "history"]
+						}
+					}
+				},
+				{
+					"name": "Get Stations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/tcdd/stations",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "tcdd", "stations"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Crawler",
+			"item": [
+				{
+					"name": "Crawl",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Add crawl parameters here\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/v1/crawler/crawl",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "crawler", "crawl"]
+						}
+					}
+				},
+				{
+					"name": "Get Crawler History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/crawler/history",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "crawler", "history"]
+						}
+					}
+				}
+			]
 		}
 	]
 } 

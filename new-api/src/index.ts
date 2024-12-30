@@ -53,7 +53,7 @@ async function startServer() {
     });
 
     // Start the periodic crawler
-    await startPeriodicCrawler();
+    // await startPeriodicCrawler();
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);

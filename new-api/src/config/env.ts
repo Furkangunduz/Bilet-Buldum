@@ -8,6 +8,7 @@ const envSchema = z.object({
   MONGODB_URI: z.string().url(),
   JWT_SECRET: z.string().min(32),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  TCDD_AUTH_TOKEN: z.string().optional().default('')
 });
 
 function validateEnv() {
