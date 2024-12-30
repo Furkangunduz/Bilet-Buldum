@@ -96,6 +96,17 @@ export interface Train {
   availableSeats: number;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  notificationPreferences: {
+    email: boolean;
+    push: boolean;
+  };
+}
+
 // Auth API
 export const authApi = {
   login: (email: string, password: string) => {
@@ -160,6 +171,18 @@ export const authApi = {
       throw error;
     }
   },
+
+  updateProfile: (data: { firstName: string; lastName: string }) => {
+    return api.put<User>('/auth/profile', data);
+  },
+
+  updateNotificationPreferences: (preferences: { email: boolean; push: boolean }) => {
+    return api.put<User>('/auth/profile/notifications', preferences);
+  },
+
+  updatePassword: (data: { currentPassword: string; newPassword: string }) => {
+    return api.put<{ message: string }>('/auth/profile/password', data);
+  }
 };
 
 export const tcddApi = {

@@ -1,33 +1,32 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useSegments } from 'expo-router';
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { authApi } from './api';
 
-interface User {
+export interface User {
   id: string;
   email: string;
-  name?: string;
-  subscription?: {
-    status: 'active' | 'inactive';
-    expiresAt: string;
+  firstName: string;
+  lastName: string;
+  notificationPreferences: {
+    email: boolean;
+    push: boolean;
   };
 }
 
 interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   user: User | null;
-  loading: boolean;
+  updateUser: (user: User) => void;
 }
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+const AuthContext = createContext<AuthContextType>({
+  signIn: async () => {},
+  signOut: async () => {},
+  user: null,
+  updateUser: () => {},
+});
 
 // This hook can be used to access the user info.
 export function useAuth() {
@@ -40,81 +39,61 @@ function useProtectedRoute(user: User | null) {
 
   useEffect(() => {
     const inAuthGroup = segments[0] === '(auth)';
+    const inOnboardingGroup = segments[0] === '(onboarding)';
 
-    if (
-      // If the user is not signed in and the initial segment is not anything in the auth group.
-      !user &&
-      !inAuthGroup
-    ) {
+    if (!user && !inAuthGroup && !inOnboardingGroup) {
       // Redirect to the sign-in page.
       router.replace('/(auth)/sign-in');
-    } else if (user && inAuthGroup) {
+    } else if (user && (inAuthGroup || inOnboardingGroup)) {
       // Redirect away from the sign-in page.
       router.replace('/(app)');
     }
   }, [user, segments]);
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadUser();
-  }, []);
-
-  async function loadUser() {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        const response = await authApi.getProfile();
-        setUser(response.data);
-      }
-    } catch (err) {
-      await AsyncStorage.removeItem('token');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function signIn(email: string, password: string) {
-    try {
-      const response = await authApi.login(email, password);
-      await AsyncStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
-      console.log(response.data);
-    } catch (err) {
-      console.log(err); 
-      throw new Error('Invalid email or password');
-    }
-  }
-
-  async function signUp(email: string, password: string) {
-    try {
-      const response = await authApi.register(email, password);
-      await AsyncStorage.setItem('token', response.data.token);
-      setUser(response.data.user);
-    } catch (err) {
-      throw new Error('Registration failed');
-    }
-  }
-
-  async function signOut() {
-    await AsyncStorage.removeItem('token');
-    setUser(null);
-  }
 
   useProtectedRoute(user);
 
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          const response = await authApi.getProfile();
+          setUser(response.data);
+        }
+      } catch (error) {
+        console.error('Error loading user:', error);
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const response = await authApi.login(email, password);
+      await AsyncStorage.setItem('token', response.data.token);
+      const userProfile = await authApi.getProfile();
+      setUser(userProfile.data);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const signOut = async () => {
+    await AsyncStorage.removeItem('token');
+    setUser(null);
+  };
+
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        signIn,
-        signUp,
-        signOut,
-        user,
-        loading,
-      }}>
+    <AuthContext.Provider value={{ signIn, signOut, user, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

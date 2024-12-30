@@ -93,4 +93,79 @@ export class AuthController {
       res.status(400).json({ error: 'Error fetching profile' });
     }
   }
+
+  static async updateProfile(req: Request, res: Response) {
+    try {
+      const { firstName, lastName } = req.body;
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { firstName, lastName },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        notificationPreferences: user.notificationPreferences,
+      });
+    } catch (error) {
+      res.status(400).json({ error: 'Error updating profile' });
+    }
+  }
+
+  static async updateNotificationPreferences(req: Request, res: Response) {
+    try {
+      const { email, push } = req.body;
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { 
+          notificationPreferences: { email, push }
+        },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        notificationPreferences: user.notificationPreferences,
+      });
+    } catch (error) {
+      res.status(400).json({ error: 'Error updating notification preferences' });
+    }
+  }
+
+  static async updatePassword(req: Request, res: Response) {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const user = await User.findById(req.user._id);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const isPasswordValid = await user.comparePassword(currentPassword);
+      if (!isPasswordValid) {
+        return res.status(401).json({ error: 'Current password is incorrect' });
+      }
+
+      user.password = newPassword;
+      await user.save();
+
+      res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+      res.status(400).json({ error: 'Error updating password' });
+    }
+  }
 } 
