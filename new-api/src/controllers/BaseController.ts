@@ -4,7 +4,7 @@ export class BaseController {
   protected sendSuccess(res: Response, data: any, status: number = 200): void {
     res.status(status).json({
       success: true,
-      data
+      data: data
     });
   }
 

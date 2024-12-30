@@ -1,12 +1,19 @@
-import express from 'express';
+import { Router } from 'express';
 import { TCDDController } from '../../controllers/TCDDController';
-import { auth } from '../../middleware/auth';
 
-const router = express.Router();
-
+const router = Router();
 const tcddController = new TCDDController();
 
-router.post('/search-trains', auth, tcddController.searchTrains);
-router.get('/stations', auth, tcddController.getStationsMap);
+// Search trains
+router.post('/search', tcddController.searchTrains);
+
+// Get all departure stations
+router.get('/stations/departure', tcddController.getDepartureStations);
+
+// Get arrival stations for a specific departure station
+router.get('/stations/arrival/:departureStationId', tcddController.getArrivalStations);
+
+// Get available cabin classes
+router.get('/cabin-classes', tcddController.getCabinClasses);
 
 export default router; 

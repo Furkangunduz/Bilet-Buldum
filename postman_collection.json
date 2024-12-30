@@ -88,17 +88,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"fromStationId\": \"98\",\n    \"toStationId\": \"1135\",\n    \"date\": \"30-12-2024\",\n    \"passengerCount\": \"1\"\n}"
+							"raw": "{\n    \"fromStationId\": \"98\",\n    \"toStationId\": \"1135\",\n    \"date\": \"30-12-2024 00:00:00\",\n    \"passengerCount\": 1,\n    \"departureTimeRange\": {\n        \"start\": \"14:30\",\n        \"end\": \"18:00\"\n    },\n    \"preferredCabinClass\": \"EKONOMİ\",\n    \"wantHighSpeedTrain\": true\n}"
 						},
 						"url": {
-							"raw": "{{BASE_URL}}/v1/tcdd/search-trains",
+							"raw": "{{BASE_URL}}/v1/tcdd/search",
 							"host": ["{{BASE_URL}}"],
-							"path": ["v1", "tcdd", "search-trains"]
+							"path": ["v1", "tcdd", "search"]
 						}
 					}
 				},
 				{
-					"name": "Get Search History",
+					"name": "Get Departure Stations",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -108,14 +108,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{BASE_URL}}/v1/tcdd/history",
+							"raw": "{{BASE_URL}}/v1/tcdd/stations/departure",
 							"host": ["{{BASE_URL}}"],
-							"path": ["v1", "tcdd", "history"]
+							"path": ["v1", "tcdd", "stations", "departure"]
 						}
 					}
 				},
 				{
-					"name": "Get Stations",
+					"name": "Get Arrival Stations",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -125,9 +125,27 @@
 							}
 						],
 						"url": {
-							"raw": "{{BASE_URL}}/v1/tcdd/stations",
+							"raw": "{{BASE_URL}}/v1/tcdd/stations/arrival/98",
 							"host": ["{{BASE_URL}}"],
-							"path": ["v1", "tcdd", "stations"]
+							"path": ["v1", "tcdd", "stations", "arrival", "98"]
+						},
+						"description": "Replace '98' with the actual departure station ID"
+					}
+				},
+				{
+					"name": "Get Cabin Classes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/tcdd/cabin-classes",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "tcdd", "cabin-classes"]
 						}
 					}
 				}
