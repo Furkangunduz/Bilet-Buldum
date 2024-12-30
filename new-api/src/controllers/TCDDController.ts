@@ -294,6 +294,154 @@ export class TCDDController extends BaseController {
     }
   };
 
+  public searchTrainsDirectly = async (params: {
+    fromStationId: string;
+    toStationId: string;
+    date: string;
+    departureTimeRange: { start: string; end: string };
+    preferredCabinClass: string;
+    passengerCount?: number;
+    wantHighSpeedTrain?: boolean;
+  }) => {
+    try {
+      const { 
+        fromStationId, 
+        toStationId, 
+        date,
+        departureTimeRange,
+        preferredCabinClass,
+        passengerCount = 1,
+        wantHighSpeedTrain = true
+      } = params;
+     
+      if (!this.validateDateFormat(date)) {
+        throw new Error('Invalid date format. Use DD-MM-YYYY HH:mm:ss');
+      }
+
+      const dateValidation = this.validateSearchDate(date);
+      if (!dateValidation.isValid) {
+        throw new Error(dateValidation.error || 'Invalid date');
+      }
+
+      const areStationsValid = await this.validateStationIds(fromStationId, toStationId);
+      if (!areStationsValid) {
+        throw new Error('Invalid station IDs');
+      }
+
+      const stationsMap = await this.loadStationsMap();
+      let fromStationName, toStationName;
+      
+      for (const [stationName, data] of Object.entries<StationData>(stationsMap)) {
+        if (data.id === fromStationId) fromStationName = stationName;
+        if (data.id === toStationId) toStationName = stationName;
+        if (fromStationName && toStationName) break;
+      }
+
+      const requestData = {
+        searchRoutes: [{
+          departureStationId: Number(fromStationId),
+          departureStationName: fromStationName,
+          arrivalStationId: Number(toStationId),
+          arrivalStationName: toStationName,
+          departureDate: date
+        }],
+        passengerTypeCounts: [{
+          id: 0,
+          count: Number(passengerCount)
+        }],
+        searchReservation: false
+      };
+
+      const response = await axios.post<TCDDData>(
+        `${this.API_BASE_URL}/train/train-availability?environment=dev&userId=1`,
+        requestData,
+        {
+          headers: {
+            ...this.HEADERS,
+            'Authorization': env.TCDD_AUTH_TOKEN
+          }
+        }
+      );
+
+      const data = response?.data;
+      const trainLegs = data.trainLegs;
+      const trainAvailabilities = trainLegs.flatMap(leg => leg.trainAvailabilities);
+      const trains = trainAvailabilities.flatMap((trainAvailability) => {
+        return trainAvailability.trains.map(train => {
+          const firstSegment = train.segments[0];
+          const lastSegment = train.segments[train.segments.length - 1];
+          
+          return {
+            trainNumber: train.trainNumber,
+            departureStationName: firstSegment.segment.departureStation.name,
+            arrivalStationName: lastSegment.segment.arrivalStation.name,
+            departureTime: this.formatTimestamp(firstSegment.departureTime),
+            arrivalTime: this.formatTimestamp(lastSegment.arrivalTime),
+            cabinClassAvailabilities: train.cabinClassAvailabilities.map(cabin => ({
+              cabinClass: cabin.cabinClass,
+              availabilityCount: cabin.availabilityCount
+            })),
+            isHighSpeed: this.isHighSpeedTrain(train)
+          };
+        });
+      });
+
+      let filteredTrains = trains;
+
+      if (wantHighSpeedTrain !== undefined) {
+        filteredTrains = filteredTrains.filter(train => train.isHighSpeed === wantHighSpeedTrain);
+      }
+
+      if (departureTimeRange) {
+        const [startHour, startMinute] = departureTimeRange.start.split(':').map(Number);
+        const [endHour, endMinute] = departureTimeRange.end.split(':').map(Number);
+        const startMinutes = startHour * 60 + startMinute;
+        const endMinutes = endHour * 60 + endMinute;
+
+        filteredTrains = filteredTrains.filter(train => {
+          const departureDate = new Date(train.departureTime);
+          const localHours = (departureDate.getUTCHours() + 3) % 24;
+          const localMinutes = departureDate.getUTCMinutes();
+          const trainMinutes = localHours * 60 + localMinutes;
+          
+          return trainMinutes >= startMinutes && trainMinutes <= endMinutes;
+        });
+      }
+
+      if (preferredCabinClass) {
+        filteredTrains = filteredTrains.filter(train => 
+          train.cabinClassAvailabilities.some(cabin => 
+            cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1
+          )
+        ).map(train => ({
+          ...train,
+          cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin =>
+            cabin.cabinClass.name === preferredCabinClass
+          )
+        }));
+      }
+
+      return {
+        success: true,
+        data: filteredTrains
+      };
+
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        return {
+          success: false,
+          data: [],
+          error: error.response?.data
+        };
+      }
+      return {
+        success: false,
+        data: [],
+        error: error.message
+      };
+    }
+  };
+
   public getStationsMap = async (_req: Request, res: Response): Promise<void> => {
     try {
       const stationsMap = await this.loadStationsMap();

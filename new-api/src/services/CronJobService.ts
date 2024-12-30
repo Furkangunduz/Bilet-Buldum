@@ -48,7 +48,7 @@ class CronJobService {
       isActive: true,
       departureTimeRange: { $ne: null } 
     })
-      .sort({ createdAt: 1 }) // Sort by creation time to prioritize older searches
+      .sort({ createdAt: 1 })
       .lean();
 
     console.log(`[SearchAlerts] Found ${alerts.length} active search alerts`);
@@ -83,10 +83,13 @@ class CronJobService {
     console.log(`[SearchAlerts] Number of alerts in group: ${alerts.length}`);
     
     try {
+      const dateParts = firstAlert.date.split(' ')[0].split('-');
+      const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]} 00:00:00`;
+      
       const searchPayload = {
         fromStationId: firstAlert.fromStationId,
         toStationId: firstAlert.toStationId,
-        date: firstAlert.date,
+        date: formattedDate,
         passengerCount: 1,
         departureTimeRange: firstAlert.departureTimeRange,
         preferredCabinClass: firstAlert.cabinClass,
@@ -95,17 +98,9 @@ class CronJobService {
 
       console.log('[SearchAlerts] Sending search request to TCDD API:', JSON.stringify(searchPayload, null, 2));
 
-      const mockResponse = {
-        json: (data: SearchResult) => data,
-        status: () => ({ json: (data: SearchResult) => data })
-      };
+      const searchResult = await this.tcddController.searchTrainsDirectly(searchPayload);
 
-      const searchResult = await Promise.resolve(this.tcddController.searchTrains(
-        { body: searchPayload } as any,
-        mockResponse as any
-      )) as unknown as SearchResult;
-
-      console.log(`[SearchAlerts] Search completed. Found ${searchResult?.data?.length || 0} results`);
+      console.log(`[SearchAlerts] Search completed. Found ${JSON.stringify(searchResult, null, 2)} results`);
 
       for (const alert of alerts) {
         const now = new Date();
