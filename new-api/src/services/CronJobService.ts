@@ -2,6 +2,7 @@ import { groupBy } from 'lodash';
 import { Types } from 'mongoose';
 import { TCDDController } from '../controllers/TCDDController';
 import SearchAlert from '../models/SearchAlert';
+import NotificationService from './NotificationService';
 
 interface SearchResult {
   success: boolean;
@@ -115,6 +116,11 @@ class CronJobService {
             lastChecked: now,
             statusReason: 'Search date has passed'
           });
+          await NotificationService.sendPushNotification(
+            alert.userId,
+            'Search Alert Expired',
+            `Your search alert for ${alert.fromStationId} to ${alert.toStationId} on ${alert.date} has expired.`
+          );
           console.log(`[SearchAlerts] Alert ${alert._id} marked as failed due to past date`);
           continue;
         }
@@ -133,6 +139,18 @@ class CronJobService {
             status: 'COMPLETED',
             statusReason: 'Seats found'
           });
+          await NotificationService.sendPushNotification(
+            alert.userId,
+            'Seats Available!',
+            `We found seats for your journey from ${alert.fromStationId} to ${alert.toStationId} on ${alert.date}. Book now!`,
+            {
+              type: 'SEATS_FOUND',
+              fromStationId: alert.fromStationId,
+              toStationId: alert.toStationId,
+              date: alert.date,
+              cabinClass: alert.cabinClass
+            }
+          );
           console.log(`[SearchAlerts] Alert ${alert._id} marked as completed`);
           console.log(`******************************************************************`);
           console.log(`*************                          *****************************`);

@@ -1,5 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+
+interface CustomAxiosInstance extends AxiosInstance {
+  updatePushToken: (pushToken: string) => Promise<any>;
+}
 
 const API_URL = 'http://localhost:3000/api/v1';
 
@@ -9,7 +13,7 @@ export const api = axios.create({
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-});
+}) as CustomAxiosInstance;
 
 // Add request interceptor for auth token and logging
 api.interceptors.request.use(
@@ -321,4 +325,11 @@ export const crawlerApi = {
       throw error;
     }
   },
-}; 
+};
+
+export const updatePushToken = async (pushToken: string) => {
+  const response = await api.put('/auth/push-token', { pushToken });
+  return response.data;
+};
+
+api.updatePushToken = updatePushToken; 

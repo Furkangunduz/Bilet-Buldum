@@ -6,6 +6,7 @@ export interface IUser extends Document {
   password: string;
   firstName: string;
   lastName: string;
+  expoPushToken?: string;
   notificationPreferences: {
     email: boolean;
     push: boolean;
@@ -38,6 +39,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       trim: true,
+    },
+    expoPushToken: {
+      type: String,
+      default: null,
     },
     notificationPreferences: {
       email: {

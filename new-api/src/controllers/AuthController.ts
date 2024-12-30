@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import { User } from '../models/User';
+import NotificationService from '../services/NotificationService';
 
 class AuthController {
   constructor() {
@@ -11,6 +12,7 @@ class AuthController {
     this.updateProfile = this.updateProfile.bind(this);
     this.updateNotificationPreferences = this.updateNotificationPreferences.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
+    this.updatePushToken = this.updatePushToken.bind(this);
   }
 
   async register(req: Request, res: Response) {
@@ -175,6 +177,23 @@ class AuthController {
       res.json({ message: 'Password updated successfully' });
     } catch (error) {
       res.status(400).json({ error: 'Error updating password' });
+    }
+  }
+
+  async updatePushToken(req: Request, res: Response) {
+    try {
+      const { pushToken } = req.body;
+      
+      if (!pushToken) {
+        return res.status(400).json({ error: 'Push token is required' });
+      }
+
+      await NotificationService.updatePushToken(req.user._id, pushToken);
+
+      res.json({ message: 'Push token updated successfully' });
+    } catch (error) {
+      console.error('Error updating push token:', error);
+      res.status(400).json({ error: 'Error updating push token' });
     }
   }
 }
