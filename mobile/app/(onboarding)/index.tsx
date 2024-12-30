@@ -48,8 +48,8 @@ export default function Onboarding() {
         }}
       />
 
-      <View className="p-4 space-y-4">
-        <View className="flex-row justify-center space-x-2">
+      <View className="p-4 gap-4">
+        <View className="flex-row justify-center gap-2">
           {ONBOARDING_STEPS.map((_, index) => (
             <View
               key={index}

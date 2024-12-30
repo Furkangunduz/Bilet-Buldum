@@ -59,13 +59,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadUser = async () => {
       try {
+        console.log('🔍 Checking for auth token...');
         const token = await AsyncStorage.getItem('token');
+        console.log('Token exists:', !!token);
+        
         if (token) {
+          console.log('🔄 Fetching user profile...');
           const response = await authApi.getProfile();
+          console.log('✅ Profile loaded successfully:', response.data);
           setUser(response.data);
+        } else {
+          console.log('ℹ️ No token found, user is not authenticated');
         }
-      } catch (error) {
-        console.error('Error loading user:', error);
+      } catch (error: any) {
+        console.error('❌ Error loading user:', {
+          name: error?.name,
+          message: error?.message,
+          response: error?.response?.data,
+          status: error?.response?.status
+        });
+        // Clear invalid token if we get an auth error
+        if (error?.response?.status === 401) {
+          console.log('🗑️ Clearing invalid token');
+          await AsyncStorage.removeItem('token');
+        }
       }
     };
 

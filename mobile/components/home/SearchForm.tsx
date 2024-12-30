@@ -1,5 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Animated, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { router } from 'expo-router';
+import React from 'react';
+import { ActivityIndicator, Alert, Animated, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { api } from '~/lib/api';
+import { useAuth } from '~/lib/auth';
 
 interface SearchFormProps {
   searchForm: {
@@ -14,11 +18,14 @@ interface SearchFormProps {
       start: string;
       end: string;
     };
+    wantHighSpeedTrain: boolean;
   };
   onShowStationModal: (type: 'from' | 'to' | 'cabin') => void;
   onShowDatePicker: () => void;
   onShowTimePicker: (type: 'start' | 'end') => void;
   onSwapStations: () => void;
+  onToggleHighSpeed: (value: boolean) => void;
+  onDateChange: (date: string) => void;
   spin: Animated.AnimatedInterpolation<string>;
 }
 
@@ -28,11 +35,93 @@ export function SearchForm({
   onShowDatePicker,
   onShowTimePicker,
   onSwapStations,
+  onToggleHighSpeed,
+  onDateChange,
   spin
 }: SearchFormProps) {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const validateForm = () => {
+    if (!user) {
+      router.push('/(auth)/sign-in');
+      return false;
+    }
+
+    if (!searchForm.fromId) {
+      setError('Please select a departure station');
+      return false;
+    }
+
+    if (!searchForm.toId) {
+      setError('Please select an arrival station');
+      return false;
+    }
+
+    if (!searchForm.date) {
+      setError('Please select a date');
+      return false;
+    }
+
+    if (!searchForm.cabinClass) {
+      setError('Please select a cabin class');
+      return false;
+    }
+
+    if (!searchForm.departureTimeRange.start || !searchForm.departureTimeRange.end) {
+      setError('Please select departure time range');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleCreateAlert = async () => {
+    setError(null);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await api.post('/search-alerts', {
+        fromStationId: searchForm.fromId,
+        toStationId: searchForm.toId,
+        date: `${searchForm.date} 00:00:00`,
+        passengerCount: 1,
+        departureTimeRange: searchForm.departureTimeRange,
+        preferredCabinClass: searchForm.cabinClass,
+        wantHighSpeedTrain: searchForm.wantHighSpeedTrain
+      });
+
+      Alert.alert(
+        'Success',
+        'Search alert created successfully! We will notify you when tickets become available.',
+        [
+          {
+            text: 'View Alerts',
+            onPress: () => router.push('/(app)/profile'),
+            style: 'default'
+          },
+          {
+            text: 'OK',
+            style: 'cancel'
+          }
+        ]
+      );
+    } catch (error: any) {
+      console.error('Error creating alert:', error);
+      setError(error.response?.data?.message || 'Failed to create alert. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <View className="space-y-10 relative">
-      <View >
+    <ScrollView className="relative">
+      <View>
         <Text className="text-sm font-medium text-foreground my-2">From</Text>
         <TouchableOpacity
           onPress={() => onShowStationModal('from')}
@@ -88,6 +177,58 @@ export function SearchForm({
             {searchForm.date || 'Select date'}
           </Text>
         </Pressable>
+        <ScrollView horizontal className="flex-row  pt-3 pb-3">
+          {(() => {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const buttons = [];
+
+            if (currentHour < 14) {
+              const today = now.toISOString().split('T')[0];
+              const isTodaySelected = searchForm.date === today;
+              buttons.push(
+                <TouchableOpacity
+                  key="today"
+                  onPress={() => onDateChange(today)}
+                  className={`px-3 py-1 rounded-full ${
+                    isTodaySelected ? 'bg-primary' : 'bg-gray-200'
+                  }`}
+                >
+                  <Text className={`${
+                    isTodaySelected ? 'text-white' : 'text-gray-700'
+                  } text-sm`}>
+                    Today
+                  </Text>
+                </TouchableOpacity>
+              );
+            }
+            [1, 2, 3,4].forEach((days) => {
+              const date = new Date();
+              date.setDate(date.getDate() + days);
+              const formattedDate = date.toISOString().split('T')[0];
+              const isSelected = searchForm.date === formattedDate;
+              const label = days === 1 ? 'Tomorrow' : `${days} Days Later`;
+
+              buttons.push(
+                <TouchableOpacity
+                  key={days}
+                  onPress={() => onDateChange(formattedDate)}
+                  className={`px-3 py-1 mx-1 rounded-full ${
+                    isSelected ? 'bg-primary' : 'bg-gray-200'
+                  }`}
+                >
+                  <Text className={`${
+                    isSelected ? 'text-white' : 'text-gray-700'
+                  } text-sm`}>
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            });
+
+            return buttons;
+          })()}
+        </ScrollView>
       </View>
 
       <View >
@@ -131,16 +272,44 @@ export function SearchForm({
         </View>
       </View>
 
+      <View className="my-4">
+        <TouchableOpacity 
+          onPress={() => onToggleHighSpeed(!searchForm.wantHighSpeedTrain)}
+          className="flex-row items-center"
+        >
+          <View className={`w-5 h-5 border rounded mr-2 items-center justify-center ${searchForm.wantHighSpeedTrain ? 'bg-primary border-primary' : 'border-input'}`}>
+            {searchForm.wantHighSpeedTrain && (
+              <Ionicons name="checkmark" size={16} color="white" />
+            )}
+          </View>
+          <Text className="text-base text-foreground">High-speed trains only</Text>
+        </TouchableOpacity>
+      </View>
+
+      {error && (
+        <View className="bg-red-500/10 p-3 rounded-lg mb-4">
+          <Text className="text-red-500 text-sm">{error}</Text>
+        </View>
+      )}
+
       <TouchableOpacity 
-        className="bg-primary h-14 rounded-xl items-center justify-center mt-6 shadow-sm"
+        onPress={handleCreateAlert}
+        disabled={isLoading}
+        className={`bg-primary h-14 rounded-xl items-center justify-center mt-6 shadow-sm ${
+          isLoading ? 'opacity-50' : 'opacity-100'
+        }`}
         style={{
           elevation: 2,
         }}
       >
-        <Text className="text-primary-foreground font-semibold text-base">
-          Create Alert
-        </Text>
+        {isLoading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text className="text-primary-foreground font-semibold text-base">
+            Create Alert
+          </Text>
+        )}
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 } 

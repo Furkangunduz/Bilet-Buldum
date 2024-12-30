@@ -3,8 +3,17 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import { User } from '../models/User';
 
-export class AuthController {
-  static async register(req: Request, res: Response) {
+class AuthController {
+  constructor() {
+    this.register = this.register.bind(this);
+    this.login = this.login.bind(this);
+    this.getProfile = this.getProfile.bind(this);
+    this.updateProfile = this.updateProfile.bind(this);
+    this.updateNotificationPreferences = this.updateNotificationPreferences.bind(this);
+    this.updatePassword = this.updatePassword.bind(this);
+  }
+
+  async register(req: Request, res: Response) {
     try {
       const { email, password, firstName, lastName } = req.body;
 
@@ -43,7 +52,7 @@ export class AuthController {
     }
   }
 
-  static async login(req: Request, res: Response) {
+  async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
 
@@ -79,7 +88,7 @@ export class AuthController {
     }
   }
 
-  static async getProfile(req: Request, res: Response) {
+  async getProfile(req: Request, res: Response) {
     try {
       const user = req.user;
       res.json({
@@ -94,7 +103,7 @@ export class AuthController {
     }
   }
 
-  static async updateProfile(req: Request, res: Response) {
+  async updateProfile(req: Request, res: Response) {
     try {
       const { firstName, lastName } = req.body;
       const user = await User.findByIdAndUpdate(
@@ -119,7 +128,7 @@ export class AuthController {
     }
   }
 
-  static async updateNotificationPreferences(req: Request, res: Response) {
+  async updateNotificationPreferences(req: Request, res: Response) {
     try {
       const { email, push } = req.body;
       const user = await User.findByIdAndUpdate(
@@ -146,7 +155,7 @@ export class AuthController {
     }
   }
 
-  static async updatePassword(req: Request, res: Response) {
+  async updatePassword(req: Request, res: Response) {
     try {
       const { currentPassword, newPassword } = req.body;
       const user = await User.findById(req.user._id);
@@ -168,4 +177,6 @@ export class AuthController {
       res.status(400).json({ error: 'Error updating password' });
     }
   }
-} 
+}
+
+export default new AuthController(); 

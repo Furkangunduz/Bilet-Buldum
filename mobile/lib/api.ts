@@ -19,7 +19,6 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
-    // Log the request details
     console.log('🚀 API Request:', {
       url: config.url,
       method: config.method?.toUpperCase(),
@@ -194,7 +193,7 @@ export const tcddApi = {
     try {
       console.log('🔍 Searching trains with params:', params);
       return api.post<Train[]>('/tcdd/search', params).then(response => {
-        console.log('✅ Trains search successful:', response.data);
+        console.log('✅ Trains search successful')
         return response;
       }).catch((error: AxiosError) => {
         console.error('❌ Error searching trains:', {
@@ -215,7 +214,7 @@ export const tcddApi = {
     try {
       console.log('🔍 Fetching departure stations...');
       return api.get<{ data: Station[] }>('/tcdd/stations/departure').then(response => {
-        console.log('✅ Departure stations fetched successfully:', response.data);
+        console.log('✅ Departure stations fetched successfully')
         return response;
       }).catch((error: AxiosError) => {
         console.error('❌ Error fetching departure stations:', {
@@ -236,7 +235,7 @@ export const tcddApi = {
     try {
       console.log('🔍 Fetching arrival stations for departure:', departureStationId);
       return api.get<{ data: Station[] }>(`/tcdd/stations/arrival/${departureStationId}`).then(response => {
-        console.log('✅ Arrival stations fetched successfully:', response.data);
+        console.log('✅ Arrival stations fetched successfully')
         return response;
       }).catch((error: AxiosError) => {
         console.error('❌ Error fetching arrival stations:', {
@@ -257,7 +256,7 @@ export const tcddApi = {
     try {
       console.log('🔍 Fetching cabin classes...');
       return api.get<ApiResponse<CabinClass[]>>('/tcdd/cabin-classes').then(response => {
-        console.log('✅ Cabin classes fetched successfully:', response.data);
+        console.log('✅ Cabin classes fetched successfully')
         return response;
       }).catch((error: AxiosError) => {
         console.error('❌ Error fetching cabin classes:', {
@@ -285,7 +284,7 @@ export const crawlerApi = {
     try {
       console.log('🔍 Starting crawler with params:', params);
       return api.post('/crawler/crawl', params).then(response => {
-        console.log('✅ Crawler started successfully:', response.data);
+        console.log('✅ Crawler started successfully')
         return response;
       }).catch((error: AxiosError) => {
         console.error('❌ Error starting crawler:', {
@@ -306,7 +305,7 @@ export const crawlerApi = {
     try {
       console.log('🔍 Fetching search history...');
       return api.get('/crawler/history').then(response => {
-        console.log('✅ Search history fetched successfully:', response.data);
+        console.log('✅ Search history fetched successfully')
         return response;
       }).catch((error: AxiosError) => {
         console.error('❌ Error fetching search history:', {

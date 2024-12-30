@@ -1,14 +1,14 @@
 import express from 'express';
-import { AuthController } from '../../controllers/AuthController';
-import { auth } from '../../middleware/auth';
+import AuthController from '../../controllers/AuthController';
+import { authenticateToken } from '../../middleware/auth';
 
 const router = express.Router();
 
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
-router.get('/profile', auth, AuthController.getProfile);
-router.put('/profile', auth, AuthController.updateProfile);
-router.put('/profile/notifications', auth, AuthController.updateNotificationPreferences);
-router.put('/profile/password', auth, AuthController.updatePassword);
+router.get('/profile', authenticateToken, AuthController.getProfile);
+router.put('/profile', authenticateToken, AuthController.updateProfile);
+router.put('/profile/notifications', authenticateToken, AuthController.updateNotificationPreferences);
+router.put('/profile/password', authenticateToken, AuthController.updatePassword);
 
 export default router; 

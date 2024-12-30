@@ -211,7 +211,7 @@ export default function Profile() {
       <ScrollView className="flex-1 bg-background">
         <View className="p-4">
           <View className="bg-card p-6 rounded-lg mb-8">
-            <View className="items-center space-y-2 mb-4">
+            <View className="items-center gap-2 mb-4">
               <View className="w-20 h-20 rounded-full bg-primary/10 items-center justify-center mb-2">
                 <Text className="text-2xl text-primary font-bold">
                   {user?.firstName?.charAt(0) || 'U'}
@@ -228,7 +228,7 @@ export default function Profile() {
 
           <TouchableOpacity
             onPress={signOut}
-            className="flex-row items-center justify-center space-x-2 mt-4 p-4 bg-destructive/10 rounded-lg"
+            className="flex-row items-center justify-center gap-2 mt-4 p-4 bg-destructive/10 rounded-lg"
           >
             <LogOut color="#EF4444" size={20} />
             <Text className="text-destructive font-medium">Sign Out</Text>

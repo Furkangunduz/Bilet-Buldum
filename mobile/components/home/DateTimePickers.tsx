@@ -30,7 +30,6 @@ export function DateTimePickers({
 }: DateTimePickersProps) {
   return (
     <>
-      {/* Time Picker Modal for iOS */}
       {Platform.OS === 'ios' && showTimePicker ? (
         <Modal
           visible={!!showTimePicker}
@@ -50,13 +49,14 @@ export function DateTimePickers({
               <DateTimePicker
                 value={
                   showTimePicker === 'start' && searchForm.departureTimeRange.start
-                    ? new Date(`2000-01-01T${searchForm.departureTimeRange.start}:00`)
+                    ? new Date(`2000-01-01T${searchForm.departureTimeRange.start}:00+03:00`)
                     : showTimePicker === 'end' && searchForm.departureTimeRange.end
-                    ? new Date(`2000-01-01T${searchForm.departureTimeRange.end}:00`)
+                    ? new Date(`2000-01-01T${searchForm.departureTimeRange.end}:00+03:00`)
                     : new Date()
                 }
                 mode="time"
                 display="spinner"
+                timeZoneOffsetInMinutes={180}
                 onChange={(event, selectedDate) => {
                   if (selectedDate && showTimePicker) {
                     const hours = selectedDate.getHours().toString().padStart(2, '0');
@@ -73,13 +73,14 @@ export function DateTimePickers({
         <DateTimePicker
           value={
             showTimePicker === 'start' && searchForm.departureTimeRange.start
-              ? new Date(`2000-01-01T${searchForm.departureTimeRange.start}:00`)
+              ? new Date(`2000-01-01T${searchForm.departureTimeRange.start}:00+03:00`)
               : showTimePicker === 'end' && searchForm.departureTimeRange.end
-              ? new Date(`2000-01-01T${searchForm.departureTimeRange.end}:00`)
+              ? new Date(`2000-01-01T${searchForm.departureTimeRange.end}:00+03:00`)
               : new Date()
           }
           mode="time"
           display="default"
+          timeZoneOffsetInMinutes={-180}
           onChange={(event, selectedDate) => {
             onCloseTimePicker();
             if (event.type === 'set' && selectedDate && showTimePicker) {
@@ -108,9 +109,9 @@ export function DateTimePickers({
                 <TouchableOpacity 
                   onPress={() => {
                     if (!searchForm.date) {
-                      const today = new Date();
-                      const formattedDate = today.toISOString().split('T')[0];
-                      onDateChange(formattedDate);
+                      const tomorrow = new Date();
+                      tomorrow.setDate(tomorrow.getDate() + 1);
+                      onDateChange(tomorrow.toISOString().split('T')[0]);
                     }
                     onCloseDatePicker();
                   }}
@@ -129,7 +130,6 @@ export function DateTimePickers({
                   }
                 }}
                 minimumDate={new Date()}
-                maximumDate={maxDate}
               />
             </View>
           </View>
@@ -147,7 +147,6 @@ export function DateTimePickers({
             }
           }}
           minimumDate={new Date()}
-          maximumDate={maxDate}
         />
       )}
     </>

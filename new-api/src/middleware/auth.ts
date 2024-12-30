@@ -3,10 +3,6 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/env';
 import { User } from '../models/User';
 
-interface JwtPayload {
-  userId: string;
-}
-
 declare global {
   namespace Express {
     interface Request {
@@ -15,24 +11,24 @@ declare global {
   }
 }
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) {
+    return res.status(401).json({ message: 'Authentication token required' });
+  }
+
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-
-    if (!token) {
-      throw new Error();
-    }
-
-    const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
+    const decoded = jwt.verify(token, env.JWT_SECRET) as { userId: string };
     const user = await User.findById(decoded.userId);
-
+    
     if (!user) {
-      throw new Error();
+      return res.status(401).json({ message: 'User not found' });
     }
 
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Please authenticate' });
+    console.log('Invalid token');
+    res.status(401).json({ message: 'Invalid token' });
   }
 }; 

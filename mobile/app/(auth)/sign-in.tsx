@@ -49,10 +49,10 @@ export default function SignIn() {
           </Animated.View>
         ) : null}
 
-        <View className="space-y-5">
+        <View className="gap-5">
           <Animated.View 
             entering={FadeInDown.delay(400).duration(1000)}
-            className="space-y-2"
+            className="gap-2"
           >
             <Text className="text-sm font-medium text-foreground ml-1">Email</Text>
             <View className="flex-row items-center bg-card border border-input rounded-xl px-4">
@@ -71,7 +71,7 @@ export default function SignIn() {
 
           <Animated.View 
             entering={FadeInDown.delay(600).duration(1000)}
-            className="space-y-2"
+            className="gap-2"
           >
             <Text className="text-sm font-medium text-foreground ml-1">Password</Text>
             <View className="flex-row items-center bg-card border border-input rounded-xl px-4">
@@ -103,7 +103,7 @@ export default function SignIn() {
 
           <Animated.View 
             entering={FadeInDown.delay(1000).duration(1000)}
-            className="flex-row justify-center space-x-1 mt-4"
+            className="flex-row justify-center gap-1 mt-4"
           >
             <Text className="text-muted-foreground">Don't have an account?</Text>
             <Link href="/(auth)/sign-up" className="text-primary font-medium">

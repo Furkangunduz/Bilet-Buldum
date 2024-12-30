@@ -11,7 +11,7 @@ import { CabinClass, Station, tcddApi } from '../../lib/api';
 
 export default function Home() {
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['80%'], []);
+  const snapPoints = useMemo(() => ['75%','90%'], []);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
 
@@ -29,12 +29,13 @@ export default function Home() {
     to: '',
     toId: '',
     date: '',
-    cabinClass: '',
-    cabinClassName: '',
+    cabinClass: '1',
+    cabinClassName: 'EKONOMİ',
     departureTimeRange: {
-      start: '',
-      end: ''
-    }
+      start: '00:00',
+      end: '23:59'
+    },
+    wantHighSpeedTrain: true
   });
 
   const [departureStations, setDepartureStations] = useState<Station[]>([]);
@@ -229,7 +230,7 @@ export default function Home() {
         </View>
 
         <View className="flex-1 items-center justify-center px-6">
-          <View className="items-center space-y-4 mb-12">
+          <View className="items-center gap-4 mb-12">
             <Ionicons name="train" size={64} color="#666" />
             <Text className="text-xl font-semibold text-foreground text-center">
               Ready to Start Your Journey?
@@ -241,7 +242,7 @@ export default function Home() {
           
           <TouchableOpacity
             onPress={handleSearchPress}
-            className="bg-primary w-full h-14 rounded-xl items-center justify-center shadow-sm flex-row space-x-2"
+            className="bg-primary w-full h-14 rounded-xl items-center justify-center shadow-sm flex-row gap-4"
           >
             <Ionicons name="search" size={20} color="white" />
             <Text className="text-primary-foreground font-semibold text-base">
@@ -348,6 +349,8 @@ export default function Home() {
                 onShowDatePicker={() => setShowDatePicker(true)}
                 onShowTimePicker={setShowTimePicker}
                 onSwapStations={handleSwapStations}
+                onToggleHighSpeed={(value) => setSearchForm(prev => ({ ...prev, wantHighSpeedTrain: value }))}
+                onDateChange={(date) => setSearchForm(prev => ({ ...prev, date }))}
                 spin={spin}
               />
             </View>

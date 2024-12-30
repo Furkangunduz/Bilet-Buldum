@@ -1,6 +1,6 @@
 import express from 'express';
 import { CrawlerController } from '../../controllers/CrawlerController';
-import { auth } from '../../middleware/auth';
+import { authenticateToken } from '../../middleware/auth';
 import { CrawlerService } from '../../services/CrawlerService';
 
 const router = express.Router();
@@ -12,7 +12,7 @@ const crawlerService = new CrawlerService();
 const crawlerController = new CrawlerController(crawlerService);
 
 // Routes
-router.post('/crawl', auth, crawlerController.crawl);
-router.get('/history', auth, crawlerController.getSearchHistory);
+router.post('/crawl', authenticateToken, crawlerController.crawl);
+router.get('/history', authenticateToken, crawlerController.getSearchHistory);
 
 export default router; 

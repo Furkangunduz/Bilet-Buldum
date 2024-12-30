@@ -13,7 +13,7 @@ export class CrawlerController extends BaseController {
   public crawl = async (req: Request, res: Response): Promise<void> => {
     try {
       const { url } = req.body;
-      const userId = req.user?.id;
+      const userId = req.user?._id;
 
       if (!url) {
         this.sendError(res, new Error('URL is required'), 400);
@@ -39,7 +39,7 @@ export class CrawlerController extends BaseController {
 
   public getSearchHistory = async (req: Request, res: Response): Promise<void> => {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?._id;
     } catch (error: any) {
       this.sendError(res, error);
     }

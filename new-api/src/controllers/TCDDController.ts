@@ -50,9 +50,70 @@ export class TCDDController extends BaseController {
     return new Date(timestamp).toISOString();
   }
 
-  private validateDate(date: string): boolean {
+  private knka(date: string): boolean {
     const dateRegex = /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2}$/;
     return dateRegex.test(date);
+  }
+
+  private validateTimeFormat(time: string): boolean {
+    const timeFormatRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/;
+    return timeFormatRegex.test(time);
+  }
+
+  private validateDateFormat(date: string): boolean {
+    const dateFormatRegex = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/;
+    return dateFormatRegex.test(date);
+  }
+
+  private validateTimeRange(start: string, end: string): boolean {
+    const [startHour, startMinute] = start.split(':').map(Number);
+    const [endHour, endMinute] = end.split(':').map(Number);
+    const startMinutes = startHour * 60 + startMinute;
+    const endMinutes = endHour * 60 + endMinute;
+
+    if ((startHour >= 1 && startHour < 5) || (endHour >= 1 && endHour < 5)) {
+      return false;
+    }
+
+    return startMinutes < endMinutes;
+  }
+
+  private async validateStationIds(fromStationId: string, toStationId: string): Promise<boolean> {
+    const stationsMap = await this.loadStationsMap();
+    let fromStationExists = false;
+    let toStationExists = false;
+
+    for (const [_, data] of Object.entries<StationData>(stationsMap)) {
+      if (data.id === fromStationId) fromStationExists = true;
+      if (data.id === toStationId) toStationExists = true;
+      if (fromStationExists && toStationExists) break;
+    }
+
+    return fromStationExists && toStationExists;
+  }
+
+  private validateSearchDate(dateStr: string): { isValid: boolean; error?: string } {
+    const searchDate = new Date(dateStr.replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
+    const now = new Date();
+    const tenDaysFromNow = new Date();
+    tenDaysFromNow.setDate(now.getDate() + 10);
+
+    if (searchDate.toDateString() === now.toDateString()) {
+      const currentHour = now.getHours();
+      if (currentHour >= 23) {
+        return { isValid: false, error: 'Cannot create search for today after 23:00' };
+      }
+    }
+
+    if (searchDate < now) {
+      return { isValid: false, error: 'Cannot create search for past dates' };
+    }
+
+    if (searchDate > tenDaysFromNow) {
+      return { isValid: false, error: 'Cannot create search for dates more than 10 days in the future' };
+    }
+
+    return { isValid: true };
   }
 
   private async loadStationsMap(): Promise<StationsMap> {
@@ -71,39 +132,53 @@ export class TCDDController extends BaseController {
         toStationId, 
         date, 
         passengerCount = 1,
-        departureTimeRange = { start: "00:00", end: "23:59" },  // Default to full day
-        preferredCabinClass = 'EKONOMİ',  // Default to economy
-        wantHighSpeedTrain = true // Default to high-speed trains
+        departureTimeRange = { start: "00:00", end: "23:59" },
+        preferredCabinClass = 'EKONOMİ',
+        wantHighSpeedTrain = true
       } = req.body;
 
-      if (!fromStationId || !toStationId || !date) {
-        this.sendError(res, new Error('Missing required parameters'), 400);
+      if (!fromStationId || !toStationId || !date || !departureTimeRange?.start || !departureTimeRange?.end) {
+        this.sendError(res, new Error('All fields are required: fromStationId, toStationId, date, departureTimeRange'), 400);
         return;
       }
 
-      if (!this.validateDate(date)) {
+      if (!this.validateDateFormat(date)) {
         this.sendError(res, new Error('Invalid date format. Use DD-MM-YYYY HH:mm:ss'), 400);
         return;
       }
 
-      // Validate time range format if provided
-      const timeFormatRegex = /^\d{2}:\d{2}$/;
-      if (departureTimeRange) {
-        if (!timeFormatRegex.test(departureTimeRange.start) || !timeFormatRegex.test(departureTimeRange.end)) {
-          this.sendError(res, new Error('Invalid time range format. Use HH:mm for both start and end times'), 400);
-          return;
-        }
+      const formattedDate = date.includes(':') ? date : `${date.split(' ')[0]} 00:00:00`;
 
-        // Validate that start time is before end time
-        const [startHour, startMinute] = departureTimeRange.start.split(':').map(Number);
-        const [endHour, endMinute] = departureTimeRange.end.split(':').map(Number);
-        const startMinutes = startHour * 60 + startMinute;
-        const endMinutes = endHour * 60 + endMinute;
+      const dateValidation = this.validateSearchDate(formattedDate);
+      if (!dateValidation.isValid) {
+        this.sendError(res, new Error(dateValidation.error || 'Invalid date'), 400);
+        return;
+      }
 
-        if (startMinutes >= endMinutes) {
-          this.sendError(res, new Error('Start time must be before end time'), 400);
-          return;
-        }
+      const areStationsValid = await this.validateStationIds(fromStationId, toStationId);
+      if (!areStationsValid) {
+        this.sendError(res, new Error('Invalid station IDs'), 400);
+        return;
+      }
+
+      if (!this.validateTimeFormat(departureTimeRange.start) || !this.validateTimeFormat(departureTimeRange.end)) {
+        this.sendError(res, new Error('Invalid time format. Use HH:mm'), 400);
+        return;
+      }
+
+      if (!this.validateTimeRange(departureTimeRange.start, departureTimeRange.end)) {
+        this.sendError(res, new Error('Invalid time range. Cannot search between 01:00 - 05:00, and start time must be before end time'), 400);
+        return;
+      }
+
+      if (typeof passengerCount !== 'number' || passengerCount < 1) {
+        this.sendError(res, new Error('Invalid passenger count'), 400);
+        return;
+      }
+
+      if (!['EKONOMİ', 'BUSINESS'].includes(preferredCabinClass)) {
+        this.sendError(res, new Error('Invalid cabin class. Must be either EKONOMİ or BUSINESS'), 400);
+        return;
       }
 
       const stationsMap = await this.loadStationsMap();
@@ -174,15 +249,12 @@ export class TCDDController extends BaseController {
         });
       });
 
-      // Filter trains based on user preferences
       let filteredTrains = trains;
 
-      // Filter by high-speed preference
       if (wantHighSpeedTrain !== undefined) {
         filteredTrains = filteredTrains.filter(train => train.isHighSpeed === wantHighSpeedTrain);
       }
 
-      // Filter by departure time range
       if (departureTimeRange) {
         const [startHour, startMinute] = departureTimeRange.start.split(':').map(Number);
         const [endHour, endMinute] = departureTimeRange.end.split(':').map(Number);
@@ -191,7 +263,6 @@ export class TCDDController extends BaseController {
 
         filteredTrains = filteredTrains.filter(train => {
           const departureDate = new Date(train.departureTime);
-          // Add 3 hours to UTC time to get the correct local time
           const localHours = (departureDate.getUTCHours() + 3) % 24;
           const localMinutes = departureDate.getUTCMinutes();
           const trainMinutes = localHours * 60 + localMinutes;
@@ -200,13 +271,17 @@ export class TCDDController extends BaseController {
         });
       }
 
-      // Filter by preferred cabin class
       if (preferredCabinClass) {
         filteredTrains = filteredTrains.filter(train => 
           train.cabinClassAvailabilities.some(cabin => 
-            cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 0
+            cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1
           )
-        );
+        ).map(train => ({
+          ...train,
+          cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin =>
+            cabin.cabinClass.name === preferredCabinClass
+          )
+        }));
       }
 
       this.sendSuccess(res, filteredTrains);
@@ -228,7 +303,6 @@ export class TCDDController extends BaseController {
     }
   };
 
-  // Get all available departure stations
   public getDepartureStations = async (_req: Request, res: Response): Promise<void> => {
     try {
       const stationsMap = await this.loadStationsMap();
@@ -242,8 +316,7 @@ export class TCDDController extends BaseController {
       this.sendError(res, error);
     }
   };
-
-  // Get possible arrival stations for a selected departure station
+  
   public getArrivalStations = async (req: Request, res: Response): Promise<void> => {
     try {
       const { departureStationId } = req.params;
@@ -255,7 +328,6 @@ export class TCDDController extends BaseController {
 
       const stationsMap = await this.loadStationsMap();
       
-      // Find the departure station in the map
       let departureStation: StationData | null = null;
       for (const [_, data] of Object.entries(stationsMap)) {
         if (data.id === departureStationId) {
@@ -269,9 +341,7 @@ export class TCDDController extends BaseController {
         return;
       }
 
-      // Get possible destinations for this departure station
       const arrivalStations = departureStation.destinations.map(dest => {
-        // Find the full station name from the map
         let stationName = '';
         for (const [name, data] of Object.entries(stationsMap)) {
           if (data.id === dest.id) {
@@ -292,7 +362,6 @@ export class TCDDController extends BaseController {
     }
   };
 
-  // Get available cabin classes
   public getCabinClasses = async (_req: Request, res: Response): Promise<void> => {
     try {
       this.sendSuccess(res, this.AVAILABLE_CABIN_CLASSES);
