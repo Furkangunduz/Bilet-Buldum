@@ -37,9 +37,8 @@ async function runCrawler() {
 }
 
 async function startPeriodicCrawler() {
-  await crawlerService.getAllStationsAndDestinations();
   // Run immediately on startup
-  // await runCrawler();
+  await runCrawler();
   
   // Then run every 10 seconds
   setInterval(runCrawler, 10000);
