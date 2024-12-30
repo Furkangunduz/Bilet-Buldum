@@ -16,7 +16,6 @@ app.use(express.json());
 // Routes
 app.use('/api/v1', v1Routes);
 
-// Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
   res.status(500).json({
@@ -41,7 +40,7 @@ async function startPeriodicCrawler() {
   await runCrawler();
   
   // Then run every 10 seconds
-  setInterval(runCrawler, 10000);
+  setInterval(runCrawler, 20000);
 }
 
 async function startServer() {

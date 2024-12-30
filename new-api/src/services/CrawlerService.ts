@@ -1,18 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import playwright from 'playwright';
-
-interface Station {
-  id: string;
-  text: string;
-}
-
-interface StationMap {
-  [station: string]: {
-    id: string;
-    destinations: Station[];
-  };
-}
+import { env } from '../config/env';
+import {
+  CrawlParams,
+  DEFAULT_PARAMS,
+  SELECTORS,
+  StationMap
+} from '../types/crawler.types';
 
 export class CrawlerService {
   private browser: playwright.Browser | null = null;
@@ -29,7 +24,6 @@ export class CrawlerService {
       .replace('ISTANBUL', 'İSTANBUL')
       .replace('PENDIK', 'PENDİK');
 
-    console.log('Normalized search term:', normalizedSearch);
 
     for (const station of stations) {
       if (!station.text) continue;
@@ -46,7 +40,7 @@ export class CrawlerService {
         const score = Math.min(stationText.length, normalizedSearch.length) / 
                      Math.max(stationText.length, normalizedSearch.length);
         
-        console.log(`Score for ${stationText}: ${score}`);
+    
         
         if (score > bestScore) {
           bestScore = score;
@@ -62,170 +56,314 @@ export class CrawlerService {
   async initialize() {
     if (!this.browser) {
       this.browser = await playwright.chromium.launch({
-        headless: true
+        headless: env.NODE_ENV !== 'development',
+        args: ['--disable-gpu', '--disable-dev-shm-usage', '--disable-setuid-sandbox', '--no-sandbox']
       });
       this.context = await this.browser.newContext({
-        viewport: { width: 1280, height: 720 }
+        viewport: { width: 1280, height: 720 },
+        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        javaScriptEnabled: true,
+        hasTouch: false,
+        isMobile: false
       });
     }
   }
 
-  async crawl(url: string =  'https://ebilet.tcddtasimacilik.gov.tr/' ): Promise<any> {
+  async crawl(params: Partial<CrawlParams> = {}, url: string = 'https://ebilet.tcddtasimacilik.gov.tr/'): Promise<any> {
     try {
+      const finalParams: CrawlParams = {
+        ...DEFAULT_PARAMS,
+        ...params
+      };
+
       await this.initialize();
       if (!this.context) throw new Error('Browser context not initialized');
 
       const page = await this.context.newPage();
 
-      console.log('Navigating to URL...');
-      await page.goto(url, { waitUntil: 'networkidle' });
+      // Set shorter timeouts
+      page.setDefaultTimeout(15000);
+      page.setDefaultNavigationTimeout(20000);
+
+      // Block unnecessary resources but keep CSS for proper rendering
+      await page.route('**/*.{png,jpg,jpeg,gif,svg,woff,woff2}', route => route.abort());
+      
+      await page.goto(url, { 
+        waitUntil: 'networkidle',  // Changed back to networkidle to ensure everything loads
+        timeout: 30000 
+      });
       console.log('Page loaded');
 
+      // Wait for the main container to be ready
+      await page.waitForSelector('.container', { timeout: 2000 });
       
-      await page.waitForLoadState('domcontentloaded');
-      await page.waitForTimeout(2000);
+      // Wait for both inputs to be present in DOM
+      await Promise.all([
+        page.waitForSelector(SELECTORS.FROM_STATION_INPUT, { state: 'attached' }),
+        page.waitForSelector(SELECTORS.TO_STATION_INPUT, { state: 'attached' })
+      ]);
 
-      
+      // Additional wait for page to be fully interactive
+      await page.waitForLoadState('domcontentloaded');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(500);
+
       console.log('Handling from station...');
-      const fromInput = await page.waitForSelector('#fromTrainInput');
+      const fromInput = await page.waitForSelector(SELECTORS.FROM_STATION_INPUT, {
+        state: 'visible',
+        timeout: 20000
+      });
       if (!fromInput) throw new Error('From input not found');
 
-      
       await fromInput.click();
       await fromInput.press('Control+A');
       await fromInput.press('Backspace');
       
-      
-      await fromInput.type('ANKARA');
-      await page.waitForTimeout(2000);
+      await fromInput.type(finalParams.fromStation);
+      await page.waitForTimeout(200);
 
-      
       console.log('Checking available stations...');
-      const stations = await page.evaluate(() => {
-        const buttons = document.querySelectorAll('button.dropdown-item.station');
+      const stations = await page.evaluate((selectors) => {
+        const buttons = document.querySelectorAll(selectors.STATION_BUTTONS);
         return Array.from(buttons).map(button => ({
           id: button.id,
-          text: button.querySelector('.textLocation')?.textContent?.trim()
+          text: button.querySelector(selectors.STATION_TEXT)?.textContent?.trim()
         }));
-      });
-      console.log('Available stations:', stations);
+      }, SELECTORS);
 
-      
-      const bestAnkaraMatch = this.findBestMatch('ANKARA GAR , ANKARA', stations);
-      if (bestAnkaraMatch) {
-        console.log('Found best matching station:', bestAnkaraMatch);
-        const button = await page.waitForSelector(`#${bestAnkaraMatch}`);
+      const bestFromMatch = this.findBestMatch(finalParams.fromStation, stations);
+      if (bestFromMatch) {
+        console.log('Found best matching station:', bestFromMatch);
+        const button = await page.waitForSelector(`#${bestFromMatch}`);
         if (button) {
           await button.click();
           console.log('Clicked best matching station');
         }
       } else {
         console.log('No matching station found, trying first station...');
-        const firstStation = await page.waitForSelector('button.dropdown-item.station');
+        const firstStation = await page.waitForSelector(SELECTORS.STATION_BUTTONS);
         if (firstStation) {
           await firstStation.click();
         }
       }
 
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(500);
       console.log('From station value:', await fromInput.inputValue());
 
-      
       console.log('Handling to station...');
-      const toInput = await page.waitForSelector('#toTrainInput');
+      const toInput = await page.waitForSelector(SELECTORS.TO_STATION_INPUT);
       if (!toInput) throw new Error('To input not found');
 
-      
       await toInput.click();
       await toInput.press('Control+A');
       await toInput.press('Backspace');
       
-      
-      await toInput.type('İSTANBUL');  
-      await page.waitForTimeout(2000);
+      await toInput.type(finalParams.toStation);
+      await page.waitForTimeout(200);
 
-      
-      const toStations = await page.evaluate(() => {
-        const buttons = document.querySelectorAll('button.dropdown-item.station');
+      const toStations = await page.evaluate((selectors) => {
+        const buttons = document.querySelectorAll(selectors.STATION_BUTTONS);
         return Array.from(buttons).map(button => ({
           id: button.id,
-          text: button.querySelector('.textLocation')?.textContent?.trim()
+          text: button.querySelector(selectors.STATION_TEXT)?.textContent?.trim()
         }));
-      });
-      console.log('Available destination stations:', toStations);
-
+      }, SELECTORS);
       
-      const bestPendikMatch = this.findBestMatch('İSTANBUL(PENDİK) , İSTANBUL', toStations);
-      if (bestPendikMatch) {
-        console.log('Found best matching destination:', bestPendikMatch);
-        const button = await page.waitForSelector(`#${bestPendikMatch}`);
+      const bestToMatch = this.findBestMatch(finalParams.toStation, toStations);
+      if (bestToMatch) {
+        console.log('Found best matching destination:', bestToMatch);
+        const button = await page.waitForSelector(`#${bestToMatch}`);
         if (button) {
           await button.click();
           console.log('Clicked best matching destination');
         }
       } else {
         console.log('No matching destination found, trying first station...');
-        const firstStation = await page.waitForSelector('button.dropdown-item.station');
+        const firstStation = await page.waitForSelector(SELECTORS.STATION_BUTTONS);
         if (firstStation) {
           await firstStation.click();
         }
       }
 
-      await page.waitForTimeout(2000);
-      console.log('To station value:', await toInput.inputValue());
+      await page.waitForTimeout(200);
 
+      // Date picker input
+      const datePickerInput = await page.waitForSelector(SELECTORS.DATE_PICKER_INPUT, {
+        timeout: 3000
+      });
       
-      console.log('Handling date selection...');
-      
-      const datePickerInput = await page.waitForSelector('.datePickerInput.departureDate input');
       if (!datePickerInput) throw new Error('Date picker input not found');
 
-      await datePickerInput.click();
-      console.log('Clicked date picker input');
-      await page.waitForTimeout(1000);
+      await page.evaluate((element: HTMLInputElement) => {
+        element.click();
+        element.focus();
+      }, datePickerInput as any);
+      
+      console.log('Clicked date picker input to open calendar');
+      
+      await page.waitForSelector(SELECTORS.CALENDAR_CONTAINER, { timeout: 3000 });
+      console.log('Calendar appeared');
 
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const day = tomorrow.getDate();
-      const month = tomorrow.getMonth() + 1;
-      const year = tomorrow.getFullYear();
+      await page.waitForTimeout(500);
 
-      console.log(`Selecting date: ${day}/${month}/${year}`);
+      // Use provided date or tomorrow
+      const targetDate = finalParams.date || (() => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow;
+      })();
 
-      const calendarDay = await page.waitForSelector(`td[data-date="${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"]`);
-      if (calendarDay) {
-        await calendarDay.click();
-        console.log('Selected date in calendar');
-      } else {
-        console.log('Could not find tomorrow in calendar, trying alternative method');
-        const availableDate = await page.waitForSelector('td.day:not(.disabled)');
-        if (availableDate) {
-          await availableDate.click();
-          console.log('Selected first available date');
+      const selectedDate = await page.evaluate((date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateFormatted = `${year}-${month}-${day}`;
+
+        // Look for the target date
+        const dateElement = document.querySelector(`td[data-date="${dateFormatted}"]`);
+        if (dateElement && !dateElement.classList.contains('disabled')) {
+          const span = dateElement.querySelector('span');
+          if (span) {
+            return {
+              date: dateElement.getAttribute('data-date'),
+              id: span.id
+            };
+          }
+        }
+
+        // If target date is not available, look for the next available date
+        const allDates = document.querySelectorAll('td[data-date]');
+        for (const element of allDates) {
+          const elementDate = new Date(element.getAttribute('data-date') || '');
+          if (elementDate >= date && 
+              !element.classList.contains('disabled') && 
+              !element.classList.contains('weekend') && 
+              !element.classList.contains('off')) {
+            const span = element.querySelector('span');
+            if (span) {
+              return {
+                date: element.getAttribute('data-date'),
+                id: span.id
+              };
+            }
+          }
+        }
+        return null;
+      }, targetDate);
+
+      if (!selectedDate) {
+        console.log('No available dates found');
+        return [];
+      }
+
+      console.log('Found date:', selectedDate.date);
+
+      await page.evaluate((dateId) => {
+        const span = document.getElementById(dateId);
+        if (span) {
+          const clickEvent = new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+          });
+          span.dispatchEvent(clickEvent);
+
+          const td = span.closest('td');
+          if (td) {
+            td.dispatchEvent(new MouseEvent('click', {
+              view: window,
+              bubbles: true,
+              cancelable: true
+            }));
+          }
+        }
+      }, selectedDate.id);
+      
+      console.log('Clicked date:', selectedDate.date);
+      
+      await page.waitForTimeout(500);
+      
+      const dateValue = await datePickerInput.inputValue();
+      console.log('Selected date value:', dateValue);
+
+      if (!dateValue) {
+        console.log('Could not verify date was set');
+        return [];
+      }
+
+      await page.waitForTimeout(200);
+
+      // Handle passenger selection
+      console.log('Handling passenger selection...');
+      
+      const passengerInput = await page.waitForSelector(SELECTORS.PASSENGER_INPUT);
+      if (!passengerInput) throw new Error('Passenger input not found');
+      
+      await passengerInput.click();
+      console.log('Clicked passenger dropdown');
+
+      await page.waitForSelector(SELECTORS.PASSENGER_DROPDOWN, { timeout: 3000 });
+      
+      const currentPassengers = await page.evaluate((selectors) => {
+        const input = document.querySelector(selectors.PASSENGER_COUNT_INPUT) as HTMLInputElement;
+        return input ? parseInt(input.value) : 1;
+      }, SELECTORS);
+
+      const desiredPassengers = finalParams.passengerCount || 1;
+      const clickCount = desiredPassengers - currentPassengers;
+
+      if (clickCount > 0) {
+        const addButton = await page.waitForSelector(SELECTORS.PASSENGER_ADD_BUTTON);
+        if (addButton) {
+          for (let i = 0; i < clickCount; i++) {
+            await addButton.click();
+            await page.waitForTimeout(200);
+          }
+        }
+      } else if (clickCount < 0) {
+        const removeButton = await page.waitForSelector(SELECTORS.PASSENGER_REMOVE_BUTTON);
+        if (removeButton) {
+          for (let i = 0; i < Math.abs(clickCount); i++) {
+            await removeButton.click();
+            await page.waitForTimeout(200);
+          }
         }
       }
 
-      await page.waitForTimeout(1000);
+      const applyButton = await page.waitForSelector(SELECTORS.PASSENGER_APPLY_BUTTON);
+      if (applyButton) {
+        await applyButton.click();
+        console.log('Applied passenger selection');
+      }
+
+      await page.waitForTimeout(200);
 
       console.log('Clicking search button...');
-      const searchButton = await page.waitForSelector('button[type="submit"]');
-      if (searchButton) {
-        await searchButton.click();
-        console.log('Search button clicked');
-      }
+      const searchButton = await page.waitForSelector(SELECTORS.SEARCH_BUTTON);
+      if (!searchButton) throw new Error('Search button not found');
 
+      // Block CSS before clicking search button
+      await page.route('**/*.css', route => route.abort());
       
+      await searchButton.click();
+      console.log('Clicked search button');
+
       try {
-        await page.waitForSelector('.seferSonuc', { timeout: 30000 });
-        console.log('Results found');
+        await page.waitForSelector(SELECTORS.SEARCH_RESULTS, { timeout: 15000 });
+        console.log('Search results loaded');
+
+        // Get the results here
+        const results = await page.evaluate(() => {
+          // Add result extraction logic here
+          return [];
+        });
+
+        return results;
       } catch (error) {
-        console.log('No results found:', error);
+        console.log('No search results found or timeout occurred');
+        return [];
       }
 
-      
-      await page.waitForTimeout(10000);
-      
-      return [];
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error('Crawler error:', error.message);
