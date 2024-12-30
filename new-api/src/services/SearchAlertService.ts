@@ -31,6 +31,20 @@ class SearchAlertService {
     await searchAlert.save();
     return searchAlert;
   }
+
+  async deactivateSearchAlert(searchId: string) {
+    const searchAlert = await SearchAlert.findById(searchId);
+    if (!searchAlert) {
+      throw new Error('Search alert not found');
+    }
+
+    searchAlert.isActive = false;
+    searchAlert.status = 'FAILED';
+    searchAlert.statusReason = 'User declined the alert';
+    
+    await searchAlert.save();
+    return searchAlert;
+  }
 }
 
 export default SearchAlertService.getInstance(); 

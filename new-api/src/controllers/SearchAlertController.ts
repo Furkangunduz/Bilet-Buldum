@@ -15,7 +15,6 @@ class SearchAlertController {
       if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
       } 
-      console.log('req.body', req.body);
 
       const searchAlert = await SearchAlertService.createSearchAlert(userId, {
         fromStationId: req.body.fromStationId,
@@ -41,8 +40,23 @@ class SearchAlertController {
       if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
+    
 
-      await SearchAlertService.deactivateSearch(req.params.searchId);
+    
+      const searchAlert = await SearchAlert.findOne({ 
+        _id: req.params.alertId,
+        userId 
+      });
+
+      if (!searchAlert) {
+        return res.status(404).json({ message: 'Search alert not found' });
+      }
+
+      searchAlert.status = 'FAILED';
+      searchAlert.isActive = false;
+      searchAlert.statusReason = 'User declined the alert';
+      await searchAlert.save();
+
       res.json({ message: 'Search alert deactivated successfully' });
     } catch (error) {
       console.error('Error deactivating search alert:', error);

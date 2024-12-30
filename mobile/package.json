@@ -50,6 +50,7 @@
     "react-native-screens": "^4.0.0",
     "react-native-svg": "15.8.0",
     "react-native-web": "~0.19.13",
+    "swr": "^2.3.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "3.3.5",
     "tailwindcss-animate": "^1.0.7",
