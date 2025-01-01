@@ -4,11 +4,6 @@ import { TCDDController } from '../controllers/TCDDController';
 import SearchAlert from '../models/SearchAlert';
 import NotificationService from './NotificationService';
 
-interface SearchResult {
-  success: boolean;
-  data: any[];
-}
-
 interface SearchAlertDocument {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
