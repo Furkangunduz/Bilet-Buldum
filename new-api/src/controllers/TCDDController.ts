@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { env } from '../config/env';
-import { TCDDData, Train } from '../types/tcdd.types';
+import { TCDDData } from '../types/tcdd.types';
 import { BaseController } from './BaseController';
 
 interface StationData {
@@ -16,6 +16,45 @@ interface StationData {
 
 interface StationsMap {
   [key: string]: StationData;
+}
+
+interface Leg {
+  trainAvailabilities: TrainAvailability[];
+}
+
+interface TrainAvailability {
+  trains: Train[];
+}
+
+interface Train {
+  id: number;
+  commercialName?: string;
+  trainNumber: string;
+  segments: Array<{
+    segment: {
+      departureStation: {
+        name: string;
+      };
+      arrivalStation: {
+        name: string;
+      };
+    };
+    departureTime: number;
+    arrivalTime: number;
+  }>;
+  cabinClassAvailabilities: Array<{
+    cabinClass: {
+      name: string;
+    };
+    availabilityCount: number;
+  }>;
+}
+
+interface Cabin {
+  cabinClass: {
+    name: string;
+  };
+  availabilityCount: number;
 }
 
 export class TCDDController extends BaseController {
@@ -517,4 +556,12 @@ export class TCDDController extends BaseController {
       this.sendError(res, error);
     }
   };
+
+  private formatTrainData(leg: Leg, trainAvailability: TrainAvailability, train: Train): any {
+    // ... existing code
+  }
+
+  private formatCabinData(cabin: Cabin): any {
+    // ... existing code
+  }
 } 

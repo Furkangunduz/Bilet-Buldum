@@ -3,11 +3,30 @@ import path from 'path';
 import playwright from 'playwright';
 import { env } from '../config/env';
 import {
-  CrawlParams,
-  DEFAULT_PARAMS,
-  SELECTORS,
-  StationMap
+    CrawlParams,
+    DEFAULT_PARAMS,
+    SELECTORS,
+    StationMap
 } from '../types/crawler.types';
+
+interface Route {
+  fromStation: string;
+  toStation: string;
+  date?: Date;
+}
+
+interface Selectors {
+  FROM_STATION_INPUT: string;
+  TO_STATION_INPUT: string;
+  STATION_BUTTONS: string;
+  STATION_TEXT: string;
+  // ... add other selector properties
+}
+
+interface SourceStation {
+  id: string;
+  text: string;
+}
 
 export class CrawlerService {
   private browser: playwright.Browser | null = null;
@@ -477,5 +496,13 @@ export class CrawlerService {
     } finally {
       await this.close();
     }
+  }
+
+  private async processRoute(route: Route): Promise<void> {
+    // ... existing code
+  }
+
+  private async handleSelectors(selectors: Selectors): Promise<void> {
+    // ... existing code
   }
 } 
