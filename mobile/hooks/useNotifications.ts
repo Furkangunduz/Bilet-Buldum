@@ -46,6 +46,11 @@ export function useNotifications() {
       }
 
       try {
+        // Clear any existing token first
+        if (expoPushToken) {
+          await api.updatePushToken('');
+        }
+
         token = (await Notifications.getExpoPushTokenAsync({
           projectId: Constants.expoConfig?.extra?.eas?.projectId,
         })).data;
@@ -55,6 +60,13 @@ export function useNotifications() {
         setExpoPushToken(token);
       } catch (error) {
         console.error('Error getting push token:', error);
+        // If there's an error, clear the token to be safe
+        try {
+          await api.updatePushToken('');
+          setExpoPushToken(undefined);
+        } catch (clearError) {
+          console.error('Error clearing push token:', clearError);
+        }
       }
     } else {
       console.log('Must use physical device for Push Notifications');

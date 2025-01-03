@@ -130,10 +130,10 @@ export interface SearchAlert {
 
 // Auth API
 export const authApi = {
-  login: (email: string, password: string) => {
+  login: (email: string, password: string, pushToken?: string) => {
     try {
       console.log('🔍 Attempting login for:', email);
-      return api.post<LoginResponse>('/auth/login', { email, password }).then(response => {
+      return api.post<LoginResponse>('/auth/login', { email, password, pushToken }).then(response => {
         console.log('✅ Login successful');
         return response;
       }).catch((error: AxiosError) => {

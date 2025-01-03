@@ -43,6 +43,8 @@ const userSchema = new Schema<IUser>(
     expoPushToken: {
       type: String,
       default: null,
+      unique: true,
+      sparse: true,
     },
     notificationPreferences: {
       email: {

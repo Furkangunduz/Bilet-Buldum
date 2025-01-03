@@ -1,7 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 import { router, useSegments } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { authApi } from './api';
+import { authApi, updatePushToken } from './api';
 
 export interface User {
   id: string;
@@ -91,7 +94,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const response = await authApi.login(email, password);
+      let pushToken;
+      
+      // Get push token if available
+      if (Device.isDevice) {
+        const { status } = await Notifications.getPermissionsAsync();
+        if (status === 'granted') {
+          const tokenData = await Notifications.getExpoPushTokenAsync({
+            projectId: Constants.expoConfig?.extra?.eas?.projectId,
+          });
+          pushToken = tokenData.data;
+        }
+      }
+
+      const response = await authApi.login(email, password, pushToken);
       await AsyncStorage.setItem('token', response.data.token);
       const userProfile = await authApi.getProfile();
       setUser(userProfile.data);
@@ -101,8 +117,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await AsyncStorage.removeItem('token');
-    setUser(null);
+    try {
+      // Clear push token from the server before logging out
+      await updatePushToken('');
+      await AsyncStorage.removeItem('token');
+      setUser(null);
+    } catch (error) {
+      console.error('Error during logout:', error);
+      throw error;
+    }
   };
 
   const signUp = async (email: string, password: string,name:string,lastName:string) => {
