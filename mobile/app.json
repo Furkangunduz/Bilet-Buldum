@@ -19,7 +19,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.furkan-gunduz.biletbuldum",
       "config": {
-        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511" // Test App ID for iOS
+        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511"
       }
     },
     "android": {
@@ -29,7 +29,7 @@
       },
       "package": "com.furkan_gunduz.biletbuldum",
       "config": {
-        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~3347511713" // Test App ID for Android
+        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~3347511713"
       }
     },
     "web": {
