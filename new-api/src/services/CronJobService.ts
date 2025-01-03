@@ -23,12 +23,22 @@ interface SearchAlertDocument {
   updatedAt: Date;
 }
 
+interface StationData {
+  id: string;
+  destinations: Array<{
+    id: string;
+    text: string;
+  }>;
+}
+
 class CronJobService {
   private static instance: CronJobService;
   private tcddController: TCDDController;
+  private stationsMap: Record<string, StationData>;
 
   private constructor() {
     this.tcddController = new TCDDController();
+    this.stationsMap = require('../../stations_map.json');
   }
 
   public static getInstance(): CronJobService {
@@ -36,6 +46,15 @@ class CronJobService {
       CronJobService.instance = new CronJobService();
     }
     return CronJobService.instance;
+  }
+
+  private getStationName(stationId: string): string {
+    for (const [stationName, data] of Object.entries(this.stationsMap)) {
+      if (data.id === stationId) {
+        return stationName;
+      }
+    }
+    return stationId;
   }
 
   private async getActiveSearchAlerts(): Promise<SearchAlertDocument[]> {
@@ -55,6 +74,15 @@ class CronJobService {
 
     console.log(`[SearchAlerts] Created ${Object.keys(grouped).length} groups from ${searchAlerts.length} alerts`);
     return grouped;
+  }
+
+  private formatDate(dateStr: string): string {
+    const [day, month, year] = dateStr.split(' ')[0].split('-');
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return `${day} ${months[parseInt(month) - 1]} ${year}`;
   }
 
   private async processSearchGroup(alerts: SearchAlertDocument[]) {
@@ -80,10 +108,6 @@ class CronJobService {
       };
 
       const searchResult = await this.tcddController.searchTrainsDirectly(searchPayload);
-      console.log(
-        `[SearchAlerts] Search result for ${firstAlert.fromStationId} -> ${firstAlert.toStationId} (${firstAlert.date}):`,
-        searchResult
-      );
 
       for (const alert of alerts) {
         const now = new Date();
@@ -96,12 +120,16 @@ class CronJobService {
             lastChecked: now,
             statusReason: 'Search date has passed',
           });
+
+          const fromStationName = this.getStationName(alert.fromStationId);
+          const toStationName = this.getStationName(alert.toStationId);
+
           await NotificationService.sendPushNotification(
             alert.userId,
             'Search Alert Expired',
-            `Your search alert for ${alert.fromStationId} to ${alert.toStationId} on ${alert.date} has expired.`
+            `Your search alert for ${fromStationName} to ${toStationName} on ${this.formatDate(alert.date)} has expired.`
           );
-          console.log(`[v ] Alert ${alert._id} expired - past date`);
+          console.log(`[SearchAlerts] Alert ${alert._id} expired - past date`);
           continue;
         }
 
@@ -113,10 +141,14 @@ class CronJobService {
             status: 'COMPLETED',
             statusReason: 'Seats found',
           });
+
+          const fromStationName = this.getStationName(alert.fromStationId);
+          const toStationName = this.getStationName(alert.toStationId);
+
           await NotificationService.sendPushNotification(
             alert.userId,
             'Seats Available!',
-            `We found seats for your journey from ${alert.fromStationId} to ${alert.toStationId} on ${alert.date}. Book now!`,
+            `We found seats for your journey from ${fromStationName} to ${toStationName} on ${this.formatDate(alert.date)}. Book now!`,
             {
               type: 'SEATS_FOUND',
               fromStationId: alert.fromStationId,
@@ -125,7 +157,6 @@ class CronJobService {
               cabinClass: alert.cabinClass,
             }
           );
-          console.log(`[SearchAlerts] Alert ${alert._id} completed - seats found`);
         }
       }
     } catch (error) {
