@@ -19,8 +19,8 @@ class AuthController {
 
   async register(req: Request, res: Response) {
     try {
-      const { email, password,name,lastName } = req.body;
-      console.log(req.body)
+      const { email, password, name, lastName } = req.body;
+      console.log(req.body);
 
       const existingUser = await User.findOne({ email });
 
@@ -31,17 +31,13 @@ class AuthController {
       const user = new User({
         email,
         password,
-        firstName:name,
-        lastName:lastName
+        firstName: name,
+        lastName: lastName,
       });
 
       await user.save();
 
-      const token = jwt.sign(
-        { userId: user._id },
-        env.JWT_SECRET,
-        { expiresIn: '7d' }
-      );
+      const token = jwt.sign({ userId: user._id }, env.JWT_SECRET, { expiresIn: '7d' });
 
       res.status(201).json({
         user: {
@@ -78,17 +74,13 @@ class AuthController {
         if (existingUser && existingUser._id && existingUser._id.toString() !== user.id) {
           await User.findByIdAndUpdate(existingUser._id, { $unset: { expoPushToken: 1 } });
         }
-        
+
         await User.findByIdAndUpdate(user._id, { expoPushToken: pushToken });
       } else {
         await User.findByIdAndUpdate(user._id, { $unset: { expoPushToken: 1 } });
       }
 
-      const token = jwt.sign(
-        { userId: user._id },
-        env.JWT_SECRET,
-        { expiresIn: '7d' }
-      );
+      const token = jwt.sign({ userId: user._id }, env.JWT_SECRET, { expiresIn: '7d' });
 
       res.json({
         user: {
@@ -124,11 +116,7 @@ class AuthController {
   async updateProfile(req: Request, res: Response) {
     try {
       const { firstName, lastName } = req.body;
-      const user = await User.findByIdAndUpdate(
-        req.user._id,
-        { firstName, lastName },
-        { new: true }
-      );
+      const user = await User.findByIdAndUpdate(req.user._id, { firstName, lastName }, { new: true });
 
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -151,8 +139,8 @@ class AuthController {
       const { email, push } = req.body;
       const user = await User.findByIdAndUpdate(
         req.user._id,
-        { 
-          notificationPreferences: { email, push }
+        {
+          notificationPreferences: { email, push },
         },
         { new: true }
       );
@@ -199,7 +187,7 @@ class AuthController {
   async updatePushToken(req: Request, res: Response) {
     try {
       const { pushToken } = req.body;
-      
+
       if (pushToken === '') {
         // If token is empty string, remove the token
         await User.findByIdAndUpdate(req.user._id, { $unset: { expoPushToken: 1 } });
@@ -229,13 +217,13 @@ class AuthController {
   async testNotification(req: Request, res: Response) {
     try {
       const { expoPushToken } = req.body;
-      
+
       if (!expoPushToken) {
         return res.status(400).json({ error: 'Push token is required' });
       }
 
       const expo = new Expo();
-      
+
       if (!Expo.isExpoPushToken(expoPushToken)) {
         return res.status(400).json({ error: 'Invalid expo push token' });
       }
@@ -262,4 +250,4 @@ class AuthController {
   }
 }
 
-export default new AuthController(); 
+export default new AuthController();
