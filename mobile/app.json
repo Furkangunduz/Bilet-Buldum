@@ -12,17 +12,25 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.furkan-gunduz.biletbuldum"
+      "bundleIdentifier": "com.furkan-gunduz.biletbuldum",
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511" // Test App ID for iOS
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/biletbuldum-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.furkan_gunduz.biletbuldum"
+      "package": "com.furkan_gunduz.biletbuldum",
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~3347511713" // Test App ID for Android
+      }
     },
     "web": {
       "bundler": "metro",
@@ -38,7 +46,8 @@
           "color": "#ffffff",
           "mode": "production"
         }
-      ]
+      ],
+      "react-native-google-mobile-ads"
     ],
     "experiments": {
       "typedRoutes": true

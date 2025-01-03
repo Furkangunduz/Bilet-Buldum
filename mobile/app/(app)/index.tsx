@@ -2,12 +2,21 @@ import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useSearchAlerts } from '~/hooks/useSearchAlerts';
 import { DateTimePickers } from '../../components/home/DateTimePickers';
 import { SearchForm } from '../../components/home/SearchForm';
 import { StationModal } from '../../components/home/StationModal';
 import { CabinClass, Station, searchAlertsApi, tcddApi } from '../../lib/api';
+
+// Initialize the interstitial ad
+const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'your-ad-unit-id-here';
+
+const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
+  requestNonPersonalizedAdsOnly: true,
+  keywords: ['train', 'travel', 'transportation'],
+});
 
 export default function Home() {
   const { searchAlerts, isLoading: isLoadingAlerts, mutate: mutateAlerts } = useSearchAlerts();
@@ -18,6 +27,7 @@ export default function Home() {
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
+  const [isAdLoaded, setIsAdLoaded] = useState(false);
 
   const maxDate = useMemo(() => {
     const date = new Date();
@@ -172,8 +182,14 @@ export default function Home() {
   }, [showStationModal, departureStations, arrivalStations, debouncedSearch]);
   
   const handleSearchPress = () => {
-    setIsBottomSheetOpen(true);
-    bottomSheetRef.current?.expand();
+    if (isAdLoaded) {
+      // Show the ad if it's loaded
+      interstitial.show();
+    } else {
+      // If ad isn't loaded, just show the search sheet directly
+      setIsBottomSheetOpen(true);
+      bottomSheetRef.current?.expand();
+    }
   };
 
   const handleCloseBottomSheet = () => {
@@ -258,8 +274,27 @@ export default function Home() {
     []
   );
 
+  // Load the ad when component mounts
+  useEffect(() => {
+    const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+      setIsAdLoaded(true);
+    });
 
-  
+    const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+      setIsBottomSheetOpen(true);
+      bottomSheetRef.current?.expand();
+    });
+
+    // Start loading the interstitial straight away
+    interstitial.load();
+
+    // Cleanup
+    return () => {
+      unsubscribeLoaded();
+      unsubscribeClosed();
+    };
+  }, []);
+
   return (
     <SafeAreaView className='flex-1 bg-background'>
       <View className="flex-1 bg-background">
