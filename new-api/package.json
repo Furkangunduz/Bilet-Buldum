@@ -1,0 +1,44 @@
+{
+  "name": "new-api",
+  "version": "1.0.0",
+  "description": "Web crawler API using Express.js, TypeScript, and Playwright",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "npx ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/axios": "^0.14.4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/lodash": "^4.17.13",
+    "@types/mongoose": "^5.11.97",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.10.3",
+    "@types/node-cron": "^3.0.11",
+    "@types/node-schedule": "^2.1.7",
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "expo-server-sdk": "^3.13.0",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^8.9.2",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.3",
+    "node-schedule": "^2.1.1",
+    "playwright": "^1.36.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+  }
+}

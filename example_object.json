@@ -1,0 +1,1785 @@
+{
+  "trains": [
+      {
+          "id": 29881,
+          "number": "81003",
+          "name": "81003 ANKARA - İSTANBUL",
+          "commercialName": "YHT ANKARA - İSTANBUL",
+          "type": "YHT",
+          "line": null,
+          "reversed": false,
+          "scheduleId": 353,
+          "departureStationId": 98,
+          "arrivalStationId": 1135,
+          "minPrice": {
+              "type": null,
+              "priceAmount": 495.0,
+              "priceCurrency": "TRY"
+          },
+          "reservationLockTime": 1440,
+          "reservable": true,
+          "bookingClassCapacities": [
+              {
+                  "id": 144023,
+                  "trainId": 29881,
+                  "bookingClassId": 4,
+                  "capacity": 45
+              },
+              {
+                  "id": 144024,
+                  "trainId": 29881,
+                  "bookingClassId": 1,
+                  "capacity": 424
+              },
+              {
+                  "id": 144025,
+                  "trainId": 29881,
+                  "bookingClassId": 22,
+                  "capacity": 12
+              },
+              {
+                  "id": 144026,
+                  "trainId": 29881,
+                  "bookingClassId": 23,
+                  "capacity": 2
+              }
+          ],
+          "segments": [
+              {
+                  "id": 422119,
+                  "departureTime": 1735703400000,
+                  "arrivalTime": 1735704120000,
+                  "stops": true,
+                  "duration": 12,
+                  "stopDuration": -1030,
+                  "distance": 19.892,
+                  "segment": {
+                      "id": 426363,
+                      "name": "ANKARA GAR-ERYAMAN YHT",
+                      "departureStation": {
+                          "id": 98,
+                          "stationNumber": "2503",
+                          "areaCode": 6,
+                          "name": "ANKARA GAR",
+                          "stationStatus": {
+                              "id": 6,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 111,
+                          "cityId": 6,
+                          "districtId": 67,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "108-I-2503",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": false,
+                          "active": true,
+                          "email": "",
+                          "orangeDeskEmail": "ankaraturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "   ANKARA",
+                          "longitude": 32.8430211,
+                          "latitude": 39.9354204,
+                          "altitude": 849.5341186523438,
+                          "startKm": -0.4,
+                          "endKm": 0.5,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "arrivalStation": {
+                          "id": 1306,
+                          "stationNumber": "9092",
+                          "areaCode": 6,
+                          "name": "ERYAMAN YHT",
+                          "stationStatus": {
+                              "id": 7,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 3606,
+                          "cityId": 6,
+                          "districtId": 75,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "204-I-9092",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "ERYAMANYHT@TCDDTASIMACILIK.GOV.TR",
+                          "orangeDeskEmail": "eryamanturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "ANKARA",
+                          "longitude": 32.63023,
+                          "latitude": 39.95575,
+                          "altitude": 798.5118408203125,
+                          "startKm": 546614.0,
+                          "endKm": 547014.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "lineId": 0,
+                      "lineOrder": 0
+                  }
+              },
+              {
+                  "id": 422120,
+                  "departureTime": 1735704240000,
+                  "arrivalTime": 1735705500000,
+                  "stops": true,
+                  "duration": 21,
+                  "stopDuration": 2,
+                  "distance": 64.215,
+                  "segment": {
+                      "id": 426410,
+                      "name": "ERYAMAN YHT-POLATLI YHT",
+                      "departureStation": {
+                          "id": 1306,
+                          "stationNumber": "9092",
+                          "areaCode": 6,
+                          "name": "ERYAMAN YHT",
+                          "stationStatus": {
+                              "id": 7,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 3606,
+                          "cityId": 6,
+                          "districtId": 75,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "204-I-9092",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "ERYAMANYHT@TCDDTASIMACILIK.GOV.TR",
+                          "orangeDeskEmail": "eryamanturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "ANKARA",
+                          "longitude": 32.63023,
+                          "latitude": 39.95575,
+                          "altitude": 798.5118408203125,
+                          "startKm": 546614.0,
+                          "endKm": 547014.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "arrivalStation": {
+                          "id": 244,
+                          "stationNumber": "2712",
+                          "areaCode": 6,
+                          "name": "POLATLI YHT",
+                          "stationStatus": {
+                              "id": 7,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 271,
+                          "cityId": 6,
+                          "districtId": 86,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "200-I-2712",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "POLATLIYHT@TCDDTASIMACILIK.GOV.TR",
+                          "orangeDeskEmail": "polatlituruncumasa@tcddtasimacilik.gov.tr",
+                          "address": "ANKARA",
+                          "longitude": 32.230833333334,
+                          "latitude": 39.671388888889,
+                          "altitude": 846.3507690429688,
+                          "startKm": 0.0,
+                          "endKm": 1.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "lineId": 0,
+                      "lineOrder": 0
+                  }
+              },
+              {
+                  "id": 422121,
+                  "departureTime": 1735705560000,
+                  "arrivalTime": 1735708260000,
+                  "stops": true,
+                  "duration": 45,
+                  "stopDuration": 1,
+                  "distance": 160.834,
+                  "segment": {
+                      "id": 426541,
+                      "name": "POLATLI YHT-ESKİŞEHİR",
+                      "departureStation": {
+                          "id": 244,
+                          "stationNumber": "2712",
+                          "areaCode": 6,
+                          "name": "POLATLI YHT",
+                          "stationStatus": {
+                              "id": 7,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 271,
+                          "cityId": 6,
+                          "districtId": 86,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "200-I-2712",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "POLATLIYHT@TCDDTASIMACILIK.GOV.TR",
+                          "orangeDeskEmail": "polatlituruncumasa@tcddtasimacilik.gov.tr",
+                          "address": "ANKARA",
+                          "longitude": 32.230833333334,
+                          "latitude": 39.671388888889,
+                          "altitude": 846.3507690429688,
+                          "startKm": 0.0,
+                          "endKm": 1.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "arrivalStation": {
+                          "id": 93,
+                          "stationNumber": "2435",
+                          "areaCode": 26,
+                          "name": "ESKİŞEHİR",
+                          "stationStatus": {
+                              "id": 6,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 106,
+                          "cityId": 26,
+                          "districtId": 379,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "104-I-2435",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": false,
+                          "active": true,
+                          "email": "",
+                          "orangeDeskEmail": "eskisehirturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "   ESKİŞEHİR",
+                          "longitude": 30.500833333333,
+                          "latitude": 39.778888888889,
+                          "altitude": 789.8875122070312,
+                          "startKm": 311.9,
+                          "endKm": 313.7,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "lineId": 0,
+                      "lineOrder": 0
+                  }
+              },
+              {
+                  "id": 422122,
+                  "departureTime": 1735708560000,
+                  "arrivalTime": 1735709460000,
+                  "stops": true,
+                  "duration": 15,
+                  "stopDuration": 5,
+                  "distance": 42.449,
+                  "segment": {
+                      "id": 426732,
+                      "name": "ESKİŞEHİR-BOZÜYÜK YHT",
+                      "departureStation": {
+                          "id": 93,
+                          "stationNumber": "2435",
+                          "areaCode": 26,
+                          "name": "ESKİŞEHİR",
+                          "stationStatus": {
+                              "id": 6,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 106,
+                          "cityId": 26,
+                          "districtId": 379,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "104-I-2435",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": false,
+                          "active": true,
+                          "email": "",
+                          "orangeDeskEmail": "eskisehirturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "   ESKİŞEHİR",
+                          "longitude": 30.500833333333,
+                          "latitude": 39.778888888889,
+                          "altitude": 789.8875122070312,
+                          "startKm": 311.9,
+                          "endKm": 313.7,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "arrivalStation": {
+                          "id": 1145,
+                          "stationNumber": "1715",
+                          "areaCode": 11,
+                          "name": "BOZÜYÜK YHT",
+                          "stationStatus": {
+                              "id": 8,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 2678,
+                          "cityId": 11,
+                          "districtId": 175,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "203-I-1715",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "",
+                          "orangeDeskEmail": "bozuyukturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "",
+                          "longitude": 30.043611111111,
+                          "latitude": 39.880555555556,
+                          "altitude": 800.5025024414062,
+                          "startKm": 238194.0,
+                          "endKm": 239041.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "lineId": 0,
+                      "lineOrder": 0
+                  }
+              },
+              {
+                  "id": 422123,
+                  "departureTime": 1735709520000,
+                  "arrivalTime": 1735710780000,
+                  "stops": true,
+                  "duration": 21,
+                  "stopDuration": 1,
+                  "distance": 32.166,
+                  "segment": {
+                      "id": 426772,
+                      "name": "BOZÜYÜK YHT-BİLECİK YHT",
+                      "departureStation": {
+                          "id": 1145,
+                          "stationNumber": "1715",
+                          "areaCode": 11,
+                          "name": "BOZÜYÜK YHT",
+                          "stationStatus": {
+                              "id": 8,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 2678,
+                          "cityId": 11,
+                          "districtId": 175,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "203-I-1715",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "",
+                          "orangeDeskEmail": "bozuyukturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "",
+                          "longitude": 30.043611111111,
+                          "latitude": 39.880555555556,
+                          "altitude": 800.5025024414062,
+                          "startKm": 238194.0,
+                          "endKm": 239041.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "arrivalStation": {
+                          "id": 1142,
+                          "stationNumber": "1712",
+                          "areaCode": 11,
+                          "name": "BİLECİK YHT",
+                          "stationStatus": {
+                              "id": 7,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 2675,
+                          "cityId": 11,
+                          "districtId": 178,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "203-I-1712",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "BİLECİKYHT@TCDDTASIMACILIK.GOV.TR",
+                          "orangeDeskEmail": "bilecikturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "BİLECİK YHT",
+                          "longitude": 30.00954,
+                          "latitude": 40.13568,
+                          "altitude": 270.5618896484375,
+                          "startKm": 206834.0,
+                          "endKm": 207557.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "lineId": 0,
+                      "lineOrder": 0
+                  }
+              },
+              {
+                  "id": 422124,
+                  "departureTime": 1735710840000,
+                  "arrivalTime": 1735712760000,
+                  "stops": true,
+                  "duration": 32,
+                  "stopDuration": 1,
+                  "distance": 85.162,
+                  "segment": {
+                      "id": 426938,
+                      "name": "BİLECİK YHT-ARİFİYE",
+                      "departureStation": {
+                          "id": 1142,
+                          "stationNumber": "1712",
+                          "areaCode": 11,
+                          "name": "BİLECİK YHT",
+                          "stationStatus": {
+                              "id": 7,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 2675,
+                          "cityId": 11,
+                          "districtId": 178,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "203-I-1712",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "BİLECİKYHT@TCDDTASIMACILIK.GOV.TR",
+                          "orangeDeskEmail": "bilecikturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "BİLECİK YHT",
+                          "longitude": 30.00954,
+                          "latitude": 40.13568,
+                          "altitude": 270.5618896484375,
+                          "startKm": 206834.0,
+                          "endKm": 207557.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "arrivalStation": {
+                          "id": 5,
+                          "stationNumber": "1512",
+                          "areaCode": 54,
+                          "name": "ARİFİYE",
+                          "stationStatus": {
+                              "id": 8,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 6,
+                          "cityId": 54,
+                          "districtId": 794,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "104-I-1512",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "ARİFİYE@TCDDTASIMACILIK.GOVTR",
+                          "orangeDeskEmail": "arifiyeturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "   SAKARYA",
+                          "longitude": 30.356111111111,
+                          "latitude": 40.713333333333,
+                          "altitude": 36.00675201416016,
+                          "startKm": 129806.0,
+                          "endKm": 131123.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "lineId": 0,
+                      "lineOrder": 0
+                  }
+              },
+              {
+                  "id": 422125,
+                  "departureTime": 1735712820000,
+                  "arrivalTime": 1735714080000,
+                  "stops": true,
+                  "duration": 21,
+                  "stopDuration": 1,
+                  "distance": 42.203,
+                  "segment": {
+                      "id": 427102,
+                      "name": "ARİFİYE-İZMİT YHT",
+                      "departureStation": {
+                          "id": 5,
+                          "stationNumber": "1512",
+                          "areaCode": 54,
+                          "name": "ARİFİYE",
+                          "stationStatus": {
+                              "id": 8,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 6,
+                          "cityId": 54,
+                          "districtId": 794,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "104-I-1512",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "ARİFİYE@TCDDTASIMACILIK.GOVTR",
+                          "orangeDeskEmail": "arifiyeturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "   SAKARYA",
+                          "longitude": 30.356111111111,
+                          "latitude": 40.713333333333,
+                          "altitude": 36.00675201416016,
+                          "startKm": 129806.0,
+                          "endKm": 131123.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "arrivalStation": {
+                          "id": 1135,
+                          "stationNumber": "1705",
+                          "areaCode": 41,
+                          "name": "İZMİT YHT",
+                          "stationStatus": {
+                              "id": 7,
+                              "name": null,
+                              "detail": null
+                          },
+                          "stationType": {
+                              "id": 2,
+                              "name": null,
+                              "detail": null
+                          },
+                          "unitId": 2668,
+                          "cityId": 41,
+                          "districtId": 619,
+                          "neighbourhoodId": 0,
+                          "uicCode": null,
+                          "technicalUnit": "203-I-1705",
+                          "stationChefId": 0,
+                          "detail": "",
+                          "showOnQuery": true,
+                          "passengerDrop": true,
+                          "ticketSaleActive": true,
+                          "active": true,
+                          "email": "İZMİT@TCDDTASIMACILIK.GOV.TR",
+                          "orangeDeskEmail": "izmitturuncumasa@tcddtasimacilik.gov.tr",
+                          "address": "İZMİT YHT",
+                          "longitude": 29.9175,
+                          "latitude": 40.761944444444,
+                          "altitude": 1.111021161079407,
+                          "startKm": 0.0,
+                          "endKm": 1.0,
+                          "showOnMap": false,
+                          "passengerAdmission": false,
+                          "disabledAccessibility": false,
+                          "phones": null,
+                          "workingDays": null,
+                          "hardwares": null,
+                          "physicalProperties": null,
+                          "stationPlatforms": null,
+                          "salesChannels": null,
+                          "IATACode": null
+                      },
+                      "lineId": 0,
+                      "lineOrder": 0
+                  }
+              }
+          ],
+          "cars": [
+              {
+                  "id": 164950,
+                  "name": "1",
+                  "trainId": 29881,
+                  "templateId": 268,
+                  "carIndex": 0,
+                  "unlabeled": false,
+                  "capacity": 0,
+                  "cabinClassId": 0,
+                  "availabilities": [
+                      {
+                          "trainCarId": 164950,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 1,
+                              "code": "C",
+                              "name": "BUSİNESS",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availability": 0,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 4,
+                                      "code": "E",
+                                      "name": "BUSİNESS STANDART",
+                                      "cabinClass": {
+                                          "id": 1,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 1,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 742.5,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 742.5,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 742.5,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 0
+                              }
+                          ],
+                          "additionalServices": []
+                      }
+                  ]
+              },
+              {
+                  "id": 164951,
+                  "name": "2",
+                  "trainId": 29881,
+                  "templateId": 272,
+                  "carIndex": 1,
+                  "unlabeled": false,
+                  "capacity": 0,
+                  "cabinClassId": 0,
+                  "availabilities": [
+                      {
+                          "trainCarId": 164951,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 2,
+                              "code": "Y1",
+                              "name": "EKONOMİ",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availability": 0,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 1,
+                                      "code": "B",
+                                      "name": "EKONOMİ STANDART",
+                                      "cabinClass": {
+                                          "id": 2,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 2,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 495.0,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 0
+                              }
+                          ],
+                          "additionalServices": []
+                      },
+                      {
+                          "trainCarId": 164951,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 11,
+                              "code": "L",
+                              "name": "LOCA",
+                              "additionalServices": [
+                                  {
+                                      "id": 4,
+                                      "additionalServiceTypeId": 3,
+                                      "name": "LOCA",
+                                      "description": "LOCA",
+                                      "code": "L",
+                                      "active": true,
+                                      "freeForPermi": false,
+                                      "actAsGroup": false,
+                                      "basePrice": [
+                                          {
+                                              "id": 3,
+                                              "additionalServiceId": 4,
+                                              "type": "FARE",
+                                              "priceAmount": 165.0,
+                                              "priceCurrency": "TRY",
+                                              "startDate": "2024-07-13",
+                                              "endDate": "2025-12-31"
+                                          }
+                                      ],
+                                      "pricingPeriods": null
+                                  }
+                              ],
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availability": 0,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 22,
+                                      "code": "K",
+                                      "name": "LOCA STANDART",
+                                      "cabinClass": {
+                                          "id": 11,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 11,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 742.5,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 907.5,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 742.5,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 0
+                              }
+                          ],
+                          "additionalServices": [
+                              {
+                                  "additionalService": {
+                                      "id": 4,
+                                      "additionalServiceTypeId": 3,
+                                      "name": "LOCA",
+                                      "description": "LOCA",
+                                      "code": "L",
+                                      "active": true,
+                                      "freeForPermi": false,
+                                      "actAsGroup": false,
+                                      "basePrice": [
+                                          {
+                                              "id": 3,
+                                              "additionalServiceId": 4,
+                                              "type": "FARE",
+                                              "priceAmount": 165.0,
+                                              "priceCurrency": "TRY",
+                                              "startDate": "2024-07-13",
+                                              "endDate": "2025-12-31"
+                                          }
+                                      ],
+                                      "pricingPeriods": null
+                                  },
+                                  "priceAmount": 165.0,
+                                  "currency": "TRY"
+                              }
+                          ]
+                      }
+                  ]
+              },
+              {
+                  "id": 164952,
+                  "name": "3",
+                  "trainId": 29881,
+                  "templateId": 269,
+                  "carIndex": 2,
+                  "unlabeled": false,
+                  "capacity": 0,
+                  "cabinClassId": 0,
+                  "availabilities": [
+                      {
+                          "trainCarId": 164952,
+                          "trainCarName": null,
+                          "cabinClass": null,
+                          "availability": 0,
+                          "pricingList": [],
+                          "additionalServices": null
+                      }
+                  ]
+              },
+              {
+                  "id": 164953,
+                  "name": "4",
+                  "trainId": 29881,
+                  "templateId": 270,
+                  "carIndex": 3,
+                  "unlabeled": false,
+                  "capacity": 0,
+                  "cabinClassId": 0,
+                  "availabilities": [
+                      {
+                          "trainCarId": 164953,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 12,
+                              "code": "DSB",
+                              "name": "TEKERLEKLİ SANDALYE",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": true
+                          },
+                          "availability": 2,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 23,
+                                      "code": "X",
+                                      "name": "ENGELLİ STANDART",
+                                      "cabinClass": {
+                                          "id": 12,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 12,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 495.0,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 2
+                              }
+                          ],
+                          "additionalServices": []
+                      },
+                      {
+                          "trainCarId": 164953,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 2,
+                              "code": "Y1",
+                              "name": "EKONOMİ",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availability": 0,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 1,
+                                      "code": "B",
+                                      "name": "EKONOMİ STANDART",
+                                      "cabinClass": {
+                                          "id": 2,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 2,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 495.0,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 0
+                              }
+                          ],
+                          "additionalServices": []
+                      }
+                  ]
+              },
+              {
+                  "id": 164954,
+                  "name": "5",
+                  "trainId": 29881,
+                  "templateId": 271,
+                  "carIndex": 4,
+                  "unlabeled": false,
+                  "capacity": 0,
+                  "cabinClassId": 0,
+                  "availabilities": [
+                      {
+                          "trainCarId": 164954,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 2,
+                              "code": "Y1",
+                              "name": "EKONOMİ",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availability": 0,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 1,
+                                      "code": "B",
+                                      "name": "EKONOMİ STANDART",
+                                      "cabinClass": {
+                                          "id": 2,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 2,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 495.0,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 0
+                              }
+                          ],
+                          "additionalServices": []
+                      }
+                  ]
+              },
+              {
+                  "id": 164955,
+                  "name": "6",
+                  "trainId": 29881,
+                  "templateId": 273,
+                  "carIndex": 5,
+                  "unlabeled": false,
+                  "capacity": 0,
+                  "cabinClassId": 0,
+                  "availabilities": [
+                      {
+                          "trainCarId": 164955,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 2,
+                              "code": "Y1",
+                              "name": "EKONOMİ",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availability": 0,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 1,
+                                      "code": "B",
+                                      "name": "EKONOMİ STANDART",
+                                      "cabinClass": {
+                                          "id": 2,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 2,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 495.0,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 0
+                              }
+                          ],
+                          "additionalServices": []
+                      }
+                  ]
+              },
+              {
+                  "id": 164956,
+                  "name": "7",
+                  "trainId": 29881,
+                  "templateId": 274,
+                  "carIndex": 6,
+                  "unlabeled": false,
+                  "capacity": 0,
+                  "cabinClassId": 0,
+                  "availabilities": [
+                      {
+                          "trainCarId": 164956,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 2,
+                              "code": "Y1",
+                              "name": "EKONOMİ",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availability": 0,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 1,
+                                      "code": "B",
+                                      "name": "EKONOMİ STANDART",
+                                      "cabinClass": {
+                                          "id": 2,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 2,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 495.0,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 0
+                              }
+                          ],
+                          "additionalServices": []
+                      }
+                  ]
+              },
+              {
+                  "id": 164957,
+                  "name": "8",
+                  "trainId": 29881,
+                  "templateId": 275,
+                  "carIndex": 7,
+                  "unlabeled": false,
+                  "capacity": 0,
+                  "cabinClassId": 0,
+                  "availabilities": [
+                      {
+                          "trainCarId": 164957,
+                          "trainCarName": null,
+                          "cabinClass": {
+                              "id": 2,
+                              "code": "Y1",
+                              "name": "EKONOMİ",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availability": 0,
+                          "pricingList": [
+                              {
+                                  "basePricingId": 62289795,
+                                  "bookingClass": {
+                                      "id": 1,
+                                      "code": "B",
+                                      "name": "EKONOMİ STANDART",
+                                      "cabinClass": {
+                                          "id": 2,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "cabinClassId": 2,
+                                  "basePricingType": "PARKOUR",
+                                  "fareBasis": {
+                                      "code": "WHO",
+                                      "factor": 1.0,
+                                      "price": {
+                                          "type": null,
+                                          "priceAmount": 495.0,
+                                          "priceCurrency": "TRY"
+                                      }
+                                  },
+                                  "basePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "crudePrice": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "baseTransportationCost": {
+                                      "type": null,
+                                      "priceAmount": 495.0,
+                                      "priceCurrency": "TRY"
+                                  },
+                                  "availability": 0
+                              }
+                          ],
+                          "additionalServices": []
+                      }
+                  ]
+              }
+          ],
+          "trainSegments": [
+              {
+                  "departureStationId": 98,
+                  "arrivalStationId": 1306,
+                  "departureTime": "2025-01-01T03:50:00",
+                  "arrivalTime": "2025-01-01T04:02:00"
+              },
+              {
+                  "departureStationId": 1306,
+                  "arrivalStationId": 244,
+                  "departureTime": "2025-01-01T04:04:00",
+                  "arrivalTime": "2025-01-01T04:25:00"
+              },
+              {
+                  "departureStationId": 244,
+                  "arrivalStationId": 93,
+                  "departureTime": "2025-01-01T04:26:00",
+                  "arrivalTime": "2025-01-01T05:11:00"
+              },
+              {
+                  "departureStationId": 93,
+                  "arrivalStationId": 1145,
+                  "departureTime": "2025-01-01T05:16:00",
+                  "arrivalTime": "2025-01-01T05:31:00"
+              },
+              {
+                  "departureStationId": 1145,
+                  "arrivalStationId": 1142,
+                  "departureTime": "2025-01-01T05:32:00",
+                  "arrivalTime": "2025-01-01T05:53:00"
+              },
+              {
+                  "departureStationId": 1142,
+                  "arrivalStationId": 5,
+                  "departureTime": "2025-01-01T05:54:00",
+                  "arrivalTime": "2025-01-01T06:26:00"
+              },
+              {
+                  "departureStationId": 5,
+                  "arrivalStationId": 1135,
+                  "departureTime": "2025-01-01T06:27:00",
+                  "arrivalTime": "2025-01-01T06:48:00"
+              },
+              {
+                  "departureStationId": 1135,
+                  "arrivalStationId": 20,
+                  "departureTime": "2025-01-01T06:50:00",
+                  "arrivalTime": "2025-01-01T07:21:00"
+              },
+              {
+                  "departureStationId": 20,
+                  "arrivalStationId": 48,
+                  "departureTime": "2025-01-01T07:22:00",
+                  "arrivalTime": "2025-01-01T07:41:00"
+              },
+              {
+                  "departureStationId": 48,
+                  "arrivalStationId": 1323,
+                  "departureTime": "2025-01-01T07:43:00",
+                  "arrivalTime": "2025-01-01T08:07:00"
+              },
+              {
+                  "departureStationId": 1323,
+                  "arrivalStationId": 1325,
+                  "departureTime": "2025-01-01T08:09:00",
+                  "arrivalTime": "2025-01-01T08:22:00"
+              }
+          ],
+          "totalDistance": 446.921,
+          "availableFareInfo": [
+              {
+                  "fareFamily": {
+                      "id": 1,
+                      "name": "STANDART"
+                  },
+                  "cabinClasses": [
+                      {
+                          "cabinClass": {
+                              "id": 1,
+                              "code": "C",
+                              "name": "BUSİNESS",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availabilityCount": 0,
+                          "minPrice": null,
+                          "bookingClassAvailabilities": [
+                              {
+                                  "bookingClass": {
+                                      "id": 4,
+                                      "code": "E",
+                                      "name": "BUSİNESS STANDART",
+                                      "cabinClass": {
+                                          "id": 1,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "price": 745.0,
+                                  "availability": 0
+                              }
+                          ]
+                      },
+                      {
+                          "cabinClass": {
+                              "id": 2,
+                              "code": "Y1",
+                              "name": "EKONOMİ",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availabilityCount": 0,
+                          "minPrice": null,
+                          "bookingClassAvailabilities": [
+                              {
+                                  "bookingClass": {
+                                      "id": 1,
+                                      "code": "B",
+                                      "name": "EKONOMİ STANDART",
+                                      "cabinClass": {
+                                          "id": 2,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "price": 495.0,
+                                  "availability": 0
+                              }
+                          ]
+                      },
+                      {
+                          "cabinClass": {
+                              "id": 11,
+                              "code": "L",
+                              "name": "LOCA",
+                              "additionalServices": [
+                                  {
+                                      "id": 4,
+                                      "additionalServiceTypeId": 3,
+                                      "name": "LOCA",
+                                      "description": "LOCA",
+                                      "code": "L",
+                                      "active": true,
+                                      "freeForPermi": false,
+                                      "actAsGroup": false,
+                                      "basePrice": [
+                                          {
+                                              "id": 3,
+                                              "additionalServiceId": 4,
+                                              "type": "FARE",
+                                              "priceAmount": 165.0,
+                                              "priceCurrency": "TRY",
+                                              "startDate": "2024-07-13",
+                                              "endDate": "2025-12-31"
+                                          }
+                                      ],
+                                      "pricingPeriods": null
+                                  }
+                              ],
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": false
+                          },
+                          "availabilityCount": 0,
+                          "minPrice": null,
+                          "bookingClassAvailabilities": [
+                              {
+                                  "bookingClass": {
+                                      "id": 22,
+                                      "code": "K",
+                                      "name": "LOCA STANDART",
+                                      "cabinClass": {
+                                          "id": 11,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "price": 910.0,
+                                  "availability": 0
+                              }
+                          ]
+                      },
+                      {
+                          "cabinClass": {
+                              "id": 12,
+                              "code": "DSB",
+                              "name": "TEKERLEKLİ SANDALYE",
+                              "additionalServices": null,
+                              "bookingClassModels": null,
+                              "showAvailabilityOnQuery": true
+                          },
+                          "availabilityCount": 2,
+                          "minPrice": 495.0,
+                          "bookingClassAvailabilities": [
+                              {
+                                  "bookingClass": {
+                                      "id": 23,
+                                      "code": "X",
+                                      "name": "ENGELLİ STANDART",
+                                      "cabinClass": {
+                                          "id": 12,
+                                          "code": null,
+                                          "name": null,
+                                          "additionalServices": null,
+                                          "bookingClassModels": null,
+                                          "showAvailabilityOnQuery": false
+                                      },
+                                      "fareFamily": {
+                                          "id": 1,
+                                          "name": "STANDART"
+                                      }
+                                  },
+                                  "price": 495.0,
+                                  "availability": 2
+                              }
+                          ]
+                      }
+                  ]
+              }
+          ],
+          "cabinClassAvailabilities": [
+              {
+                  "cabinClass": {
+                      "id": 12,
+                      "code": "DSB",
+                      "name": "TEKERLEKLİ SANDALYE",
+                      "additionalServices": null,
+                      "bookingClassModels": null,
+                      "showAvailabilityOnQuery": true
+                  },
+                  "availabilityCount": 2
+              }
+          ],
+          "trainDate": 1735689600000,
+          "trainNumber": "81003-01012025",
+          "skipsDay": false
+      }
+  ],
+  "totalTripTime": 10680000,
+  "minPrice": 495.0,
+  "connection": false,
+  "dayChanged": false
+}

@@ -1,18 +1,49 @@
-export const NAV_THEME = {
-  light: {
-    background: 'hsl(0 0% 100%)', // background
-    border: 'hsl(240 5.9% 90%)', // border
-    card: 'hsl(0 0% 100%)', // card
-    notification: 'hsl(0 84.2% 60.2%)', // destructive
-    primary: 'hsl(240 5.9% 10%)', // primary
-    text: 'hsl(240 10% 3.9%)', // foreground
+export const API_URL = 'https://bilet-buldum.onrender.com/api/v1';
+
+export const AUTH_TOKEN_KEY = '@bilet_buldum_auth_token';
+
+export const ONBOARDING_STEPS = [
+  {
+    id: 1,
+    title: 'Find Your Train',
+    description: 'Search and compare train tickets across Turkey',
+    image: require('../assets/onboarding/search.webp'),
   },
-  dark: {
-    background: 'hsl(240 10% 3.9%)', // background
-    border: 'hsl(240 3.7% 15.9%)', // border
-    card: 'hsl(240 10% 3.9%)', // card
-    notification: 'hsl(0 72% 51%)', // destructive
-    primary: 'hsl(0 0% 98%)', // primary
-    text: 'hsl(0 0% 98%)', // foreground
+  {
+    id: 2,
+    title: 'Get Notified',
+    description: 'Receive instant notifications when tickets become available',
+    image: require('../assets/onboarding/search.webp'),
   },
-};
+  {
+    id: 3,
+    title: 'Book Instantly',
+    description: 'Secure your tickets as soon as they become available',
+    image: require('../assets/onboarding/search.webp'),
+  },
+];
+
+export const SUBSCRIPTION_PLANS = [
+  {
+    id: 'monthly',
+    name: 'Monthly',
+    price: 49.99,
+    features: [
+      'Unlimited ticket alerts',
+      'Priority notifications',
+      'Advanced search filters',
+      'Premium support',
+    ],
+  },
+  {
+    id: 'yearly',
+    name: 'Yearly',
+    price: 399.99,
+    features: [
+      'All monthly features',
+      '2 months free',
+      'Early access to new features',
+      'VIP support',
+    ],
+  },
+];

@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const TCDDController_1 = require("../../controllers/TCDDController");
+const router = (0, express_1.Router)();
+const tcddController = new TCDDController_1.TCDDController();
+router.post('/search', tcddController.searchTrains);
+router.get('/stations/departure', tcddController.getDepartureStations);
+router.get('/stations/arrival/:departureStationId', tcddController.getArrivalStations);
+router.get('/cabin-classes', tcddController.getCabinClasses);
+exports.default = router;

@@ -1,0 +1,202 @@
+{
+	"info": {
+		"_postman_id": "1234-5678-1234-5678",
+		"name": "Bilet Buldum API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"yourpassword\",\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/v1/auth/register",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"yourpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/v1/auth/login",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/auth/profile",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "auth", "profile"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "TCDD",
+			"item": [
+				{
+					"name": "Search Trains",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fromStationId\": \"98\",\n    \"toStationId\": \"1135\",\n    \"date\": \"30-12-2024 00:00:00\",\n    \"passengerCount\": 1,\n    \"departureTimeRange\": {\n        \"start\": \"14:30\",\n        \"end\": \"18:00\"\n    },\n    \"preferredCabinClass\": \"EKONOMİ\",\n    \"wantHighSpeedTrain\": true\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/v1/tcdd/search",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "tcdd", "search"]
+						}
+					}
+				},
+				{
+					"name": "Get Departure Stations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/tcdd/stations/departure",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "tcdd", "stations", "departure"]
+						}
+					}
+				},
+				{
+					"name": "Get Arrival Stations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/tcdd/stations/arrival/98",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "tcdd", "stations", "arrival", "98"]
+						},
+						"description": "Replace '98' with the actual departure station ID"
+					}
+				},
+				{
+					"name": "Get Cabin Classes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/tcdd/cabin-classes",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "tcdd", "cabin-classes"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Crawler",
+			"item": [
+				{
+					"name": "Crawl",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    // Add crawl parameters here\n}"
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/v1/crawler/crawl",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "crawler", "crawl"]
+						}
+					}
+				},
+				{
+					"name": "Get Crawler History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/v1/crawler/history",
+							"host": ["{{BASE_URL}}"],
+							"path": ["v1", "crawler", "history"]
+						}
+					}
+				}
+			]
+		}
+	]
+} 
