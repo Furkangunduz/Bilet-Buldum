@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:3000/api/v1';
+export const API_URL = 'https://bilet-buldum.onrender.com/api/v1';
 
 export const AUTH_TOKEN_KEY = '@bilet_buldum_auth_token';
 
