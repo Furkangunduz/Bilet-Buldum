@@ -19,7 +19,8 @@ class AuthController {
     }
     async register(req, res) {
         try {
-            const { email, password, firstName, lastName } = req.body;
+            const { email, password, name, lastName } = req.body;
+            console.log(req.body);
             const existingUser = await User_1.User.findOne({ email });
             if (existingUser) {
                 return res.status(400).json({ error: 'Email already registered' });
@@ -27,8 +28,8 @@ class AuthController {
             const user = new User_1.User({
                 email,
                 password,
-                firstName,
-                lastName,
+                firstName: name,
+                lastName: lastName
             });
             await user.save();
             const token = jsonwebtoken_1.default.sign({ userId: user._id }, env_1.env.JWT_SECRET, { expiresIn: '7d' });

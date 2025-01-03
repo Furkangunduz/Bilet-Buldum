@@ -60,10 +60,7 @@ class CrawlerService {
     }
     async crawl(params = {}, url = 'https://ebilet.tcddtasimacilik.gov.tr/') {
         try {
-            const finalParams = {
-                ...crawler_types_1.DEFAULT_PARAMS,
-                ...params
-            };
+            const finalParams = Object.assign(Object.assign({}, crawler_types_1.DEFAULT_PARAMS), params);
             await this.initialize();
             if (!this.context)
                 throw new Error('Browser context not initialized');
@@ -424,6 +421,12 @@ class CrawlerService {
         finally {
             await this.close();
         }
+    }
+    async processRoute(route) {
+        // ... existing code
+    }
+    async handleSelectors(selectors) {
+        // ... existing code
     }
 }
 exports.CrawlerService = CrawlerService;

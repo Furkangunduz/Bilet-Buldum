@@ -13,11 +13,7 @@ class SearchAlertService {
         return SearchAlertService.instance;
     }
     async createSearchAlert(userId, searchData) {
-        const searchAlert = new SearchAlert_1.default({
-            userId,
-            ...searchData,
-            isActive: true
-        });
+        const searchAlert = new SearchAlert_1.default(Object.assign(Object.assign({ userId }, searchData), { isActive: true }));
         await searchAlert.save();
         return searchAlert;
     }

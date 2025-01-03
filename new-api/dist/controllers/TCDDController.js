@@ -103,10 +103,7 @@ class TCDDController extends BaseController_1.BaseController {
                     searchReservation: false
                 };
                 const response = await axios_1.default.post(`${this.API_BASE_URL}/train/train-availability?environment=dev&userId=1`, requestData, {
-                    headers: {
-                        ...this.HEADERS,
-                        'Authorization': env_1.env.TCDD_AUTH_TOKEN
-                    }
+                    headers: Object.assign(Object.assign({}, this.HEADERS), { 'Authorization': env_1.env.TCDD_AUTH_TOKEN })
                 });
                 const data = response === null || response === void 0 ? void 0 : response.data;
                 const trainLegs = data.trainLegs;
@@ -147,10 +144,7 @@ class TCDDController extends BaseController_1.BaseController {
                     });
                 }
                 if (preferredCabinClass) {
-                    filteredTrains = filteredTrains.filter(train => train.cabinClassAvailabilities.some(cabin => cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1)).map(train => ({
-                        ...train,
-                        cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin => cabin.cabinClass.name === preferredCabinClass)
-                    }));
+                    filteredTrains = filteredTrains.filter(train => train.cabinClassAvailabilities.some(cabin => cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1)).map(train => (Object.assign(Object.assign({}, train), { cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin => cabin.cabinClass.name === preferredCabinClass) })));
                 }
                 this.sendSuccess(res, filteredTrains);
             }
@@ -203,10 +197,7 @@ class TCDDController extends BaseController_1.BaseController {
                     searchReservation: false
                 };
                 const response = await axios_1.default.post(`${this.API_BASE_URL}/train/train-availability?environment=dev&userId=1`, requestData, {
-                    headers: {
-                        ...this.HEADERS,
-                        'Authorization': env_1.env.TCDD_AUTH_TOKEN
-                    }
+                    headers: Object.assign(Object.assign({}, this.HEADERS), { 'Authorization': env_1.env.TCDD_AUTH_TOKEN })
                 });
                 const data = response === null || response === void 0 ? void 0 : response.data;
                 const trainLegs = data.trainLegs;
@@ -247,10 +238,7 @@ class TCDDController extends BaseController_1.BaseController {
                     });
                 }
                 if (preferredCabinClass) {
-                    filteredTrains = filteredTrains.filter(train => train.cabinClassAvailabilities.some(cabin => cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1)).map(train => ({
-                        ...train,
-                        cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin => cabin.cabinClass.name === preferredCabinClass)
-                    }));
+                    filteredTrains = filteredTrains.filter(train => train.cabinClassAvailabilities.some(cabin => cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1)).map(train => (Object.assign(Object.assign({}, train), { cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin => cabin.cabinClass.name === preferredCabinClass) })));
                 }
                 return {
                     success: true,
@@ -410,6 +398,12 @@ class TCDDController extends BaseController_1.BaseController {
             return JSON.parse(content);
         }
         throw new Error('Stations map file not found');
+    }
+    formatTrainData(leg, trainAvailability, train) {
+        // ... existing code
+    }
+    formatCabinData(cabin) {
+        // ... existing code
     }
 }
 exports.TCDDController = TCDDController;
