@@ -4,7 +4,7 @@
     "slug": "bilet-buldum",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/biletbuldum-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -12,16 +12,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.furkan-gunduz.biletbuldum"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/biletbuldum-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.furkan_gunduz.biletbuldum"
@@ -36,7 +34,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/notification-icon.png",
+          "icon": "./assets/biletbuldum-icon.png",
           "color": "#ffffff",
           "sounds": ["./assets/notification-sound.wav"],
           "mode": "production"
@@ -47,9 +45,8 @@
       "typedRoutes": true
     },
     "notification": {
-      "icon": "./assets/notification-icon.png",
+      "icon": "./assets/biletbuldum-icon.png",
       "color": "#ffffff",
-      "iosDisplayInForeground": true,
       "androidMode": "default",
       "androidCollapsedTitle": "New Notification",
       "iosDisplayInForeground": true

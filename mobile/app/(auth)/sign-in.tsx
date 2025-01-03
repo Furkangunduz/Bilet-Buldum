@@ -6,7 +6,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useAuth } from '../../lib/auth';
 
 export default function SignIn() {
-  const [email, setEmail] = useState('test@example.com');
+  const [email, setEmail] = useState('kral@kral.com');
   const [password, setPassword] = useState('123123');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
