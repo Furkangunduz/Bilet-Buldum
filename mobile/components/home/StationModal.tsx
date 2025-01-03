@@ -33,12 +33,15 @@ export function StationModal({
 }: StationModalProps) {
   const renderStationItem = ({ item }: { item: Station }) => (
     <TouchableOpacity
-      onPress={() => onStationSelect(item)}
+      onPress={() =>{
+        onStationSelect(item)
+      }}
       className="p-4 border-b border-border"
     >
       <Text className="text-base text-foreground">{item.name}</Text>
     </TouchableOpacity>
   );
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -88,7 +91,7 @@ export function StationModal({
                     <Text className="text-base text-foreground">{item.name}</Text>
                   </TouchableOpacity>
                 )}
-                keyExtractor={item => item.id}
+                keyExtractor={item => `${type === 'cabin' ? 'cabin' : 'cabinClass'}-${item.id}`}
                 ListEmptyComponent={
                   <View className="flex-1 items-center justify-center p-4">
                     <Text className="text-muted-foreground text-center">
@@ -121,6 +124,8 @@ export function StationModal({
               </View>
             </View>
 
+           
+
             {isLoading ? (
               <View className="flex-1 items-center justify-center">
                 <ActivityIndicator size="large" color="#666" />
@@ -129,7 +134,7 @@ export function StationModal({
               <FlatList
                 data={stations}
                 renderItem={renderStationItem}
-                keyExtractor={item => item.id}
+                keyExtractor={item => `${type === 'from' ? 'from' : 'to'}-${item.id}`}
                 contentContainerStyle={{ flexGrow: 1 }}
                 keyboardShouldPersistTaps="handled"
                 ListEmptyComponent={

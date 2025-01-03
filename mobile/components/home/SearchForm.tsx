@@ -2,7 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, Alert, Animated, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { api } from '~/lib/api';
+import { useSearchAlerts } from '~/hooks/useSearchAlerts';
+import { api, Station } from '~/lib/api';
 import { useAuth } from '~/lib/auth';
 
 interface SearchFormProps {
@@ -20,6 +21,7 @@ interface SearchFormProps {
     };
     wantHighSpeedTrain: boolean;
   };
+  onStationSelect: (station: Station, type?: 'from' | 'to') => void;
   onShowStationModal: (type: 'from' | 'to' | 'cabin') => void;
   onShowDatePicker: () => void;
   onShowTimePicker: (type: 'start' | 'end') => void;
@@ -27,19 +29,28 @@ interface SearchFormProps {
   onToggleHighSpeed: (value: boolean) => void;
   onDateChange: (date: string) => void;
   spin: Animated.AnimatedInterpolation<string>;
+  arrivalStations: Station[];
+    closeBottomSheet: () => void;
+  resetSearchForm: () => void;
 }
 
 export function SearchForm({
   searchForm,
+  onStationSelect,
   onShowStationModal,
   onShowDatePicker,
   onShowTimePicker,
   onSwapStations,
   onToggleHighSpeed,
   onDateChange,
-  spin
+  spin,
+  arrivalStations,
+  closeBottomSheet,
+  resetSearchForm
 }: SearchFormProps) {
   const { user } = useAuth();
+  const {  mutate: mutateAlerts } = useSearchAlerts();
+
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -95,20 +106,19 @@ export function SearchForm({
         preferredCabinClass: searchForm.cabinClass,
         wantHighSpeedTrain: searchForm.wantHighSpeedTrain
       });
-
+      await mutateAlerts()
+      resetSearchForm();
       Alert.alert(
         'Success',
         'Search alert created successfully! We will notify you when tickets become available.',
         [
           {
             text: 'View Alerts',
-            onPress: () => router.push('/(app)/profile'),
+            onPress: () => {
+              closeBottomSheet();
+            },
             style: 'default'
           },
-          {
-            text: 'OK',
-            style: 'cancel'
-          }
         ]
       );
     } catch (error: any) {
@@ -135,17 +145,39 @@ export function SearchForm({
           </Text>
           <Ionicons name="chevron-down" size={20} color="#666" />
         </TouchableOpacity>
+        <ScrollView horizontal className="flex-row pt-3 pb-3">
+          {[
+            { id: "98", name: "ANKARA GAR , ANKARA" },
+            { id: "1135", name: "İZMİT YHT , KOCAELİ" },
+            { id: "1325", name: "İSTANBUL(SÖĞÜTLÜÇEŞME) , İSTANBUL" },
+            { id: "992", name: "İSTANBUL(HALKALI) , İSTANBUL" }
+          ].map((station) => (
+            <TouchableOpacity
+              key={station.id}
+              onPress={() => onStationSelect({ id: station.id, name: station.name }, 'from')}
+              className={`px-3 py-1 mx-1 rounded-full ${
+                searchForm.fromId === station.id ? 'bg-primary' : 'bg-gray-200'
+              }`}
+            >
+              <Text className={`${
+                searchForm.fromId === station.id ? 'text-white' : 'text-gray-700'
+              } text-sm`}>
+                {station.name.split(' , ')[0]}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
 
       {/* Swap Button */}
-      <TouchableOpacity 
+      {/* <TouchableOpacity 
         onPress={onSwapStations}
         className="absolute right-2 top-20 z-10 bg-primary w-10 h-10 rounded-full items-center justify-center shadow-sm"
       >
         <Animated.View style={{ transform: [{ rotate: spin }] }}>
           <Ionicons name="swap-vertical" size={24} color="white" />
         </Animated.View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <View >
         <Text className="text-sm font-medium text-foreground my-2">To</Text>
@@ -164,6 +196,32 @@ export function SearchForm({
           </Text>
           <Ionicons name="chevron-down" size={20} color="#666" />
         </TouchableOpacity>
+        {searchForm.fromId && (
+          <ScrollView horizontal className="flex-row pt-3 pb-3">
+            {arrivalStations
+              .filter(station => [
+                "98", // ANKARA GAR
+                "1135", // İZMİT YHT
+                "1325", // İSTANBUL(SÖĞÜTLÜÇEŞME)
+                "992", // İSTANBUL(HALKALI)
+              ].includes(station.id))
+              .map((station) => (
+                <TouchableOpacity
+                  key={station.id}
+                  onPress={() => onStationSelect({ id: station.id, name: station.name }, 'to')}
+                  className={`px-3 py-1 mx-1 rounded-full ${
+                    searchForm.toId === station.id ? 'bg-primary' : 'bg-gray-200'
+                  }`}
+                >
+                  <Text className={`${
+                    searchForm.toId === station.id ? 'text-white' : 'text-gray-700'
+                  } text-sm`}>
+                    {station.name.split(' , ')[0]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+          </ScrollView>
+        )}
       </View>
 
       <View >
@@ -295,7 +353,7 @@ export function SearchForm({
       <TouchableOpacity 
         onPress={handleCreateAlert}
         disabled={isLoading}
-        className={`bg-primary h-14 rounded-xl items-center justify-center mt-6 shadow-sm ${
+        className={`bg-primary h-14 rounded-xl items-center justify-center my-6 shadow-sm ${
           isLoading ? 'opacity-50' : 'opacity-100'
         }`}
         style={{

@@ -53,8 +53,6 @@ export default function Home() {
   const [isLoadingCabinClasses, setIsLoadingCabinClasses] = useState(false);
   const [cabinClassesError, setCabinClassesError] = useState<string | null>(null);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const fetchCabinClasses = async () => {
     try {
       setIsLoadingCabinClasses(true);
@@ -124,8 +122,10 @@ export default function Home() {
     fetchCabinClasses();
   }, []);
 
-  const handleStationSelect = (station: Station) => {
-    if (showStationModal === 'from') {
+  const handleStationSelect = (station: Station, type?: 'from' | 'to') => {
+    const selectionType = type || showStationModal;
+    
+    if (selectionType === 'from') {
       setSearchForm(prev => ({
         ...prev,
         from: station.name,
@@ -133,7 +133,7 @@ export default function Home() {
         to: '',
         toId: '',
       }));
-    } else {
+    } else if (selectionType === 'to') {
       setSearchForm(prev => ({
         ...prev,
         to: station.name,
@@ -229,6 +229,23 @@ export default function Home() {
     }
   };
 
+  const resetSearchForm = () => {
+    setSearchForm({
+      from: '',
+      fromId: '',
+      to: '',
+      toId: '',
+      date: '',
+      cabinClass: '1',
+      cabinClassName: 'EKONOMİ',
+      departureTimeRange: {
+        start: '00:00',
+        end: '23:59'
+      },
+      wantHighSpeedTrain: true
+    });
+  };
+
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -241,51 +258,8 @@ export default function Home() {
     []
   );
 
-  const handleCreateAlert = async () => {
-    if (!searchForm.fromId || !searchForm.toId || !searchForm.date) {
-      
-      return;
-    }
 
-    try {
-      setIsSubmitting(true);
-      await searchAlertsApi.createSearchAlert({
-        fromStationId: searchForm.fromId,
-        toStationId: searchForm.toId,
-        date: searchForm.date,
-        cabinClass: searchForm.cabinClass,
-        departureTimeRange: searchForm.departureTimeRange
-      });
-
-      // Close the bottom sheet
-      handleCloseBottomSheet();
-
-      // Reset form
-      setSearchForm({
-        from: '',
-        fromId: '',
-        to: '',
-        toId: '',
-        date: '',
-        cabinClass: '1',
-        cabinClassName: 'EKONOMİ',
-        departureTimeRange: {
-          start: '00:00',
-          end: '23:59'
-        },
-        wantHighSpeedTrain: true
-      });
-
-      // Refresh the alerts list
-      await mutateAlerts();
-    } catch (error) {
-      console.error('Error creating alert:', error);
-      // You might want to show an error message here
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+  
   return (
     <SafeAreaView className='flex-1 bg-background'>
       <View className="flex-1 bg-background">
@@ -462,6 +436,7 @@ export default function Home() {
             
             <SearchForm
               searchForm={searchForm}
+              onStationSelect={handleStationSelect}
               onShowStationModal={setShowStationModal}
               onShowDatePicker={() => setShowDatePicker(true)}
               onShowTimePicker={setShowTimePicker}
@@ -469,6 +444,9 @@ export default function Home() {
               onToggleHighSpeed={(value) => setSearchForm(prev => ({ ...prev, wantHighSpeedTrain: value }))}
               onDateChange={(date) => setSearchForm(prev => ({ ...prev, date }))}
               spin={spin}
+              arrivalStations={arrivalStations}
+              closeBottomSheet={handleCloseBottomSheet}
+              resetSearchForm={resetSearchForm}
             />
           </View>
         </BottomSheetView>
