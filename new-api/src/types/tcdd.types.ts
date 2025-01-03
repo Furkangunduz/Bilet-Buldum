@@ -1,4 +1,3 @@
-
 export interface TrainAvailabilities {
   trains: Train[];
   totalTripTime: number;
@@ -138,10 +137,10 @@ export interface CarAvailability {
   additionalServices: AdditionalService[] | null;
 }
 
-export interface CabinClass { 
-  id: number;
+export interface CabinClass {
+  id: number | string;
   code: 'C' | 'Y1' | 'DSB' | 'B';
-  name: 'BUSİNESS'| 'EKONOMİ' | 'EKERLEKLİ SANDALYE' | 'YATAKLI';
+  name: 'BUSİNESS' | 'EKONOMİ' | 'EKERLEKLİ SANDALYE' | 'YATAKLI';
   additionalServices: AdditionalServiceDetail[] | null;
   bookingClassModels: null | any;
   showAvailabilityOnQuery: boolean;
@@ -232,7 +231,8 @@ export interface BookingClassAvailability {
   availability: number;
 }
 
-export interface CabinClassAvailability { //KEY CLASS TO BE USED IN THE API
+export interface CabinClassAvailability {
+  //KEY CLASS TO BE USED IN THE API
   cabinClass: CabinClass;
   availabilityCount: number;
 }
@@ -246,13 +246,13 @@ export interface TCDDData {
 
 export interface TrainLeg {
   trainAvailabilities: TrainAvailabilities[];
-} 
+}
 
 export const BookingClassIdMap = {
-  "4": 'ECONOMY',
-  "1": 'BUSINESS',
-  "22": 'FIRST',
-  "23": 'SECOND',
+  '4': 'ECONOMY',
+  '1': 'BUSINESS',
+  '22': 'FIRST',
+  '23': 'SECOND',
 } as const;
 
 export type BookingClassId = keyof typeof BookingClassIdMap;

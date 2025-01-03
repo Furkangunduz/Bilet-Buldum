@@ -39,9 +39,9 @@ class CronJobService {
   }
 
   private async getActiveSearchAlerts(): Promise<SearchAlertDocument[]> {
-    const alerts = await SearchAlert.find({ 
+    const alerts = await SearchAlert.find({
       isActive: true,
-      departureTimeRange: { $ne: null } 
+      departureTimeRange: { $ne: null },
     })
       .sort({ createdAt: 1 })
       .lean();
@@ -51,10 +51,8 @@ class CronJobService {
   }
 
   private groupSearchAlerts(searchAlerts: SearchAlertDocument[]) {
-    const grouped = groupBy(searchAlerts, (alert: SearchAlertDocument) => 
-      `${alert.fromStationId}-${alert.toStationId}-${alert.date}`
-    );
-    
+    const grouped = groupBy(searchAlerts, (alert: SearchAlertDocument) => `${alert.fromStationId}-${alert.toStationId}-${alert.date}`);
+
     console.log(`[SearchAlerts] Created ${Object.keys(grouped).length} groups from ${searchAlerts.length} alerts`);
     return grouped;
   }
@@ -62,13 +60,15 @@ class CronJobService {
   private async processSearchGroup(alerts: SearchAlertDocument[]) {
     const firstAlert = alerts[0];
     if (!firstAlert.departureTimeRange) return;
-    
-    console.log(`[SearchAlerts] Processing ${alerts.length} alerts for ${firstAlert.fromStationId} -> ${firstAlert.toStationId} (${firstAlert.date})`);
-    
+
+    console.log(
+      `[SearchAlerts] Processing ${alerts.length} alerts for ${firstAlert.fromStationId} -> ${firstAlert.toStationId} (${firstAlert.date})`
+    );
+
     try {
       const dateParts = firstAlert.date.split(' ')[0].split('-');
       const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]} 00:00:00`;
-      
+
       const searchPayload = {
         fromStationId: firstAlert.fromStationId,
         toStationId: firstAlert.toStationId,
@@ -76,28 +76,32 @@ class CronJobService {
         passengerCount: 1,
         departureTimeRange: firstAlert.departureTimeRange,
         preferredCabinClass: firstAlert.cabinClass,
-        wantHighSpeedTrain: true
+        wantHighSpeedTrain: true,
       };
 
       const searchResult = await this.tcddController.searchTrainsDirectly(searchPayload);
+      console.log(
+        `[SearchAlerts] Search result for ${firstAlert.fromStationId} -> ${firstAlert.toStationId} (${firstAlert.date}):`,
+        searchResult
+      );
 
       for (const alert of alerts) {
         const now = new Date();
         const searchDate = new Date(alert.date.replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
-        
+
         if (searchDate < now) {
           await SearchAlert.findByIdAndUpdate(alert._id, {
             isActive: false,
             status: 'FAILED',
             lastChecked: now,
-            statusReason: 'Search date has passed'
+            statusReason: 'Search date has passed',
           });
           await NotificationService.sendPushNotification(
             alert.userId,
             'Search Alert Expired',
             `Your search alert for ${alert.fromStationId} to ${alert.toStationId} on ${alert.date} has expired.`
           );
-          console.log(`[SearchAlerts] Alert ${alert._id} expired - past date`);
+          console.log(`[v ] Alert ${alert._id} expired - past date`);
           continue;
         }
 
@@ -107,7 +111,7 @@ class CronJobService {
           await SearchAlert.findByIdAndUpdate(alert._id, {
             isActive: false,
             status: 'COMPLETED',
-            statusReason: 'Seats found'
+            statusReason: 'Seats found',
           });
           await NotificationService.sendPushNotification(
             alert.userId,
@@ -118,7 +122,7 @@ class CronJobService {
               fromStationId: alert.fromStationId,
               toStationId: alert.toStationId,
               date: alert.date,
-              cabinClass: alert.cabinClass
+              cabinClass: alert.cabinClass,
             }
           );
           console.log(`[SearchAlerts] Alert ${alert._id} completed - seats found`);
@@ -130,7 +134,7 @@ class CronJobService {
         await SearchAlert.findByIdAndUpdate(alert._id, {
           isActive: false,
           status: 'FAILED',
-          statusReason: 'Search failed due to technical error'
+          statusReason: 'Search failed due to technical error',
         });
         console.log(`[SearchAlerts] Alert ${alert._id} failed - technical error`);
       }
@@ -139,7 +143,7 @@ class CronJobService {
 
   public async processSearchAlerts() {
     console.log('\n[SearchAlerts] Starting search alerts processing');
-    
+
     try {
       const activeAlerts = await this.getActiveSearchAlerts();
       if (!activeAlerts.length) {
@@ -150,13 +154,13 @@ class CronJobService {
       const groupedAlerts = this.groupSearchAlerts(activeAlerts);
       let groupIndex = 1;
       const totalGroups = Object.keys(groupedAlerts).length;
-      
+
       for (const [key, alerts] of Object.entries(groupedAlerts)) {
         console.log(`[SearchAlerts] Processing group ${groupIndex}/${totalGroups}`);
         await this.processSearchGroup(alerts as SearchAlertDocument[]);
         groupIndex++;
       }
-      
+
       console.log('[SearchAlerts] Completed processing all groups');
     } catch (error) {
       console.error('[SearchAlerts] Error processing search alerts:', error);

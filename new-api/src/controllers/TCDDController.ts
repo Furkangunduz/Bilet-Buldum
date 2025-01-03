@@ -60,25 +60,25 @@ interface Cabin {
 export class TCDDController extends BaseController {
   private readonly API_BASE_URL = 'https://web-api-prod-ytp.tcddtasimacilik.gov.tr/tms';
   private readonly HEADERS = {
-    'Accept': 'application/json, text/plain, */*',
+    Accept: 'application/json, text/plain, */*',
     'Accept-Language': 'tr',
     'Content-Type': 'application/json',
-    'Origin': 'https://ebilet.tcddtasimacilik.gov.tr',
+    Origin: 'https://ebilet.tcddtasimacilik.gov.tr',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-    'unit-id': '3895'
+    'unit-id': '3895',
   };
 
   private readonly AVAILABLE_CABIN_CLASSES = [
     {
       id: 1,
       code: 'Y1',
-      name: 'EKONOMİ'
+      name: 'EKONOMİ',
     },
     {
       id: 2,
       code: 'C',
-      name: 'BUSİNESS'
-    }
+      name: 'BUSİNESS',
+    },
   ];
 
   private isHighSpeedTrain(train: Train): boolean {
@@ -166,14 +166,14 @@ export class TCDDController extends BaseController {
 
   public searchTrains = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { 
-        fromStationId, 
-        toStationId, 
-        date, 
+      const {
+        fromStationId,
+        toStationId,
+        date,
         passengerCount = 1,
-        departureTimeRange = { start: "00:00", end: "23:59" },
+        departureTimeRange = { start: '00:00', end: '23:59' },
         preferredCabinClass = 'EKONOMİ',
-        wantHighSpeedTrain = true
+        wantHighSpeedTrain = true,
       } = req.body;
 
       if (!fromStationId || !toStationId || !date || !departureTimeRange?.start || !departureTimeRange?.end) {
@@ -206,7 +206,11 @@ export class TCDDController extends BaseController {
       }
 
       if (!this.validateTimeRange(departureTimeRange.start, departureTimeRange.end)) {
-        this.sendError(res, new Error('Invalid time range. Cannot search between 01:00 - 05:00, and start time must be before end time'), 400);
+        this.sendError(
+          res,
+          new Error('Invalid time range. Cannot search between 01:00 - 05:00, and start time must be before end time'),
+          400
+        );
         return;
       }
 
@@ -221,9 +225,9 @@ export class TCDDController extends BaseController {
       }
 
       const stationsMap = await this.loadStationsMap();
-      
+
       let fromStationName, toStationName;
-      
+
       for (const [stationName, data] of Object.entries<StationData>(stationsMap)) {
         if (data.id === fromStationId) {
           fromStationName = stationName;
@@ -240,50 +244,50 @@ export class TCDDController extends BaseController {
       }
 
       const requestData = {
-        searchRoutes: [{
-          departureStationId: Number(fromStationId),
-          departureStationName: fromStationName,
-          arrivalStationId: Number(toStationId),
-          arrivalStationName: toStationName,
-          departureDate: date
-        }],
-        passengerTypeCounts: [{
-          id: 0,
-          count: Number(passengerCount)
-        }],
-        searchReservation: false
+        searchRoutes: [
+          {
+            departureStationId: Number(fromStationId),
+            departureStationName: fromStationName,
+            arrivalStationId: Number(toStationId),
+            arrivalStationName: toStationName,
+            departureDate: date,
+          },
+        ],
+        passengerTypeCounts: [
+          {
+            id: 0,
+            count: Number(passengerCount),
+          },
+        ],
+        searchReservation: false,
       };
 
-      const response = await axios.post<TCDDData>(
-        `${this.API_BASE_URL}/train/train-availability?environment=dev&userId=1`,
-        requestData,
-        {
-          headers: {
-            ...this.HEADERS,
-            'Authorization': env.TCDD_AUTH_TOKEN
-          }
-        }
-      );
+      const response = await axios.post<TCDDData>(`${this.API_BASE_URL}/train/train-availability?environment=dev&userId=1`, requestData, {
+        headers: {
+          ...this.HEADERS,
+          Authorization: env.TCDD_AUTH_TOKEN,
+        },
+      });
 
-      const data = response?.data
+      const data = response?.data;
       const trainLegs = data.trainLegs;
-      const trainAvailabilities = trainLegs.flatMap(leg => leg.trainAvailabilities);
+      const trainAvailabilities = trainLegs.flatMap((leg) => leg.trainAvailabilities);
       const trains = trainAvailabilities.flatMap((trainAvailability) => {
-        return trainAvailability.trains.map(train => {
+        return trainAvailability.trains.map((train) => {
           const firstSegment = train.segments[0];
           const lastSegment = train.segments[train.segments.length - 1];
-          
+
           return {
             trainNumber: train.trainNumber,
             departureStationName: firstSegment.segment.departureStation.name,
             arrivalStationName: lastSegment.segment.arrivalStation.name,
             departureTime: this.formatTimestamp(firstSegment.departureTime),
             arrivalTime: this.formatTimestamp(lastSegment.arrivalTime),
-            cabinClassAvailabilities: train.cabinClassAvailabilities.map(cabin => ({
+            cabinClassAvailabilities: train.cabinClassAvailabilities.map((cabin) => ({
               cabinClass: cabin.cabinClass,
-              availabilityCount: cabin.availabilityCount
+              availabilityCount: cabin.availabilityCount,
             })),
-            isHighSpeed: this.isHighSpeedTrain(train)
+            isHighSpeed: this.isHighSpeedTrain(train),
           };
         });
       });
@@ -291,7 +295,7 @@ export class TCDDController extends BaseController {
       let filteredTrains = trains;
 
       if (wantHighSpeedTrain !== undefined) {
-        filteredTrains = filteredTrains.filter(train => train.isHighSpeed === wantHighSpeedTrain);
+        filteredTrains = filteredTrains.filter((train) => train.isHighSpeed === wantHighSpeedTrain);
       }
 
       if (departureTimeRange) {
@@ -300,27 +304,25 @@ export class TCDDController extends BaseController {
         const startMinutes = startHour * 60 + startMinute;
         const endMinutes = endHour * 60 + endMinute;
 
-        filteredTrains = filteredTrains.filter(train => {
+        filteredTrains = filteredTrains.filter((train) => {
           const departureDate = new Date(train.departureTime);
           const localHours = (departureDate.getUTCHours() + 3) % 24;
           const localMinutes = departureDate.getUTCMinutes();
           const trainMinutes = localHours * 60 + localMinutes;
-          
+
           return trainMinutes >= startMinutes && trainMinutes <= endMinutes;
         });
       }
 
       if (preferredCabinClass) {
-        filteredTrains = filteredTrains.filter(train => 
-          train.cabinClassAvailabilities.some(cabin => 
-            cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1
+        filteredTrains = filteredTrains
+          .filter((train) =>
+            train.cabinClassAvailabilities.some((cabin) => cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1)
           )
-        ).map(train => ({
-          ...train,
-          cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin =>
-            cabin.cabinClass.name === preferredCabinClass
-          )
-        }));
+          .map((train) => ({
+            ...train,
+            cabinClassAvailabilities: train.cabinClassAvailabilities.filter((cabin) => cabin.cabinClass.name === preferredCabinClass),
+          }));
       }
 
       this.sendSuccess(res, filteredTrains);
@@ -343,16 +345,16 @@ export class TCDDController extends BaseController {
     wantHighSpeedTrain?: boolean;
   }) => {
     try {
-      const { 
-        fromStationId, 
-        toStationId, 
+      const {
+        fromStationId,
+        toStationId,
         date,
         departureTimeRange,
         preferredCabinClass,
         passengerCount = 1,
-        wantHighSpeedTrain = true
+        wantHighSpeedTrain = true,
       } = params;
-     
+
       if (!this.validateDateFormat(date)) {
         throw new Error('Invalid date format. Use DD-MM-YYYY HH:mm:ss');
       }
@@ -369,7 +371,7 @@ export class TCDDController extends BaseController {
 
       const stationsMap = await this.loadStationsMap();
       let fromStationName, toStationName;
-      
+
       for (const [stationName, data] of Object.entries<StationData>(stationsMap)) {
         if (data.id === fromStationId) fromStationName = stationName;
         if (data.id === toStationId) toStationName = stationName;
@@ -377,106 +379,118 @@ export class TCDDController extends BaseController {
       }
 
       const requestData = {
-        searchRoutes: [{
-          departureStationId: Number(fromStationId),
-          departureStationName: fromStationName,
-          arrivalStationId: Number(toStationId),
-          arrivalStationName: toStationName,
-          departureDate: date
-        }],
-        passengerTypeCounts: [{
-          id: 0,
-          count: Number(passengerCount)
-        }],
-        searchReservation: false
+        searchRoutes: [
+          {
+            departureStationId: Number(fromStationId),
+            departureStationName: fromStationName,
+            arrivalStationId: Number(toStationId),
+            arrivalStationName: toStationName,
+            departureDate: date,
+          },
+        ],
+        passengerTypeCounts: [
+          {
+            id: 0,
+            count: Number(passengerCount),
+          },
+        ],
+        searchReservation: false,
       };
 
-      const response = await axios.post<TCDDData>(
-        `${this.API_BASE_URL}/train/train-availability?environment=dev&userId=1`,
-        requestData,
-        {
-          headers: {
-            ...this.HEADERS,
-            'Authorization': env.TCDD_AUTH_TOKEN
-          }
-        }
-      );
+      const response = await axios.post<TCDDData>(`${this.API_BASE_URL}/train/train-availability?environment=dev&userId=1`, requestData, {
+        headers: {
+          ...this.HEADERS,
+          Authorization: env.TCDD_AUTH_TOKEN,
+        },
+      });
 
       const data = response?.data;
       const trainLegs = data.trainLegs;
-      const trainAvailabilities = trainLegs.flatMap(leg => leg.trainAvailabilities);
+      const trainAvailabilities = trainLegs.flatMap((leg) => leg.trainAvailabilities);
+
       const trains = trainAvailabilities.flatMap((trainAvailability) => {
-        return trainAvailability.trains.map(train => {
+        return trainAvailability.trains.map((train) => {
           const firstSegment = train.segments[0];
           const lastSegment = train.segments[train.segments.length - 1];
-          
+
           return {
             trainNumber: train.trainNumber,
             departureStationName: firstSegment.segment.departureStation.name,
             arrivalStationName: lastSegment.segment.arrivalStation.name,
             departureTime: this.formatTimestamp(firstSegment.departureTime),
             arrivalTime: this.formatTimestamp(lastSegment.arrivalTime),
-            cabinClassAvailabilities: train.cabinClassAvailabilities.map(cabin => ({
+            cabinClassAvailabilities: train.cabinClassAvailabilities.map((cabin) => ({
               cabinClass: cabin.cabinClass,
-              availabilityCount: cabin.availabilityCount
+              availabilityCount: cabin.availabilityCount,
             })),
-            isHighSpeed: this.isHighSpeedTrain(train)
+            isHighSpeed: this.isHighSpeedTrain(train),
           };
         });
       });
 
       let filteredTrains = trains;
+      console.log('----------[[FILTERS]]----------');
+      console.log('Preferred Cabin Class:', preferredCabinClass);
+
+      if (preferredCabinClass) {
+        filteredTrains = filteredTrains
+          .filter((train) => {
+            return train.cabinClassAvailabilities.some((cabin) => {
+              return cabin.cabinClass.id === parseInt(preferredCabinClass) && cabin.availabilityCount >= 1;
+            });
+          })
+          .map((train) => ({
+            ...train,
+            cabinClassAvailabilities: train.cabinClassAvailabilities.filter((cabin) => cabin.cabinClass.name === preferredCabinClass),
+          }));
+      }
 
       if (wantHighSpeedTrain !== undefined) {
-        filteredTrains = filteredTrains.filter(train => train.isHighSpeed === wantHighSpeedTrain);
+        filteredTrains = filteredTrains.filter((train) => train.isHighSpeed === wantHighSpeedTrain);
       }
 
       if (departureTimeRange) {
+        console.log('---------- Departure Time Range ----------');
+        console.log('Departure time range:', departureTimeRange);
         const [startHour, startMinute] = departureTimeRange.start.split(':').map(Number);
         const [endHour, endMinute] = departureTimeRange.end.split(':').map(Number);
         const startMinutes = startHour * 60 + startMinute;
         const endMinutes = endHour * 60 + endMinute;
 
-        filteredTrains = filteredTrains.filter(train => {
+        filteredTrains = filteredTrains.filter((train) => {
           const departureDate = new Date(train.departureTime);
-          const localHours = (departureDate.getUTCHours() + 3) % 24;
-          const localMinutes = departureDate.getUTCMinutes();
+
+          const localHours = departureDate.getHours();
+          const localMinutes = departureDate.getMinutes();
           const trainMinutes = localHours * 60 + localMinutes;
-          
+
+          console.log(`Train: ${train.trainNumber}`);
+          console.log(`Departure Time (Local): ${localHours}:${localMinutes}`);
+          console.log(`Calculated Train Minutes: ${trainMinutes}`);
+          console.log(`Start Minutes: ${startMinutes}, End Minutes: ${endMinutes}`);
+          console.log('---------[[RESULT]]----------');
+          console.log(trainMinutes >= startMinutes && trainMinutes <= endMinutes);
+
           return trainMinutes >= startMinutes && trainMinutes <= endMinutes;
         });
       }
 
-      if (preferredCabinClass) {
-        filteredTrains = filteredTrains.filter(train => 
-          train.cabinClassAvailabilities.some(cabin => 
-            cabin.cabinClass.name === preferredCabinClass && cabin.availabilityCount > 1
-          )
-        ).map(train => ({
-          ...train,
-          cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin =>
-            cabin.cabinClass.name === preferredCabinClass
-          )
-        }));
-      }
-
       return {
         success: true,
-        data: filteredTrains
+        data: filteredTrains,
       };
-
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         return {
           success: false,
           data: [],
-          error: error.response?.data
+          error: error.response?.data,
         };
       }
       return {
         success: false,
         data: [],
-        error: error.message
+        error: error.message,
       };
     }
   };
@@ -495,26 +509,26 @@ export class TCDDController extends BaseController {
       const stationsMap = await this.loadStationsMap();
       const departureStations = Object.entries(stationsMap).map(([stationName, data]) => ({
         id: data.id,
-        name: stationName
+        name: stationName,
       }));
-      
+
       this.sendSuccess(res, departureStations);
     } catch (error: any) {
       this.sendError(res, error);
     }
   };
-  
+
   public getArrivalStations = async (req: Request, res: Response): Promise<void> => {
     try {
       const { departureStationId } = req.params;
-      
+
       if (!departureStationId) {
         this.sendError(res, new Error('Departure station ID is required'), 400);
         return;
       }
 
       const stationsMap = await this.loadStationsMap();
-      
+
       let departureStation: StationData | null = null;
       for (const [_, data] of Object.entries(stationsMap)) {
         if (data.id === departureStationId) {
@@ -528,7 +542,7 @@ export class TCDDController extends BaseController {
         return;
       }
 
-      const arrivalStations = departureStation.destinations.map(dest => {
+      const arrivalStations = departureStation.destinations.map((dest) => {
         let stationName = '';
         for (const [name, data] of Object.entries(stationsMap)) {
           if (data.id === dest.id) {
@@ -536,10 +550,10 @@ export class TCDDController extends BaseController {
             break;
           }
         }
-        
+
         return {
           id: dest.id,
-          name: stationName
+          name: stationName,
         };
       });
 
@@ -564,4 +578,4 @@ export class TCDDController extends BaseController {
   private formatCabinData(cabin: Cabin): any {
     // ... existing code
   }
-} 
+}
