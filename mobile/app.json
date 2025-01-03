@@ -12,7 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.furkan-gunduz.biletbuldum"
@@ -36,7 +38,9 @@
         {
           "icon": "./assets/biletbuldum-icon.png",
           "color": "#ffffff",
-          "sounds": ["./assets/notification-sound.wav"],
+          "sounds": [
+            "./assets/notification-sound.wav"
+          ],
           "mode": "production"
         }
       ]
@@ -50,6 +54,14 @@
       "androidMode": "default",
       "androidCollapsedTitle": "New Notification",
       "iosDisplayInForeground": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6a2e4476-24ab-46d1-8dba-9b6ffab7b2e1"
+      }
     }
   }
 }
