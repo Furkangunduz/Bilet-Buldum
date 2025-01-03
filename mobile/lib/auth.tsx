@@ -17,6 +17,7 @@ export interface User {
 interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  signUp: (email: string, password: string,name:string,lastName:string) => Promise<void>;
   user: User | null;
   updateUser: (user: User) => void;
 }
@@ -24,15 +25,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   signIn: async () => {},
   signOut: async () => {},
+  signUp: async () => {},
   user: null,
   updateUser: () => {},
 });
 
-// This hook can be used to access the user info.
 export function useAuth() {
   return useContext(AuthContext);
 }
-
 // This hook will protect the route access based on user authentication.
 function useProtectedRoute(user: User | null) {
   const segments = useSegments();
@@ -105,12 +105,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
+  const signUp = async (email: string, password: string,name:string,lastName:string) => {
+    try {
+      const response = await authApi.register(email, password,name,lastName);
+      await AsyncStorage.setItem('token', response.data.token);
+      const userProfile = await authApi.getProfile();
+      setUser(userProfile.data);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
   };
 
   return (
-    <AuthContext.Provider value={{ signIn, signOut, user, updateUser }}>
+    <AuthContext.Provider value={{ signIn, signOut, signUp, user, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

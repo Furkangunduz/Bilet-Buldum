@@ -151,10 +151,10 @@ export const authApi = {
     }
   },
   
-  register: (email: string, password: string) => {
+  register: (email: string, password: string, name: string, lastName: string) => {
     try {
       console.log('🔍 Attempting registration for:', email);
-      return api.post<LoginResponse>('/auth/register', { email, password }).then(response => {
+      return api.post<LoginResponse>('/auth/register', { email, password, name, lastName }).then(response => {
         console.log('✅ Registration successful');
         return response;
       }).catch((error: AxiosError) => {
