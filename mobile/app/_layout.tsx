@@ -36,7 +36,7 @@ function SplashScreen() {
 
 function RootLayoutNav() {
   const { isLoading } = useAuth();
-
+  
   if (isLoading) {
     return <SplashScreen />;
   }

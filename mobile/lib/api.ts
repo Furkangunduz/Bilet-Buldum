@@ -4,8 +4,8 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'ax
 interface CustomAxiosInstance extends AxiosInstance {
   updatePushToken: (pushToken: string) => Promise<any>;
 }
-
-const API_URL = 'https://biletbuldum.duckdns.org/api/v1';
+console.log('__DEV__',__DEV__)
+const API_URL = __DEV__ ? 'http://localhost:3000/api/v1' : 'https://biletbuldum.duckdns.org/api/v1';
 
 export const api = axios.create({
   baseURL: API_URL,
@@ -13,9 +13,10 @@ export const api = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
+  timeout: 10000, 
 }) as CustomAxiosInstance;
 
-// Add request interceptor for auth token and logging
+
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = await AsyncStorage.getItem('token');
@@ -113,9 +114,12 @@ export interface User {
 export interface SearchAlert {
   _id: string;
   fromStationId: string;
+  fromStationName: string;
   toStationId: string;
+  toStationName: string;
   date: string;
   cabinClass: string;
+  cabinClassName: string;
   departureTimeRange: {
     start: string;
     end: string;
@@ -188,12 +192,18 @@ export const authApi = {
           return response;
         })
         .catch((error: AxiosError) => {
-          console.error('❌ Error fetching profile:', {
-            status: error.response?.status,
-            data: error.response?.data,
-            message: error.message,
-            config: error.config,
-          });
+          if (error.code === 'ECONNABORTED') {
+            console.error('❌ Profile request timed out');
+          } else if (!error.response) {
+            console.error('❌ Network error while fetching profile');
+          } else {
+            console.error('❌ Error fetching profile:', {
+              status: error.response?.status,
+              data: error.response?.data,
+              message: error.message,
+              config: error.config,
+            });
+          }
           throw error;
         });
     } catch (error) {

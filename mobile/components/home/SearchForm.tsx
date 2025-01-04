@@ -366,9 +366,9 @@ export function SearchForm({
           </View>
           <ScrollView horizontal className="flex-row pt-3 pb-3">
             {[
-              { start: "06:00", end: "12:00", label: "Morning" },
-              { start: "12:00", end: "18:00", label: "Afternoon" },
-              { start: "18:00", end: "06:00", label: "Night" }
+              { start: "06:00", end: "12:00", label: "(06:00 - 12:00)" },
+              { start: "12:00", end: "18:00", label: "(12:00 - 18:00)" },
+              { start: "18:00", end: "06:00", label: "(18:00 - 06:00)" }
             ].map((timeRange) => (
               <TouchableOpacity
                 key={timeRange.label}

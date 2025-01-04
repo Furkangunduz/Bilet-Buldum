@@ -10,7 +10,15 @@ const searchAlertSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  fromStationName: {
+    type: String,
+    required: true
+  },
   toStationId: {
+    type: String,
+    required: true
+  },
+  toStationName: {
     type: String,
     required: true
   },
@@ -19,6 +27,10 @@ const searchAlertSchema = new mongoose.Schema({
     required: true
   },
   cabinClass: {
+    type: String,
+    required: true
+  },
+  cabinClassName: {
     type: String,
     required: true
   },

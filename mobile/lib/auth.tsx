@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { router, useRouter, useSegments } from 'expo-router';
+import { useRouter, useSegments } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { authApi, updatePushToken } from './api';
 
@@ -37,23 +37,6 @@ const AuthContext = createContext<AuthContextType>({
 
 export function useAuth() {
   return useContext(AuthContext);
-}
-// This hook will protect the route access based on user authentication.
-function useProtectedRoute(user: User | null) {
-  const segments = useSegments();
-
-  useEffect(() => {
-    const inAuthGroup = segments[0] === '(auth)';
-    const inOnboardingGroup = segments[0] === '(onboarding)';
-
-    if (!user && !inAuthGroup && !inOnboardingGroup) {
-      // Redirect to the sign-in page.
-      router.replace('/(auth)/sign-in');
-    } else if (user && (inAuthGroup || inOnboardingGroup)) {
-      // Redirect away from the sign-in page.
-      router.replace('/(app)');
-    }
-  }, [user, segments]);
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -97,7 +80,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           response: error?.response?.data,
           status: error?.response?.status
         });
-        // Clear invalid token if we get an auth error
         if (error?.response?.status === 401) {
           console.log('🗑️ Clearing invalid token');
           await AsyncStorage.removeItem('token');

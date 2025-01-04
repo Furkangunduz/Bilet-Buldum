@@ -342,7 +342,7 @@ export default function Home() {
                   >
                     <View className="flex-row items-center justify-between mb-2">
                       <Text className="text-base font-medium text-foreground">
-                        {alert.fromStationId} → {alert.toStationId}
+                        {alert.fromStationName?.split(' , ')[0]} → {alert.toStationName?.split(' , ')[0]}
                       </Text>
                       <View className={`px-2 py-1 rounded-full ${
                         alert.status === 'PENDING' ? 'bg-yellow-100' :
@@ -359,10 +359,15 @@ export default function Home() {
                       </View>
                     </View>
                     <Text className="text-sm text-muted-foreground">
-                      {new Date(alert.date).toLocaleDateString()} • {alert.cabinClass}
+                      {new Date(alert.date).toLocaleDateString('tr-TR', { 
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })} • {alert.cabinClassName || alert.cabinClass}
                     </Text>
                     <Text className="text-sm text-muted-foreground">
-                      {alert.departureTimeRange.start} - {alert.departureTimeRange.end}
+                      {alert.departureTimeRange.start.replace(/^(\d{2}):(\d{2})$/, '$1:$2')} - {alert.departureTimeRange.end.replace(/^(\d{2}):(\d{2})$/, '$1:$2')}
                     </Text>
                   </TouchableOpacity>
                 ))}

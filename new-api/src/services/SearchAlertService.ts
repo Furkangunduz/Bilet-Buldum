@@ -14,9 +14,12 @@ class SearchAlertService {
 
   async createSearchAlert(userId: string, searchData: {
     fromStationId: string;
+    fromStationName: string;
     toStationId: string;
+    toStationName: string;
     date: string;
     cabinClass: string;
+    cabinClassName: string;
     departureTimeRange: {
       start: string;
       end: string;

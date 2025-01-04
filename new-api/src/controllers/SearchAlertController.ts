@@ -16,11 +16,33 @@ class SearchAlertController {
         return res.status(401).json({ message: 'Unauthorized' });
       } 
 
+      const stationsMap: Record<string, { id: string; destinations: Array<{ id: string; text: string }> }> = require('../../stations_map.json');
+      
+      let fromStationName = req.body.fromStationId;
+      let toStationName = req.body.toStationId;
+
+      // Find station names from the map
+      for (const [stationName, data] of Object.entries(stationsMap)) {
+        if (data.id === req.body.fromStationId) {
+          fromStationName = stationName;
+        }
+        if (data.id === req.body.toStationId) {
+          toStationName = stationName;
+        }
+        if (fromStationName !== req.body.fromStationId && toStationName !== req.body.toStationId) break;
+      }
+
+      // Get cabin class name
+      const cabinClassName = req.body.preferredCabinClass === '1' ? 'EKONOMİ' : 'BUSINESS';
+
       const searchAlert = await SearchAlertService.createSearchAlert(userId, {
         fromStationId: req.body.fromStationId,
+        fromStationName,
         toStationId: req.body.toStationId,
+        toStationName,
         date: req.body.date,
         cabinClass: req.body.preferredCabinClass,
+        cabinClassName,
         departureTimeRange: req.body.departureTimeRange
       });
 
@@ -71,12 +93,40 @@ class SearchAlertController {
         return res.status(401).json({ message: 'Unauthorized' });
       }
 
+      const stationsMap: Record<string, { id: string; destinations: Array<{ id: string; text: string }> }> = require('../../stations_map.json');
       const searchAlerts = await SearchAlert.find({ userId, isActive: true })
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .lean();
+
+      const alertsWithNames = searchAlerts.map(alert => {
+        let fromStationName = alert.fromStationId;
+        let toStationName = alert.toStationId;
+
+        // Find station names from the map
+        for (const [stationName, data] of Object.entries(stationsMap)) {
+          if (data.id === alert.fromStationId) {
+            fromStationName = stationName;
+          }
+          if (data.id === alert.toStationId) {
+            toStationName = stationName;
+          }
+          if (fromStationName !== alert.fromStationId && toStationName !== alert.toStationId) break;
+        }
+
+        // Get cabin class name
+        const cabinClassName = alert.cabinClass === '1' ? 'EKONOMİ' : 'BUSINESS';
+
+        return {
+          ...alert,
+          fromStationName,
+          toStationName,
+          cabinClassName
+        };
+      });
 
       res.json({
         message: 'Search alerts retrieved successfully',
-        data: searchAlerts
+        data: alertsWithNames
       });
     } catch (error) {
       console.error('Error retrieving search alerts:', error);
