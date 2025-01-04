@@ -383,87 +383,27 @@ api.updatePushToken = updatePushToken;
 
 export const searchAlertsApi = {
   getSearchAlerts: () => {
-    try {
-      console.log('🔍 Fetching search alerts...');
-      return api
-        .get<ApiResponse<SearchAlert[]>>('/search-alerts')
-        .then((response) => {
-          console.log('✅ Search alerts fetched successfully');
-          return response;
-        })
-        .catch((error: AxiosError) => {
-          console.error('❌ Error fetching search alerts:', {
-            status: error.response?.status,
-            data: error.response?.data,
-            message: error.message,
-            config: error.config,
-          });
-          throw error;
-        });
-    } catch (error) {
-      console.error('❌ Unexpected error in getSearchAlerts:', error);
-      throw error;
-    }
+    return api.get<ApiResponse<SearchAlert[]>>('/search-alerts');
   },
 
   createSearchAlert: (data: {
     fromStationId: string;
     toStationId: string;
     date: string;
-    cabinClass: string;
+    preferredCabinClass: string;
     departureTimeRange: {
       start: string;
       end: string;
     };
   }) => {
-    try {
-      console.log('🔍 Creating search alert...');
-      return api
-        .post<ApiResponse<SearchAlert>>('/search-alerts', data)
-        .then((response) => {
-          console.log('✅ Search alert created successfully');
-          return response;
-        })
-        .catch((error: AxiosError) => {
-          console.error('❌ Error creating search alert:', {
-            status: error.response?.status,
-            data: error.response?.data,
-            message: error.message,
-            config: error.config,
-          });
-          throw error;
-        });
-    } catch (error) {
-      console.error('❌ Unexpected error in createSearchAlert:', error);
-      throw error;
-    }
+    return api.post<ApiResponse<SearchAlert>>('/search-alerts', data);
   },
 
-  deactivateSearchAlert: (searchAlertId: string) => {
-    try {
-      console.log('🔍 Deactivating search alert:', searchAlertId);
-      return api
-        .delete<ApiResponse<void>>(`/search-alerts/${searchAlertId}`)
-        .then((response) => {
-          console.log('✅ Search alert deactivated successfully');
-          return response;
-        })
-        .catch((error: AxiosError) => {
-          console.error('❌ Error deactivating search alert:', {
-            status: error.response?.status,
-            data: error.response?.data,
-            message: error.message,
-            config: error.config,
-          });
-          throw error;
-        });
-    } catch (error) {
-      console.error('❌ Unexpected error in deactivateSearchAlert:', error);
-      throw error;
-    }
+  declineSearchAlert: (alertId: string) => {
+    return api.post<ApiResponse<SearchAlert>>(`/search-alerts/${alertId}/decline`);
   },
 
   deleteSearchAlert: (alertId: string) => {
-    return api.delete(`/search-alerts/${alertId}`);
-  },
+    return api.delete<ApiResponse<SearchAlert>>(`/search-alerts/${alertId}`);
+  }
 };

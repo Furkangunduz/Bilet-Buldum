@@ -1,16 +1,41 @@
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Loader2 } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Easing, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
+import { AlertItem } from '~/components/home/AlertItem';
+import { DateTimePickers } from '~/components/home/DateTimePickers';
+import { EmptyState } from '~/components/home/EmptyState';
+import { SearchForm } from '~/components/home/SearchForm';
+import { StationModal } from '~/components/home/StationModal';
+import { StatusFilter } from '~/components/home/StatusFilter';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useSearchAlerts } from '~/hooks/useSearchAlerts';
-import { DateTimePickers } from '../../components/home/DateTimePickers';
-import { SearchForm } from '../../components/home/SearchForm';
-import { StationModal } from '../../components/home/StationModal';
-import { CabinClass, Station, searchAlertsApi, tcddApi } from '../../lib/api';
+import { CabinClass, Station, searchAlertsApi, tcddApi } from '~/lib/api';
+
+// Enable LayoutAnimation for Android
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
+// Custom layout animation config
+const CustomLayoutAnimation = {
+  duration: 300,
+  create: {
+    type: LayoutAnimation.Types.easeInEaseOut,
+    property: LayoutAnimation.Properties.opacity,
+  },
+  update: {
+    type: LayoutAnimation.Types.easeInEaseOut,
+  },
+  delete: {
+    type: LayoutAnimation.Types.easeInEaseOut,
+    property: LayoutAnimation.Properties.opacity,
+  },
+};
 
 // Initialize the interstitial ad
 const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'your-ad-unit-id-here';
@@ -31,6 +56,11 @@ export default function Home() {
   const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
   const [isAdLoaded, setIsAdLoaded] = useState(false);
   const [currentSnapPointIndex, setCurrentSnapPointIndex] = useState(0);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>(['PENDING']);
+
+  const filteredAlerts = useMemo(() => {
+    return searchAlerts.filter(alert => selectedStatuses.includes(alert.status));
+  }, [searchAlerts, selectedStatuses]);
 
   const maxDate = useMemo(() => {
     const date = new Date();
@@ -245,16 +275,23 @@ export default function Home() {
     deleteAlertSheetRef.current?.expand();
   };
 
-  const handleDeleteAlert = async () => {
-    if (!selectedAlertId) return;
-
+  const handleDeleteAlert = async (alertId: string) => {
     try {
-      await searchAlertsApi.deleteSearchAlert(selectedAlertId);
+      await searchAlertsApi.deleteSearchAlert(alertId);
+      LayoutAnimation.configureNext(CustomLayoutAnimation);
       await mutateAlerts();
-      deleteAlertSheetRef.current?.close();
-      setSelectedAlertId(null);
     } catch (error) {
       console.error('Error deleting alert:', error);
+    }
+  };
+
+  const handleDeclineAlert = async (alertId: string) => {
+    try {
+      await searchAlertsApi.declineSearchAlert(alertId);
+      LayoutAnimation.configureNext(CustomLayoutAnimation);
+      await mutateAlerts();
+    } catch (error) {
+      console.error('Error declining alert:', error);
     }
   };
 
@@ -338,111 +375,36 @@ export default function Home() {
             </View>
           ) : searchAlerts.length > 0 ? (
             <View className="flex-1">
-              <Text className="text-lg font-semibold text-foreground mb-8 mt-6">
+              <Text className="text-lg font-semibold text-foreground mb-4 mt-6">
                 Your Active Alerts
               </Text>
+              <StatusFilter 
+                selectedStatuses={selectedStatuses}
+                onStatusChange={setSelectedStatuses}
+              />
               <ScrollView className="flex-1 gap-4">
-                {searchAlerts.map((alert) => (
-                  <TouchableOpacity
-                    key={alert._id} 
-                    className="bg-card p-4 rounded-lg border border-border mb-2"
-                    onLongPress={() => handleLongPressAlert(alert._id)}
-                    delayLongPress={500}
-                  >
-                    <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-base font-medium text-foreground max-w-[150px]">
-                        {alert.fromStationName?.split(' , ')[0]} → {alert.toStationName?.split(' , ')[0]}
-                      </Text>
-                      <View className={`px-3 py-1.5 rounded-full flex-row items-center ${
-                        alert.status === 'PENDING' ? 'bg-yellow-100/80' :
-                        alert.status === 'COMPLETED' ? 'bg-green-100/80' :
-                        'bg-red-100/80'
-                      }`}>
-                        {alert.status === 'PENDING' ? (
-                          <View className="flex-row items-center gap-2">
-                            <Text className="text-xs font-medium text-yellow-800">
-                              Searching
-                            </Text>
-                            <Animated.View 
-                              style={{
-                                transform: [{
-                                  rotate: spinAnim.interpolate({
-                                    inputRange: [0, 1],
-                                    outputRange: ['0deg', '360deg']
-                                  })
-                                }],
-                                marginLeft: 2
-                              }}
-                            >
-                              <Loader2 
-                                size={14} 
-                                color="hsl(41, 100%, 35%)" 
-                                strokeWidth={2.5}
-                              />
-                            </Animated.View>
-                          </View>
-                        ) : alert.status === 'COMPLETED' ? (
-                          <View className="flex-row items-center gap-2">
-                            <Text className="text-xs font-medium text-green-800">
-                              Found
-                            </Text>
-                            <Ionicons 
-                              name="checkmark-circle" 
-                              size={14} 
-                              color="hsl(142, 76%, 36%)" 
-                            />
-                          </View>
-                        ) : (
-                          <View className="flex-row items-center gap-2">
-                            <Text className="text-xs font-medium text-red-800">
-                              Failed
-                            </Text>
-                            <Ionicons 
-                              name="alert-circle" 
-                              size={14} 
-                              color="hsl(0, 84%, 60%)" 
-                            />
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                    <Text className="text-sm text-muted-foreground">
-                      {new Date(alert.date).toLocaleDateString('tr-TR', { 
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })} • {alert.cabinClassName || alert.cabinClass}
-                    </Text>
-                    <Text className="text-sm text-muted-foreground">
-                      {alert.departureTimeRange.start.replace(/^(\d{2}):(\d{2})$/, '$1:$2')} - {alert.departureTimeRange.end.replace(/^(\d{2}):(\d{2})$/, '$1:$2')}
-                    </Text>
-
-                    {alert.statusReason && (
-                      <Text className="text-xs text-muted-foreground mt-2">
-                        {alert.statusReason}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
+                {filteredAlerts.length > 0 ? (
+                  filteredAlerts.map((alert) => (
+                    <AlertItem
+                      key={alert._id}
+                      alert={alert}
+                      onDelete={() => handleDeleteAlert(alert._id)}
+                      onDecline={() => handleDeclineAlert(alert._id)}
+                      spinAnim={spinAnim}
+                      isDark={isDark}
+                    />
+                  ))
+                ) : (
+                  <EmptyState selectedStatuses={selectedStatuses} />
+                )}
               </ScrollView>
             </View>
           ) : (
-            <View className="flex-1 items-center justify-center">
-              <View className="items-center gap-4 mb-12">
-                <Ionicons name="train" size={64} color="#666" />
-                <Text className="text-xl font-semibold text-foreground text-center">
-                  Ready to Start Your Journey?
-                </Text>
-                <Text className="text-muted-foreground text-center">
-                  Search for train tickets and set alerts for your preferred routes
-                </Text>
-              </View>
-            </View>
+            <EmptyState selectedStatuses={selectedStatuses} />
           )}
         </View>
 
-        <View className="p-6 ">
+        <View className="p-6">
           <TouchableOpacity
             onPress={handleSearchPress}
             className="bg-primary w-full h-14 rounded-xl items-center justify-center shadow-sm flex-row gap-6"
@@ -623,7 +585,8 @@ export default function Home() {
             </TouchableOpacity>
             <TouchableOpacity 
               className="flex-1 bg-destructive py-3 rounded-lg items-center"
-              onPress={handleDeleteAlert}
+              onPress={() => {
+              }}
             >
               <Text className="text-destructive-foreground font-semibold">Delete</Text>
             </TouchableOpacity>

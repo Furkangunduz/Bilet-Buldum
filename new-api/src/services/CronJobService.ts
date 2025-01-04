@@ -19,6 +19,7 @@ interface SearchAlertDocument {
   status: 'PENDING' | 'COMPLETED' | 'FAILED';
   statusReason?: string;
   lastChecked: Date | null;
+  deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +61,8 @@ class CronJobService {
   private async getActiveSearchAlerts(): Promise<SearchAlertDocument[]> {
     const alerts = await SearchAlert.find({
       isActive: true,
+      status: 'PENDING',
+      deletedAt: null,
       departureTimeRange: { $ne: null },
     })
       .sort({ createdAt: 1 })
@@ -110,6 +113,13 @@ class CronJobService {
       const searchResult = await this.tcddController.searchTrainsDirectly(searchPayload);
 
       for (const alert of alerts) {
+        // Skip if alert has been deleted or declined
+        const currentAlert = await SearchAlert.findById(alert._id);
+        if (!currentAlert || currentAlert.deletedAt || currentAlert.status !== 'PENDING') {
+          console.log(`[SearchAlerts] Alert ${alert._id} skipped - deleted or not pending`);
+          continue;
+        }
+
         const now = new Date();
         const searchDate = new Date(alert.date.replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
 
@@ -162,6 +172,13 @@ class CronJobService {
     } catch (error) {
       console.error('[SearchAlerts] Error processing search group:', error);
       for (const alert of alerts) {
+        // Skip if alert has been deleted or declined
+        const currentAlert = await SearchAlert.findById(alert._id);
+        if (!currentAlert || currentAlert.deletedAt || currentAlert.status !== 'PENDING') {
+          console.log(`[SearchAlerts] Alert ${alert._id} skipped - deleted or not pending`);
+          continue;
+        }
+
         await SearchAlert.findByIdAndUpdate(alert._id, {
           isActive: false,
           status: 'FAILED',

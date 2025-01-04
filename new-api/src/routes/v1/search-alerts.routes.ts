@@ -6,6 +6,7 @@ const router = Router();
 
 router.post('/', authenticateToken, SearchAlertController.createSearchAlert);
 router.get('/', authenticateToken, SearchAlertController.getUserSearchAlerts);
-router.delete('/:alertId', authenticateToken, SearchAlertController.deactivateSearchAlert);
+router.post('/:alertId/decline', authenticateToken, SearchAlertController.declineSearchAlert);
+router.delete('/:alertId', authenticateToken, SearchAlertController.deleteSearchAlert);
 
 export default router; 

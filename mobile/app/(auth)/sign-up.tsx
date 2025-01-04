@@ -2,6 +2,7 @@ import { Link } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import { useColorScheme } from '~/lib/useColorScheme';
 import { ThemeToggle } from '../../components/ThemeToggle';
 import { useAuth } from '../../lib/auth';
 
@@ -50,6 +51,9 @@ export default function SignUp() {
       setIsLoading(false);
     }
   }
+
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
     <KeyboardAvoidingView 
@@ -154,7 +158,7 @@ export default function SignUp() {
               >
                 {isLoading ? (
                   <>
-                    <ActivityIndicator color="hsl(var(--primary-foreground))" size="small" />
+                    <ActivityIndicator color={isDark ? '#000' : '#fff'} size="small" />
                     <Text className="text-primary-foreground text-lg font-semibold ml-2">Creating account...</Text>
                   </>
                 ) : (

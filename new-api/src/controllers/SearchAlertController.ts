@@ -6,7 +6,8 @@ import SearchAlertService from '../services/SearchAlertService';
 class SearchAlertController {
   constructor() {
     this.createSearchAlert = this.createSearchAlert.bind(this);
-    this.deactivateSearchAlert = this.deactivateSearchAlert.bind(this);
+    this.declineSearchAlert = this.declineSearchAlert.bind(this);
+    this.deleteSearchAlert = this.deleteSearchAlert.bind(this);
     this.getUserSearchAlerts = this.getUserSearchAlerts.bind(this);
   }
 
@@ -19,7 +20,8 @@ class SearchAlertController {
 
       const activeAlerts = await SearchAlert.find({ 
         userId,
-        isActive: true
+        isActive: true,
+        deletedAt: null
       });
 
       if (activeAlerts.length >= 2) {
@@ -33,7 +35,8 @@ class SearchAlertController {
         userId,
         fromStationId: req.body.fromStationId,
         toStationId: req.body.toStationId,
-        isActive: true
+        isActive: true,
+        deletedAt: null
       });
 
       if (existingAlert) {
@@ -84,7 +87,7 @@ class SearchAlertController {
     }
   }
 
-  async deactivateSearchAlert(req: Request, res: Response) {
+  async declineSearchAlert(req: Request, res: Response) {
     try {
       const userId = req.user?._id;
       if (!userId) {
@@ -100,11 +103,16 @@ class SearchAlertController {
 
       const searchAlert = await SearchAlert.findOne({ 
         _id: alertId,
-        userId 
+        userId,
+        deletedAt: null
       });
 
       if (!searchAlert) {
         return res.status(404).json({ message: 'Search alert not found' });
+      }
+
+      if (searchAlert.status !== 'PENDING') {
+        return res.status(400).json({ message: 'Only pending alerts can be declined' });
       }
 
       searchAlert.status = 'FAILED';
@@ -113,11 +121,52 @@ class SearchAlertController {
       await searchAlert.save();
 
       res.json({ 
-        message: 'Search alert deactivated successfully',
+        message: 'Search alert declined successfully',
         data: searchAlert
       });
     } catch (error) {
-      console.error('Error deactivating search alert:', error);
+      console.error('Error declining search alert:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async deleteSearchAlert(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const { alertId } = req.params;
+      
+      // Validate ObjectId
+      if (!mongoose.Types.ObjectId.isValid(alertId)) {
+        return res.status(400).json({ message: 'Invalid alert ID format' });
+      }
+
+      const searchAlert = await SearchAlert.findOne({ 
+        _id: alertId,
+        userId,
+        deletedAt: null
+      });
+
+      if (!searchAlert) {
+        return res.status(404).json({ message: 'Search alert not found' });
+      }
+
+      if (searchAlert.status === 'PENDING') {
+        return res.status(400).json({ message: 'Cannot delete a pending alert. Please decline it first.' });
+      }
+
+      searchAlert.deletedAt = new Date();
+      await searchAlert.save();
+
+      res.json({ 
+        message: 'Search alert deleted successfully',
+        data: searchAlert
+      });
+    } catch (error) {
+      console.error('Error deleting search alert:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   }
@@ -130,7 +179,10 @@ class SearchAlertController {
       }
 
       const stationsMap: Record<string, { id: string; destinations: Array<{ id: string; text: string }> }> = require('../../stations_map.json');
-      const searchAlerts = await SearchAlert.find({ userId})
+      const searchAlerts = await SearchAlert.find({ 
+        userId,
+        deletedAt: null
+      })
         .sort({ createdAt: -1 })
         .lean();
 

@@ -408,7 +408,7 @@ export function SearchForm({
                 <Ionicons 
                   name="checkmark" 
                   size={16} 
-                  color={isDark ? '#fff' : '#000'} 
+                  color={isDark ? '#000' : '#fff'} 
                 />
               )}
             </View>
@@ -425,7 +425,7 @@ export function SearchForm({
         <TouchableOpacity 
           onPress={handleCreateAlert}
           disabled={isLoading}
-          className={`bg-primary h-14 rounded-xl items-center justify-center my-6 shadow-sm ${
+          className={`bg-primary h-14 rounded-xl items-center justify-center mt-6 mb-20 shadow-sm ${
             isLoading ? 'opacity-50' : 'opacity-100'
           }`}
           style={{
@@ -433,7 +433,7 @@ export function SearchForm({
           }}
         >
           {isLoading ? (
-            <ActivityIndicator color="hsl(var(--primary-foreground))" />
+            <ActivityIndicator color={isDark ? '#000' : '#fff'} />
           ) : (
             <Text className="text-primary-foreground font-semibold text-base">
               Create Alert
