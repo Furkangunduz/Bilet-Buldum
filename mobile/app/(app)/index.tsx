@@ -3,7 +3,7 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheet
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
-import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
+import { AdEventType, InterstitialAd } from 'react-native-google-mobile-ads';
 import { AlertItem } from '~/components/home/AlertItem';
 import { DateTimePickers } from '~/components/home/DateTimePickers';
 import { EmptyState } from '~/components/home/EmptyState';
@@ -13,6 +13,7 @@ import { StatusFilter } from '~/components/home/StatusFilter';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useSearchAlerts } from '~/hooks/useSearchAlerts';
 import { CabinClass, Station, searchAlertsApi, tcddApi } from '~/lib/api';
+import { AD_UNIT_IDS } from '~/lib/constants';
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -36,7 +37,7 @@ const CustomLayoutAnimation = {
   },
 };
 
-const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'your-ad-unit-id-here';
+const adUnitId = AD_UNIT_IDS.INTERSTITIAL[Platform.OS === 'ios' ? 'IOS' : 'ANDROID'];
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,

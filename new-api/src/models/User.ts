@@ -7,6 +7,8 @@ export interface IUser extends Document {
   firstName: string;
   lastName: string;
   expoPushToken?: string;
+  hasCompletedOnboarding: boolean;
+  onboardingCompletedAt?: Date;
   notificationPreferences: {
     email: boolean;
     push: boolean;
@@ -45,6 +47,14 @@ const userSchema = new Schema<IUser>(
       default: null,
       unique: true,
       sparse: true,
+    },
+    hasCompletedOnboarding: {
+      type: Boolean,
+      default: false,
+    },
+    onboardingCompletedAt: {
+      type: Date,
+      default: null,
     },
     notificationPreferences: {
       email: {

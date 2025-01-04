@@ -15,6 +15,7 @@ class AuthController {
     this.updatePassword = this.updatePassword.bind(this);
     this.updatePushToken = this.updatePushToken.bind(this);
     this.testNotification = this.testNotification.bind(this);
+    this.completeOnboarding = this.completeOnboarding.bind(this);
   }
 
   async register(req: Request, res: Response) {
@@ -45,6 +46,7 @@ class AuthController {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          onboardingCompletedAt: user.onboardingCompletedAt,
           notificationPreferences: user.notificationPreferences,
         },
         token,
@@ -88,6 +90,7 @@ class AuthController {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          onboardingCompletedAt: user.onboardingCompletedAt,
           notificationPreferences: user.notificationPreferences,
         },
         token,
@@ -106,6 +109,7 @@ class AuthController {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        onboardingCompletedAt: user.onboardingCompletedAt,
         notificationPreferences: user.notificationPreferences,
       });
     } catch (error) {
@@ -246,6 +250,34 @@ class AuthController {
     } catch (error) {
       console.error('Error in test notification:', error);
       res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  async completeOnboarding(req: Request, res: Response) {
+    try {
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { 
+          onboardingCompletedAt: new Date()
+        },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        onboardingCompletedAt: user.onboardingCompletedAt,
+        notificationPreferences: user.notificationPreferences,
+      });
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      res.status(400).json({ error: 'Error completing onboarding' });
     }
   }
 }

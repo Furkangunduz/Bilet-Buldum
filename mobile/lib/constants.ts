@@ -1,6 +1,16 @@
+import { TestIds } from 'react-native-google-mobile-ads';
+
 export const API_URL = 'https://bilet-buldum.onrender.com/api/v1';
 
 export const AUTH_TOKEN_KEY = '@bilet_buldum_auth_token';
+
+// Ad Unit IDs for different environments
+export const AD_UNIT_IDS = {
+  INTERSTITIAL: {
+    IOS: __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-7425995753039606/5349762157',
+    ANDROID: __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-7425995753039606/4204265083', 
+  }
+};
 
 export const ONBOARDING_STEPS = [
   {

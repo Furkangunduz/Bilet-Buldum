@@ -21,7 +21,7 @@ mobileAds()
   });
 
 function RootLayoutNav() {
-  const { isLoading } = useAuth();
+  const { isLoading, user } = useAuth();
   
   const onLayoutRootView = useCallback(async () => {
     if (!isLoading) {
@@ -36,7 +36,8 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
+      <Stack.Screen name="(app)" options={{ headerShown: false, gestureEnabled: false }} />
     </Stack>
   );
 }

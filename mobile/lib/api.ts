@@ -105,6 +105,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  onboardingCompletedAt: string;
   notificationPreferences: {
     email: boolean;
     push: boolean;
@@ -223,6 +224,8 @@ export const authApi = {
   updatePassword: (data: { currentPassword: string; newPassword: string }) => {
     return api.put<{ message: string }>('/auth/profile/password', data);
   },
+
+  completeOnboarding: () => api.post<User>('/auth/complete-onboarding'),
 };
 
 export const tcddApi = {
