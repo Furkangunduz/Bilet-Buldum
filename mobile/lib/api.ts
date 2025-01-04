@@ -133,6 +133,16 @@ export interface SearchAlert {
   updatedAt: string;
 }
 
+export interface ContactMessage {
+  id: string;
+  userId: string;
+  subject: string;
+  message: string;
+  status: 'PENDING' | 'READ' | 'RESPONDED';
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Auth API
 export const authApi = {
   login: (email: string, password: string, pushToken?: string) => {
@@ -246,6 +256,32 @@ export const authApi = {
         });
     } catch (error) {
       console.error('❌ Unexpected error in deleteAccount:', error);
+      throw error;
+    }
+  },
+};
+
+// Contact API
+export const contactApi = {
+  sendMessage: (data: { subject: string; message: string; email: string }) => {
+    try {
+      console.log('📧 Sending contact message...');
+      return api
+        .post<ApiResponse<ContactMessage>>('/contact/messages', data)
+        .then((response) => {
+          console.log('✅ Contact message sent successfully');
+          return response;
+        })
+        .catch((error: AxiosError) => {
+          console.error('❌ Error sending contact message:', {
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message,
+          });
+          throw error;
+        });
+    } catch (error) {
+      console.error('❌ Unexpected error in contact:', error);
       throw error;
     }
   },

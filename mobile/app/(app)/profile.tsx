@@ -1,15 +1,15 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Bell, ChevronRight, FileText, LogOut, Palette, Settings, Shield, User } from 'lucide-react-native';
+import { Bell, ChevronRight, Coffee, FileText, LogOut, Mail, Palette, Settings, Shield, User } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Linking, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { PrivacyPolicy } from '~/components/profile/PrivacyPolicy';
 import { TermsOfService } from '~/components/profile/TermsOfService';
 import { NotificationsForm } from '../../components/profile/NotificationsForm';
 import { PasswordForm } from '../../components/profile/PasswordForm';
 import { PersonalInfoForm } from '../../components/profile/PersonalInfoForm';
 import { ThemeToggle } from '../../components/ThemeToggle';
-import { authApi } from '../../lib/api';
+import { authApi, contactApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 
 interface ProfileItem {
@@ -30,7 +30,7 @@ export default function Profile() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const [activeSheet, setActiveSheet] = useState<'personal' | 'notifications' | 'password' | 'privacyPolicy' | 'termsOfService' | null>(null);
+  const [activeSheet, setActiveSheet] = useState<'personal' | 'notifications' | 'password' | 'privacyPolicy' | 'termsOfService' | 'contact' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,6 +49,11 @@ export default function Profile() {
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
+  });
+
+  const [contactForm, setContactForm] = useState({
+    subject: '',
+    message: ''
   });
 
   const handleUpdatePersonalInfo = async () => {
@@ -111,6 +116,23 @@ export default function Profile() {
     }
   };
 
+  const handleContactSubmit = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await contactApi.sendMessage({
+        ...contactForm,
+        email: user?.email || ''
+      });
+      bottomSheetRef.current?.close();
+      Alert.alert('Success', 'Your message has been sent. We will get back to you soon.');
+      setContactForm({ subject: '', message: '' });
+    } catch (err) {
+      setError('Failed to send message');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const sections: SectionData[] = [
     {
@@ -149,6 +171,28 @@ export default function Profile() {
           color: '#F59E0B',
           rightContent: () => <ThemeToggle />,
           onPress: () => {}
+        }
+      ]
+    },
+    {
+      title: 'Support',
+      items: [
+        {
+          icon: Coffee,
+          label: 'Buy Me a Coffee',
+          color: '#FFDD00',
+          onPress: () => {
+            Linking.openURL('https://www.buymeacoffee.com/furkangunduz');
+          }
+        },
+        {
+          icon: Mail,
+          label: 'Contact Us',
+          color: '#0EA5E9',
+          onPress: () => {
+            setActiveSheet('contact');
+            bottomSheetRef.current?.expand();
+          }
         }
       ]
     },
@@ -254,6 +298,63 @@ export default function Profile() {
 
       case 'termsOfService':
         return <TermsOfService />;
+
+      case 'contact':
+        return (
+          <View className="p-6">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-xl font-semibold text-foreground">Contact Us</Text>
+              <TouchableOpacity onPress={() => bottomSheetRef.current?.close()}>
+                <Text className="text-primary">Close</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View className="gap-6">
+              <View>
+                <Text className="text-sm font-medium text-foreground mb-2">Subject</Text>
+                <TextInput
+                  className="p-3 rounded-md bg-input border border-border text-foreground"
+                  placeholder="Enter subject"
+                  placeholderTextColor="#666"
+                  value={contactForm.subject}
+                  onChangeText={(text) => setContactForm(prev => ({ ...prev, subject: text }))}
+                />
+              </View>
+
+              <View>
+                <Text className="text-sm font-medium text-foreground mb-2">Message</Text>
+                <TextInput
+                  className="p-3 rounded-md bg-input border border-border text-foreground"
+                  placeholder="Type your message here..."
+                  placeholderTextColor="#666"
+                  multiline
+                  numberOfLines={10}
+                  textAlignVertical="top"
+                  value={contactForm.message}
+                  onChangeText={(text) => setContactForm(prev => ({ ...prev, message: text }))}
+                />
+              </View>
+
+              {error && (
+                <Text className="text-destructive text-sm">{error}</Text>
+              )}
+
+              <TouchableOpacity
+                className="bg-primary p-4 rounded-md"
+                onPress={handleContactSubmit}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text className="text-primary-foreground text-center font-semibold">
+                    Send Message
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
 
       default:
         return null;
