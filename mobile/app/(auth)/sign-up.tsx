@@ -1,8 +1,11 @@
+import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Link } from 'expo-router';
-import { useState } from 'react';
-import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useColorScheme } from '~/lib/useColorScheme';
+import { PrivacyPolicy } from '../../components/profile/PrivacyPolicy';
+import { TermsOfService } from '../../components/profile/TermsOfService';
 import { ThemeToggle } from '../../components/ThemeToggle';
 import { useAuth } from '../../lib/auth';
 
@@ -14,6 +17,44 @@ export default function SignUp() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useAuth();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [activeSheet, setActiveSheet] = useState<'privacyPolicy' | 'termsOfService' | null>(null);
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        pressBehavior="close"
+        opacity={0.5}
+      />
+    ),
+    []
+  );
+
+  const showPrivacyPolicy = () => {
+    setActiveSheet('privacyPolicy');
+    bottomSheetRef.current?.expand();
+  };
+
+  const showTermsOfService = () => {
+    setActiveSheet('termsOfService');
+    bottomSheetRef.current?.expand();
+  };
+
+  const renderBottomSheetContent = () => {
+    switch (activeSheet) {
+      case 'privacyPolicy':
+        return <PrivacyPolicy onClose={() => bottomSheetRef.current?.close()} />;
+      case 'termsOfService':
+        return <TermsOfService onClose={() => bottomSheetRef.current?.close()} />;
+      default:
+        return null;
+    }
+  };
 
   async function handleSignUp() {
     if (!name.trim()) {
@@ -51,9 +92,6 @@ export default function SignUp() {
       setIsLoading(false);
     }
   }
-
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
 
   return (
     <KeyboardAvoidingView 
@@ -150,11 +188,26 @@ export default function SignUp() {
 
             <Animated.View 
               entering={FadeInDown.delay(1200).duration(1000)}
+              className="mt-4"
             >
+              <Text className="text-sm text-muted-foreground text-center mb-4">
+                By creating an account, you agree to our{' '}
+                <TouchableWithoutFeedback
+                 className='p-0 m-0' onPress={showTermsOfService} disabled={isLoading}>
+                  <Text className="text-primary font-medium">Terms of Service</Text>
+                </TouchableWithoutFeedback>
+                {' '}and{' '}
+                <TouchableWithoutFeedback
+                 onPress={showPrivacyPolicy} disabled={isLoading}>
+                  <Text className="text-primary font-medium">Privacy Policy</Text>
+                </TouchableWithoutFeedback>
+                
+              </Text>
+
               <TouchableOpacity
                 onPress={handleSignUp}
                 disabled={isLoading}
-                className={`bg-primary h-12 rounded-lg items-center justify-center mt-4 flex-row ${isLoading ? 'opacity-70' : ''}`}
+                className={`bg-primary h-12 rounded-lg items-center justify-center flex-row ${isLoading ? 'opacity-70' : ''}`}
               >
                 {isLoading ? (
                   <>
@@ -181,6 +234,43 @@ export default function SignUp() {
           </View>
         </Animated.View>
       </View>
+
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={['80%']}
+        index={-1}
+        enablePanDownToClose={true}
+        onClose={() => {
+          setActiveSheet(null);
+          setError('');
+        }}
+        backdropComponent={renderBackdrop}
+        backgroundStyle={{
+          backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)',
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          borderTopWidth: 1,
+          borderTopColor: isDark ? 'hsl(240 3.7% 15.9%)' : 'hsl(240 5.9% 90%)',
+          shadowColor: isDark ? 'hsl(240 3.7% 15.9%)' : '#000',
+          shadowOffset: {
+            width: 0,
+            height: -4,
+          },
+          shadowOpacity: isDark ? 0.5 : 0.1,
+          shadowRadius: 8,
+          elevation: 16,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: isDark ? 'hsl(240 5% 64.9%)' : 'hsl(240 3.8% 46.1%)',
+          width: 32,
+          height: 4,
+          borderRadius: 2,
+        }}
+      >
+        <BottomSheetView className="flex-1 bg-background">
+          {renderBottomSheetContent()}
+        </BottomSheetView>
+      </BottomSheet>
     </KeyboardAvoidingView>
   );
 } 

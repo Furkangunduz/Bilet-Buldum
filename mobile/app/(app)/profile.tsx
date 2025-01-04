@@ -1,8 +1,10 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Bell, ChevronRight, LogOut, Palette, Settings, User } from 'lucide-react-native';
+import { Bell, ChevronRight, FileText, LogOut, Palette, Settings, Shield, User } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { PrivacyPolicy } from '~/components/profile/PrivacyPolicy';
+import { TermsOfService } from '~/components/profile/TermsOfService';
 import { NotificationsForm } from '../../components/profile/NotificationsForm';
 import { PasswordForm } from '../../components/profile/PasswordForm';
 import { PersonalInfoForm } from '../../components/profile/PersonalInfoForm';
@@ -18,7 +20,7 @@ interface ProfileItem {
   rightContent?: () => React.ReactNode;
 }
 
-interface ProfileSectionData {
+interface SectionData {
   title: string;
   items: ProfileItem[];
 }
@@ -28,7 +30,7 @@ export default function Profile() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const [activeSheet, setActiveSheet] = useState<'personal' | 'notifications' | 'password' | null>(null);
+  const [activeSheet, setActiveSheet] = useState<'personal' | 'notifications' | 'password' | 'privacyPolicy' | 'termsOfService' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,7 +112,7 @@ export default function Profile() {
   };
 
 
-  const sections: ProfileSectionData[] = [
+  const sections: SectionData[] = [
     {
       title: 'Account',
       items: [
@@ -149,7 +151,30 @@ export default function Profile() {
           onPress: () => {}
         }
       ]
-    }
+    },
+    {
+      title: 'Legal',
+      items: [
+        {
+          icon: Shield,
+          label: 'Privacy Policy',
+          color: '#EF4444',
+          onPress: () => {
+            setActiveSheet('privacyPolicy');
+            bottomSheetRef.current?.expand();
+          }
+        },
+        {
+          icon: FileText,
+          label: 'Terms of Service',
+          color: '#6366F1',
+          onPress: () => {
+            setActiveSheet('termsOfService');
+            bottomSheetRef.current?.expand();
+          }
+        }
+      ]
+    } 
   ];
 
   const renderBottomSheetContent = () => {
@@ -189,13 +214,18 @@ export default function Profile() {
             error={error}
           />
         );
+      case 'privacyPolicy':
+        return <PrivacyPolicy />;
+
+      case 'termsOfService':
+        return <TermsOfService />;
 
       default:
         return null;
     }
   };
 
-  const ProfileSection = ({ title, items }: ProfileSectionData) => (
+  const Section = ({ title, items }: SectionData) => (
     <View className="mb-8">
       <Text className="text-lg font-semibold text-foreground mb-4">{title}</Text>
       <View className="bg-card rounded-lg overflow-hidden">
@@ -238,6 +268,16 @@ export default function Profile() {
     <ActivityIndicator size="large" className="text-primary" />
   </View> :
     <SafeAreaView className='flex-1 bg-background'>
+      <View className="flex-row justify-between items-center px-10 pt-6">
+        <Text className="text-xl font-semibold text-foreground">Profile</Text>
+        <TouchableOpacity
+          onPress={handleSignOut}
+          className="p-2 rounded-full bg-destructive/10 active:bg-destructive/20"
+        >
+          <LogOut size={20} color={isDark ? 'hsl(0 0% 100%)' : 'hsl(220.9 76.2% 48%)'} />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView className="flex-1 bg-background">
         <View className="p-4">
           <View className="bg-card p-6 rounded-lg mb-8">
@@ -253,16 +293,8 @@ export default function Profile() {
           </View>
 
           {sections.map((section) => (
-            <ProfileSection key={section.title} {...section} />
+            <Section key={section.title} {...section} />
           ))}
-
-          <TouchableOpacity
-            onPress={handleSignOut}
-            className="flex-row items-center justify-center gap-2 mt-4 p-4 bg-destructive/10 rounded-lg"
-          >
-            <LogOut color="#EF4444" size={20} />
-            <Text className="text-destructive font-medium">Sign Out</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
 

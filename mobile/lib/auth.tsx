@@ -49,11 +49,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isLoading) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const inOnboardingGroup = segments[0] === '(onboarding)';
 
-    if (!user && !inAuthGroup && !inOnboardingGroup) {
+    if (!user && !inAuthGroup ) {
       router.replace('/(auth)/sign-in');
-    } else if (user && (inAuthGroup || inOnboardingGroup)) {
+    } else if (user && (inAuthGroup)) {
       router.replace('/(app)');
     }
   }, [user, segments, isLoading]);
