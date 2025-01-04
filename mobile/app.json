@@ -18,6 +18,13 @@
       "bundleIdentifier": "com.furkan-gunduz.biletbuldum",
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511"
+      },
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you and improve your ticket search experience.",
+        "NSLocationWhenInUseUsageDescription": "We need your location to show you relevant ticket events near you.",
+        "NSCameraUsageDescription": "We need camera access to let you scan tickets and upload profile pictures.",
+        "NSPhotoLibraryUsageDescription": "We need photo library access to let you upload profile pictures.",
+        "NSNotificationsUsageDescription": "We'll send you notifications about ticket availability and updates on your saved searches."
       }
     },
     "android": {
