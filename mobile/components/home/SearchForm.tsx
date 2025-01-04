@@ -33,6 +33,7 @@ interface SearchFormProps {
   arrivalStations: Station[];
   closeBottomSheet: () => void;
   resetSearchForm: () => void;
+  setDepartureTimeRange: (timeRange: { start: string; end: string }) => void;
 }
 
 export function SearchForm({
@@ -47,7 +48,8 @@ export function SearchForm({
   spin,
   arrivalStations,
   closeBottomSheet,
-  resetSearchForm
+  resetSearchForm,
+  setDepartureTimeRange
 }: SearchFormProps) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -373,8 +375,7 @@ export function SearchForm({
               <TouchableOpacity
                 key={timeRange.label}
                 onPress={() => {
-                  searchForm.departureTimeRange.start = timeRange.start;
-                  searchForm.departureTimeRange.end = timeRange.end;
+                  setDepartureTimeRange({start: timeRange.start, end: timeRange.end});
                 }}
                 className={`px-3 py-1 mx-1 rounded-full ${
                   searchForm.departureTimeRange.start === timeRange.start && 

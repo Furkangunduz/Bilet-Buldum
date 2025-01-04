@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import SearchAlert from '../models/SearchAlert';
 import SearchAlertService from '../services/SearchAlertService';
 
@@ -16,12 +17,40 @@ class SearchAlertController {
         return res.status(401).json({ message: 'Unauthorized' });
       } 
 
+      const activeAlerts = await SearchAlert.find({ 
+        userId,
+        isActive: true
+      });
+
+      if (activeAlerts.length >= 2) {
+        return res.status(400).json({ 
+          message: 'You can only have 2 active alerts at a time. Please delete an existing alert to create a new one.' 
+        });
+      }
+
+      // Check if user already has an active alert for the same route
+      const existingAlert = await SearchAlert.findOne({
+        userId,
+        fromStationId: req.body.fromStationId,
+        toStationId: req.body.toStationId,
+        isActive: true
+      });
+
+      if (existingAlert) {
+        return res.status(400).json({ 
+          message: 'You already have an active alert for this route' 
+        });
+      }
+
       const stationsMap: Record<string, { id: string; destinations: Array<{ id: string; text: string }> }> = require('../../stations_map.json');
       
       let fromStationName = req.body.fromStationId;
       let toStationName = req.body.toStationId;
 
-      // Find station names from the map
+      if(req.body.fromStationId === req.body.toStationId) {
+        return res.status(400).json({ message: 'From and to station cannot be the same' });
+      }
+
       for (const [stationName, data] of Object.entries(stationsMap)) {
         if (data.id === req.body.fromStationId) {
           fromStationName = stationName;
@@ -32,7 +61,6 @@ class SearchAlertController {
         if (fromStationName !== req.body.fromStationId && toStationName !== req.body.toStationId) break;
       }
 
-      // Get cabin class name
       const cabinClassName = req.body.preferredCabinClass === '1' ? 'EKONOMİ' : 'BUSINESS';
 
       const searchAlert = await SearchAlertService.createSearchAlert(userId, {
@@ -62,11 +90,16 @@ class SearchAlertController {
       if (!userId) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
-    
 
-    
+      const { alertId } = req.params;
+      
+      // Validate ObjectId
+      if (!mongoose.Types.ObjectId.isValid(alertId)) {
+        return res.status(400).json({ message: 'Invalid alert ID format' });
+      }
+
       const searchAlert = await SearchAlert.findOne({ 
-        _id: req.params.alertId,
+        _id: alertId,
         userId 
       });
 
@@ -79,7 +112,10 @@ class SearchAlertController {
       searchAlert.statusReason = 'User declined the alert';
       await searchAlert.save();
 
-      res.json({ message: 'Search alert deactivated successfully' });
+      res.json({ 
+        message: 'Search alert deactivated successfully',
+        data: searchAlert
+      });
     } catch (error) {
       console.error('Error deactivating search alert:', error);
       res.status(500).json({ message: 'Internal server error' });
@@ -94,7 +130,7 @@ class SearchAlertController {
       }
 
       const stationsMap: Record<string, { id: string; destinations: Array<{ id: string; text: string }> }> = require('../../stations_map.json');
-      const searchAlerts = await SearchAlert.find({ userId, isActive: true })
+      const searchAlerts = await SearchAlert.find({ userId})
         .sort({ createdAt: -1 })
         .lean();
 
@@ -102,7 +138,6 @@ class SearchAlertController {
         let fromStationName = alert.fromStationId;
         let toStationName = alert.toStationId;
 
-        // Find station names from the map
         for (const [stationName, data] of Object.entries(stationsMap)) {
           if (data.id === alert.fromStationId) {
             fromStationName = stationName;
@@ -113,7 +148,6 @@ class SearchAlertController {
           if (fromStationName !== alert.fromStationId && toStationName !== alert.toStationId) break;
         }
 
-        // Get cabin class name
         const cabinClassName = alert.cabinClass === '1' ? 'EKONOMİ' : 'BUSINESS';
 
         return {

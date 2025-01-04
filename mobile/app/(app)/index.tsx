@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import { Loader2 } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, Easing, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useSearchAlerts } from '~/hooks/useSearchAlerts';
@@ -67,6 +68,8 @@ export default function Home() {
 
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  const [spinAnim] = useState(new Animated.Value(0));
 
   const fetchCabinClasses = async () => {
     try {
@@ -310,18 +313,24 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    const startSpinning = () => {
+      Animated.loop(
+        Animated.timing(spinAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+          easing: Easing.linear,
+        })
+      ).start();
+    };
+
+    startSpinning();
+  }, []);
+
   return (
     <SafeAreaView className='flex-1 bg-background'>
       <View className="flex-1 bg-background">
-        <View className="px-6 py-4 border-b border-border">
-          <Text className="text-2xl font-bold text-foreground">
-            Find Tickets
-          </Text>
-          <Text className="text-muted-foreground mt-1">
-            Set alerts for your journey
-          </Text>
-        </View>
-
         <View className="flex-1 px-6">
           {isLoadingAlerts ? (
             <View className="flex-1 items-center justify-center">
@@ -329,33 +338,72 @@ export default function Home() {
             </View>
           ) : searchAlerts.length > 0 ? (
             <View className="flex-1">
-              <Text className="text-lg font-semibold text-foreground mb-4 mt-6">
+              <Text className="text-lg font-semibold text-foreground mb-8 mt-6">
                 Your Active Alerts
               </Text>
-              <View className="flex-1 gap-4">
+              <ScrollView className="flex-1 gap-4">
                 {searchAlerts.map((alert) => (
                   <TouchableOpacity
                     key={alert._id} 
-                    className="bg-card p-4 rounded-lg border border-border"
+                    className="bg-card p-4 rounded-lg border border-border mb-2"
                     onLongPress={() => handleLongPressAlert(alert._id)}
                     delayLongPress={500}
                   >
                     <View className="flex-row items-center justify-between mb-2">
-                      <Text className="text-base font-medium text-foreground">
+                      <Text className="text-base font-medium text-foreground max-w-[150px]">
                         {alert.fromStationName?.split(' , ')[0]} → {alert.toStationName?.split(' , ')[0]}
                       </Text>
-                      <View className={`px-2 py-1 rounded-full ${
-                        alert.status === 'PENDING' ? 'bg-yellow-100' :
-                        alert.status === 'COMPLETED' ? 'bg-green-100' :
-                        'bg-red-100'
+                      <View className={`px-3 py-1.5 rounded-full flex-row items-center ${
+                        alert.status === 'PENDING' ? 'bg-yellow-100/80' :
+                        alert.status === 'COMPLETED' ? 'bg-green-100/80' :
+                        'bg-red-100/80'
                       }`}>
-                        <Text className={`text-xs font-medium ${
-                          alert.status === 'PENDING' ? 'text-yellow-800' :
-                          alert.status === 'COMPLETED' ? 'text-green-800' :
-                          'text-red-800'
-                        }`}>
-                          {alert.status}
-                        </Text>
+                        {alert.status === 'PENDING' ? (
+                          <View className="flex-row items-center gap-2">
+                            <Text className="text-xs font-medium text-yellow-800">
+                              Searching
+                            </Text>
+                            <Animated.View 
+                              style={{
+                                transform: [{
+                                  rotate: spinAnim.interpolate({
+                                    inputRange: [0, 1],
+                                    outputRange: ['0deg', '360deg']
+                                  })
+                                }],
+                                marginLeft: 2
+                              }}
+                            >
+                              <Loader2 
+                                size={14} 
+                                color="hsl(41, 100%, 35%)" 
+                                strokeWidth={2.5}
+                              />
+                            </Animated.View>
+                          </View>
+                        ) : alert.status === 'COMPLETED' ? (
+                          <View className="flex-row items-center gap-2">
+                            <Text className="text-xs font-medium text-green-800">
+                              Found
+                            </Text>
+                            <Ionicons 
+                              name="checkmark-circle" 
+                              size={14} 
+                              color="hsl(142, 76%, 36%)" 
+                            />
+                          </View>
+                        ) : (
+                          <View className="flex-row items-center gap-2">
+                            <Text className="text-xs font-medium text-red-800">
+                              Failed
+                            </Text>
+                            <Ionicons 
+                              name="alert-circle" 
+                              size={14} 
+                              color="hsl(0, 84%, 60%)" 
+                            />
+                          </View>
+                        )}
                       </View>
                     </View>
                     <Text className="text-sm text-muted-foreground">
@@ -369,9 +417,15 @@ export default function Home() {
                     <Text className="text-sm text-muted-foreground">
                       {alert.departureTimeRange.start.replace(/^(\d{2}):(\d{2})$/, '$1:$2')} - {alert.departureTimeRange.end.replace(/^(\d{2}):(\d{2})$/, '$1:$2')}
                     </Text>
+
+                    {alert.statusReason && (
+                      <Text className="text-xs text-muted-foreground mt-2">
+                        {alert.statusReason}
+                      </Text>
+                    )}
                   </TouchableOpacity>
                 ))}
-              </View>
+              </ScrollView>
             </View>
           ) : (
             <View className="flex-1 items-center justify-center">
@@ -388,7 +442,7 @@ export default function Home() {
           )}
         </View>
 
-        <View className="p-6 border-t border-border">
+        <View className="p-6 ">
           <TouchableOpacity
             onPress={handleSearchPress}
             className="bg-primary w-full h-14 rounded-xl items-center justify-center shadow-sm flex-row gap-6"
@@ -507,12 +561,20 @@ export default function Home() {
                 onShowDatePicker={() => setShowDatePicker(true)}
                 onShowTimePicker={setShowTimePicker}
                 onSwapStations={handleSwapStations}
-                onToggleHighSpeed={(value) => setSearchForm(prev => ({ ...prev, wantHighSpeedTrain: value }))}
                 onDateChange={(date) => setSearchForm(prev => ({ ...prev, date }))}
-                spin={spin}
-                arrivalStations={arrivalStations}
                 closeBottomSheet={handleCloseBottomSheet}
                 resetSearchForm={resetSearchForm}
+                onToggleHighSpeed={(value) => setSearchForm(prev => ({ ...prev, wantHighSpeedTrain: value }))}
+                spin={spin}
+                arrivalStations={arrivalStations}
+                setDepartureTimeRange={
+                  (timeRange) => {
+                    setSearchForm(prev => ({
+                      ...prev,
+                      departureTimeRange: timeRange
+                    }));
+                  }
+                }
               />
             </BottomSheetScrollView>
 
