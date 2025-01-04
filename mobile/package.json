@@ -1,7 +1,7 @@
 {
   "name": "biletbuldum",
   "main": "index.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scripts": {
     "dev": "expo start -c --ios",
     "dev:web": "expo start -c --web",
