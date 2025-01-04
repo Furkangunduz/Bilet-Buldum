@@ -51,18 +51,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const inAuthGroup = segments[0] === '(auth)';
     const inOnboarding = segments[0] === 'onboarding';
-
-
+    
     if (!user && !inAuthGroup) {
-      // Not logged in, go to sign in
       console.log('➡️ Redirecting to sign in');
       router.replace('/(auth)/sign-in');
     } else if (user && !user.onboardingCompletedAt && !inOnboarding) {
-      // Logged in but hasn't completed onboarding, go to onboarding
       console.log('➡️ Redirecting to onboarding');
       router.replace('/onboarding');
     } else if (user && user.onboardingCompletedAt && (inAuthGroup || inOnboarding)) {
-      // Logged in and completed onboarding, go to main app
       console.log('➡️ Redirecting to main app');
       router.replace('/(app)');
     }

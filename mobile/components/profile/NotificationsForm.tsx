@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { Bell, Mail, X } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useRef } from 'react';
@@ -42,6 +43,28 @@ export function NotificationsForm({
     ]).start();
   }, []);
 
+  const handleToggle = (type: 'email' | 'push') => {
+    Haptics.impactAsync(
+      preferences[type] 
+        ? Haptics.ImpactFeedbackStyle.Light 
+        : Haptics.ImpactFeedbackStyle.Medium
+    );
+    onChangePreferences({ 
+      ...preferences, 
+      [type]: !preferences[type] 
+    });
+  };
+
+  const handleSubmit = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await onSubmit();
+  };
+
+  const handleClose = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onClose();
+  };
+
   return (
     <Animated.View 
       style={{ 
@@ -53,7 +76,7 @@ export function NotificationsForm({
       <View className="flex-row justify-between items-center mb-6">
         <Text className="text-2xl font-bold text-foreground">Notification Preferences</Text>
         <TouchableOpacity 
-          onPress={onClose}
+          onPress={handleClose}
           className="p-2 rounded-full bg-muted/10 active:bg-muted/20"
         >
           <X size={20} color={isDark ? '#A1A1AA' : '#71717A'} />
@@ -62,7 +85,7 @@ export function NotificationsForm({
 
       <View>
         <TouchableOpacity
-          onPress={() => onChangePreferences({ ...preferences, email: !preferences.email })}
+          onPress={() => handleToggle('email')}
           className="flex-row items-center justify-between p-4 bg-card border border-input rounded-xl active:bg-muted/5 mb-4"
         >
           <View className="flex-row items-center gap-5">
@@ -84,7 +107,7 @@ export function NotificationsForm({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => onChangePreferences({ ...preferences, push: !preferences.push })}
+          onPress={() => handleToggle('push')}
           className="flex-row items-center justify-between p-4 bg-card border border-input rounded-xl active:bg-muted/5 mb-4"
         >
           <View className="flex-row items-center gap-5">
@@ -112,7 +135,7 @@ export function NotificationsForm({
         )}
 
         <TouchableOpacity
-          onPress={onSubmit}
+          onPress={handleSubmit}
           disabled={isLoading}
           className={`h-12 rounded-xl items-center justify-center ${
             isLoading ? 'bg-primary/70' : 'bg-primary active:bg-primary/90'

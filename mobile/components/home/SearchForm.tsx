@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
@@ -59,33 +60,69 @@ export function SearchForm({
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  const handleStationSelect = (station: Station, type?: 'from' | 'to') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onStationSelect(station, type);
+  };
+
+  const handleShowModal = (type: 'from' | 'to' | 'cabin') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onShowStationModal(type);
+  };
+
+  const handleDatePicker = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onShowDatePicker();
+  };
+
+  const handleTimePicker = (type: 'start' | 'end') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onShowTimePicker(type);
+  };
+
+  const handleSwap = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onSwapStations();
+  };
+
+  const handleHighSpeedToggle = (value: boolean) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onToggleHighSpeed(value);
+  };
+
   const validateForm = () => {
     if (!user) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       router.push('/(auth)/sign-in');
       return false;
     }
 
     if (!searchForm.fromId) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError('Please select a departure station');
       return false;
     }
 
     if (!searchForm.toId) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError('Please select an arrival station');
       return false;
     }
 
     if (!searchForm.date) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError('Please select a date');
       return false;
     }
 
     if (!searchForm.cabinClass) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError('Please select a cabin class');
       return false;
     }
 
     if (!searchForm.departureTimeRange.start || !searchForm.departureTimeRange.end) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError('Please select departure time range');
       return false;
     }
@@ -111,7 +148,8 @@ export function SearchForm({
         preferredCabinClass: searchForm.cabinClass,
         wantHighSpeedTrain: searchForm.wantHighSpeedTrain
       });
-      await mutateAlerts()
+      await mutateAlerts();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       resetSearchForm();
       Alert.alert(
         'Success',
@@ -120,6 +158,7 @@ export function SearchForm({
           {
             text: 'View Alerts',
             onPress: () => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               closeBottomSheet();
             },
             style: 'default'
@@ -128,6 +167,7 @@ export function SearchForm({
       );
     } catch (error: any) {
       console.error('Error creating alert:', error);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setError(error.response?.data?.message || 'Failed to create alert. Please try again.');
     } finally {
       setIsLoading(false);
@@ -140,7 +180,7 @@ export function SearchForm({
         <View>
           <Text className="text-sm font-medium text-foreground my-2">From</Text>
           <TouchableOpacity
-            onPress={() => onShowStationModal('from')}
+            onPress={() => handleShowModal('from')}
             className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
           >
             <Ionicons 
@@ -170,7 +210,7 @@ export function SearchForm({
             ].map((station) => (
               <TouchableOpacity
                 key={station.id}
-                onPress={() => onStationSelect({ id: station.id, name: station.name }, 'from')}
+                onPress={() => handleStationSelect({ id: station.id, name: station.name }, 'from')}
                 className={`px-3 py-1 mx-1 rounded-full ${
                   searchForm.fromId === station.id ? 'bg-primary' : 'bg-secondary'
                 }`}
@@ -188,7 +228,7 @@ export function SearchForm({
         <View>
           <Text className="text-sm font-medium text-foreground my-2">To</Text>
           <TouchableOpacity
-            onPress={() => searchForm.fromId && onShowStationModal('to')}
+            onPress={() => searchForm.fromId && handleShowModal('to')}
             className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
             style={{ opacity: searchForm.fromId ? 1 : 0.5 }}
           >
@@ -221,7 +261,7 @@ export function SearchForm({
                 .map((station) => (
                   <TouchableOpacity
                     key={station.id}
-                    onPress={() => onStationSelect({ id: station.id, name: station.name }, 'to')}
+                    onPress={() => handleStationSelect({ id: station.id, name: station.name }, 'to')}
                     className={`px-3 py-1 mx-1 rounded-full ${
                       searchForm.toId === station.id ? 'bg-primary' : 'bg-secondary'
                     }`}
@@ -241,7 +281,7 @@ export function SearchForm({
           <Text className="text-sm font-medium text-foreground my-2">Date</Text>
           <Pressable 
             className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
-            onPress={onShowDatePicker}
+            onPress={handleDatePicker}
           >
             <Ionicons 
               name="calendar-outline" 
@@ -310,7 +350,7 @@ export function SearchForm({
         <View>
           <Text className="text-sm font-medium text-foreground my-2">Cabin Class</Text>
           <TouchableOpacity
-            onPress={() => onShowStationModal('cabin')}
+            onPress={() => handleShowModal('cabin')}
             className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
           >
             <Ionicons 
@@ -337,7 +377,7 @@ export function SearchForm({
           <Text className="text-sm font-medium text-foreground my-2">Departure Time Range</Text>
           <View className="flex-row gap-4">
             <TouchableOpacity
-              onPress={() => onShowTimePicker('start')}
+              onPress={() => handleTimePicker('start')}
               className="flex-1 flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
             >
               <Ionicons 
@@ -352,7 +392,7 @@ export function SearchForm({
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => onShowTimePicker('end')}
+              onPress={() => handleTimePicker('end')}
               className="flex-1 flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
             >
               <Ionicons 
@@ -400,7 +440,7 @@ export function SearchForm({
 
         <View className="my-4">
           <TouchableOpacity 
-            onPress={() => onToggleHighSpeed(!searchForm.wantHighSpeedTrain)}
+            onPress={() => handleHighSpeedToggle(!searchForm.wantHighSpeedTrain)}
             className="flex-row items-center"
           >
             <View className={`w-5 h-5 border rounded mr-2 items-center justify-center ${searchForm.wantHighSpeedTrain ? 'bg-primary border-primary' : 'border-input'}`}>
