@@ -1,7 +1,7 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Bell, ChevronRight, LogOut, Palette, Settings, User } from 'lucide-react-native';
 import { useCallback, useRef, useState } from 'react';
-import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { NotificationsForm } from '../../components/profile/NotificationsForm';
 import { PasswordForm } from '../../components/profile/PasswordForm';
 import { PersonalInfoForm } from '../../components/profile/PersonalInfoForm';
@@ -27,6 +27,7 @@ export default function Profile() {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [activeSheet, setActiveSheet] = useState<'personal' | 'notifications' | 'password' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [personalInfo, setPersonalInfo] = useState({
@@ -94,6 +95,17 @@ export default function Profile() {
       setIsLoading(false);
     }
   };
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOut();
+    } catch (error) {
+      setIsSigningOut(false);
+      Alert.alert('Error', 'Failed to sign out. Please try again.');
+    }
+  };
+
 
   const sections: ProfileSectionData[] = [
     {
@@ -218,6 +230,9 @@ export default function Profile() {
   );
 
   return (
+  isSigningOut ? <View className="flex-1 items-center justify-center">
+    <ActivityIndicator size="large" className="text-primary" />
+  </View> :
     <SafeAreaView className='flex-1 bg-background'>
       <ScrollView className="flex-1 bg-background">
         <View className="p-4">
@@ -228,7 +243,7 @@ export default function Profile() {
                   {user?.firstName?.charAt(0) || 'U'}
                 </Text>
               </View>
-              <Text className="text-2xl font-bold text-foreground">{`${user?.firstName} ${user?.lastName}`}</Text>
+              <Text className="text-2xl font-bold text-foreground">{user ? `${user.firstName} ${user.lastName}` : ''}</Text>
               <Text className="text-muted-foreground">{user?.email}</Text>
             </View>
           </View>
@@ -238,7 +253,7 @@ export default function Profile() {
           ))}
 
           <TouchableOpacity
-            onPress={signOut}
+            onPress={handleSignOut}
             className="flex-row items-center justify-center gap-2 mt-4 p-4 bg-destructive/10 rounded-lg"
           >
             <LogOut color="#EF4444" size={20} />

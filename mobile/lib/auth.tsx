@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { router, useSegments } from 'expo-router';
+import { router, useRouter, useSegments } from 'expo-router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { authApi, updatePushToken } from './api';
 
@@ -23,6 +23,7 @@ interface AuthContextType {
   signUp: (email: string, password: string,name:string,lastName:string) => Promise<void>;
   user: User | null;
   updateUser: (user: User) => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -31,6 +32,7 @@ const AuthContext = createContext<AuthContextType>({
   signUp: async () => {},
   user: null,
   updateUser: () => {},
+  isLoading: true,
 });
 
 export function useAuth() {
@@ -56,8 +58,22 @@ function useProtectedRoute(user: User | null) {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const segments = useSegments();
+  const router = useRouter();
 
-  useProtectedRoute(user);
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+    const inOnboardingGroup = segments[0] === '(onboarding)';
+
+    if (!user && !inAuthGroup && !inOnboardingGroup) {
+      router.replace('/(auth)/sign-in');
+    } else if (user && (inAuthGroup || inOnboardingGroup)) {
+      router.replace('/(app)');
+    }
+  }, [user, segments, isLoading]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -86,6 +102,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('🗑️ Clearing invalid token');
           await AsyncStorage.removeItem('token');
         }
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -144,7 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ signIn, signOut, signUp, user, updateUser }}>
+    <AuthContext.Provider value={{ signIn, signOut, signUp, user, updateUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
