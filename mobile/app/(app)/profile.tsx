@@ -1,5 +1,6 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Bell, ChevronRight, LogOut, Palette, Settings, User } from 'lucide-react-native';
+import { useColorScheme } from 'nativewind';
 import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { NotificationsForm } from '../../components/profile/NotificationsForm';
@@ -24,6 +25,8 @@ interface ProfileSectionData {
 
 export default function Profile() {
   const { user, signOut, updateUser } = useAuth();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [activeSheet, setActiveSheet] = useState<'personal' | 'notifications' | 'password' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -224,6 +227,7 @@ export default function Profile() {
         appearsOnIndex={0}
         disappearsOnIndex={-1}
         pressBehavior="close"
+        opacity={0.5}
       />
     ),
     []
@@ -273,28 +277,28 @@ export default function Profile() {
         }}
         backdropComponent={renderBackdrop}
         backgroundStyle={{
-          backgroundColor: 'hsl(0 0% 100%)',
+          backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)',
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
           borderTopWidth: 1,
-          borderTopColor: 'hsl(240 5.9% 90%)',
-          shadowColor: '#000',
+          borderTopColor: isDark ? 'hsl(240 3.7% 15.9%)' : 'hsl(240 5.9% 90%)',
+          shadowColor: isDark ? 'hsl(240 3.7% 15.9%)' : '#000',
           shadowOffset: {
             width: 0,
             height: -4,
           },
-          shadowOpacity: 0.1,
+          shadowOpacity: isDark ? 0.5 : 0.1,
           shadowRadius: 8,
           elevation: 16,
         }}
         handleIndicatorStyle={{
-          backgroundColor: 'hsl(240 5.9% 90%)',
+          backgroundColor: isDark ? 'hsl(240 5% 64.9%)' : 'hsl(240 3.8% 46.1%)',
           width: 32,
           height: 4,
           borderRadius: 2,
         }}
       >
-        <BottomSheetView className="flex-1">
+        <BottomSheetView className="flex-1 bg-background">
           {renderBottomSheetContent()}
         </BottomSheetView>
       </BottomSheet>

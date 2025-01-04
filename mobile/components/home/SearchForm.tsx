@@ -368,6 +368,7 @@ export function SearchForm({
           </View>
           <ScrollView horizontal className="flex-row pt-3 pb-3">
             {[
+              { start: "00:00", end: "23:59", label: "All Day" },
               { start: "06:00", end: "12:00", label: "(06:00 - 12:00)" },
               { start: "12:00", end: "18:00", label: "(12:00 - 18:00)" },
               { start: "18:00", end: "06:00", label: "(18:00 - 06:00)" }
