@@ -400,7 +400,7 @@ export default function Home() {
               </ScrollView>
             </View>
           ) : (
-            <EmptyState selectedStatuses={selectedStatuses} />
+            <EmptyState  />
           )}
         </View>
 

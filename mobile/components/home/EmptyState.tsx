@@ -3,12 +3,22 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 interface EmptyStateProps {
-  selectedStatuses: string[];
+  selectedStatuses?: string[];
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({ selectedStatuses }) => {
-  if (selectedStatuses.length === 0) {
-    return null;
+  if (!selectedStatuses || selectedStatuses.length === 0) {
+    return <View className="flex-1 items-center justify-center">
+    <View className="items-center gap-4 mb-12">
+      <Ionicons name="train" size={64} color="#666" />
+      <Text className="text-xl font-semibold text-foreground text-center">
+        Ready to Start Your Journey?
+      </Text>
+      <Text className="text-muted-foreground text-center">
+        Search for train tickets and set alerts for your preferred routes
+      </Text>
+    </View>
+  </View>;
   }
 
   if (selectedStatuses.length === 1) {

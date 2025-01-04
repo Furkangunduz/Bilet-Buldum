@@ -55,12 +55,10 @@ export function useNotifications() {
           projectId: Constants.expoConfig?.extra?.eas?.projectId,
         })).data;
         
-        console.log('Push token:', token);
         await api.updatePushToken(token);
         setExpoPushToken(token);
       } catch (error) {
         console.error('Error getting push token:', error);
-        // If there's an error, clear the token to be safe
         try {
           await api.updatePushToken('');
           setExpoPushToken(undefined);
