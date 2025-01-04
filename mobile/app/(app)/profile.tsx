@@ -264,7 +264,7 @@ export default function Profile() {
   );
 
   return (
-  isSigningOut ? <View className="flex-1 items-center justify-center">
+  isSigningOut ? <View className="flex-1 items-center justify-center" style={{ backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)' }}>
     <ActivityIndicator size="large" className="text-primary" />
   </View> :
     <SafeAreaView className='flex-1 bg-background'>
