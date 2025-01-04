@@ -268,7 +268,7 @@ export default function Profile() {
     <ActivityIndicator size="large" className="text-primary" />
   </View> :
     <SafeAreaView className='flex-1 bg-background'>
-      <View className="flex-row justify-between items-center px-10 pt-6">
+      <View className="flex-row justify-between items-center px-10 pb-1">
         <Text className="text-xl font-semibold text-foreground">Profile</Text>
         <TouchableOpacity
           onPress={handleSignOut}

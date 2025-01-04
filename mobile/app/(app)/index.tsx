@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
@@ -14,14 +14,13 @@ import { useDebounce } from '~/hooks/useDebounce';
 import { useSearchAlerts } from '~/hooks/useSearchAlerts';
 import { CabinClass, Station, searchAlertsApi, tcddApi } from '~/lib/api';
 
-// Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 }
 
-// Custom layout animation config
+
 const CustomLayoutAnimation = {
   duration: 300,
   create: {
@@ -37,7 +36,6 @@ const CustomLayoutAnimation = {
   },
 };
 
-// Initialize the interstitial ad
 const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'your-ad-unit-id-here';
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
@@ -48,14 +46,9 @@ const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
 export default function Home() {
   const { searchAlerts, isLoading: isLoadingAlerts, mutate: mutateAlerts } = useSearchAlerts();
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const deleteAlertSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['60%'], []);
-  const deleteSnapPoints = useMemo(() => ['25%'], []);
+  const snapPoints = useMemo(() => ['85%'], []);
   const rotateAnim = useRef(new Animated.Value(0)).current;
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
-  const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
   const [isAdLoaded, setIsAdLoaded] = useState(false);
-  const [currentSnapPointIndex, setCurrentSnapPointIndex] = useState(0);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>(['PENDING']);
 
   const filteredAlerts = useMemo(() => {
@@ -225,18 +218,14 @@ export default function Home() {
         interstitial.show();
       } catch (error) {
         console.warn('Failed to show ad, opening bottom sheet directly:', error);
-        setIsBottomSheetOpen(true);
         bottomSheetRef.current?.expand();
       }
     } else {
-      // If ad is not loaded, just show the bottom sheet
-      setIsBottomSheetOpen(true);
       bottomSheetRef.current?.expand();
     }
   };
 
   const handleCloseBottomSheet = () => {
-    setIsBottomSheetOpen(false);
     bottomSheetRef.current?.close();
   };
 
@@ -269,11 +258,6 @@ export default function Home() {
     inputRange: [0, 1],
     outputRange: ['0deg', '180deg']
   });
-
-  const handleLongPressAlert = (alertId: string) => {
-    setSelectedAlertId(alertId);
-    deleteAlertSheetRef.current?.expand();
-  };
 
   const handleDeleteAlert = async (alertId: string) => {
     try {
@@ -332,7 +316,6 @@ export default function Home() {
     const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
       setIsAdLoaded(false);
       interstitial.load();
-      setIsBottomSheetOpen(true);
       bottomSheetRef.current?.expand();
     });
 
@@ -462,8 +445,6 @@ export default function Home() {
         snapPoints={snapPoints}
         index={-1}
         enablePanDownToClose={true}
-        onClose={() => setIsBottomSheetOpen(false)}
-        onChange={(index) => setCurrentSnapPointIndex(index)}
         backdropComponent={renderBackdrop}
         backgroundStyle={{
           backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)',
@@ -490,7 +471,7 @@ export default function Home() {
           borderTopRightRadius: 24,
         }}
       >
-        <BottomSheetScrollView
+        <View
           style={[
             styles.contentContainer, 
             { 
@@ -541,57 +522,7 @@ export default function Home() {
             </BottomSheetScrollView>
 
           </View>
-        </BottomSheetScrollView>
-      </BottomSheet>
-
-      <BottomSheet
-        ref={deleteAlertSheetRef}
-        index={-1}
-        snapPoints={deleteSnapPoints}
-        enablePanDownToClose
-        backdropComponent={renderBackdrop}
-        backgroundStyle={{
-          backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)',
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          borderTopWidth: 2,
-          borderTopColor: isDark ? 'hsl(240 3.7% 15.9%)' : 'hsl(240 5.9% 90%)',
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: -4,
-          },
-          shadowOpacity: isDark ? 0.5 : 0.1,
-          shadowRadius: 8,
-          elevation: 16,
-        }}
-        handleIndicatorStyle={{
-          backgroundColor: isDark ? 'hsl(240 5% 64.9%)' : 'hsl(240 3.8% 46.1%)',
-          width: 40,
-        }}
-      >
-        <BottomSheetView style={[styles.deleteSheetContent, { backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)' }]}>
-          <Text className="text-xl font-bold text-foreground mb-2">Delete Alert</Text>
-          <Text className="text-base text-muted-foreground mb-6">Are you sure you want to delete this alert?</Text>
-          <View className="flex-row justify-between gap-3">
-            <TouchableOpacity 
-              className="flex-1 bg-secondary py-3 rounded-lg items-center"
-              onPress={() => {
-                deleteAlertSheetRef.current?.close();
-                setSelectedAlertId(null);
-              }}
-            >
-              <Text className="text-secondary-foreground font-semibold">Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              className="flex-1 bg-destructive py-3 rounded-lg items-center"
-              onPress={() => {
-              }}
-            >
-              <Text className="text-destructive-foreground font-semibold">Delete</Text>
-            </TouchableOpacity>
-          </View>
-        </BottomSheetView>
+        </View>
       </BottomSheet>
     </SafeAreaView>
   );
