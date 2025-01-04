@@ -13,5 +13,6 @@ router.put('/profile/password', authenticateToken, AuthController.updatePassword
 router.put('/push-token', authenticateToken, AuthController.updatePushToken);
 router.post('/test-notification', AuthController.testNotification);
 router.post('/complete-onboarding', authenticateToken, AuthController.completeOnboarding);
+router.delete('/profile', authenticateToken, AuthController.deleteAccount);
 
 export default router; 

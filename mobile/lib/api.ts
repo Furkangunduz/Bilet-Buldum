@@ -226,6 +226,29 @@ export const authApi = {
   },
 
   completeOnboarding: () => api.post<User>('/auth/complete-onboarding'),
+
+  deleteAccount: () => {
+    try {
+      console.log('🗑️ Attempting to delete account...');
+      return api
+        .delete('/auth/profile')
+        .then((response) => {
+          console.log('✅ Account deleted successfully');
+          return response;
+        })
+        .catch((error: AxiosError) => {
+          console.error('❌ Error deleting account:', {
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message,
+          });
+          throw error;
+        });
+    } catch (error) {
+      console.error('❌ Unexpected error in deleteAccount:', error);
+      throw error;
+    }
+  },
 };
 
 export const tcddApi = {

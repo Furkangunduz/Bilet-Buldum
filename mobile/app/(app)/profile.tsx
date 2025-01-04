@@ -174,7 +174,42 @@ export default function Profile() {
           }
         }
       ]
-    } 
+    },
+    {
+      title: 'Danger Zone',
+      items: [
+        {
+          icon: LogOut,
+          label: 'Delete Account',
+          color: '#DC2626',
+          onPress: () => {
+            Alert.alert(
+              'Delete Account',
+              'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
+              [
+                {
+                  text: 'Cancel',
+                  style: 'cancel',
+                },
+                {
+                  text: 'Delete',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await authApi.deleteAccount();
+                      await signOut();
+                    } catch (error) {
+                      Alert.alert('Error', 'Failed to delete account. Please try again.');
+                    }
+                  },
+                },
+              ],
+              { cancelable: true }
+            );
+          }
+        }
+      ]
+    }
   ];
 
   const renderBottomSheetContent = () => {

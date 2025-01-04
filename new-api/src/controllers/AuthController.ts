@@ -16,6 +16,7 @@ class AuthController {
     this.updatePushToken = this.updatePushToken.bind(this);
     this.testNotification = this.testNotification.bind(this);
     this.completeOnboarding = this.completeOnboarding.bind(this);
+    this.deleteAccount = this.deleteAccount.bind(this);
   }
 
   async register(req: Request, res: Response) {
@@ -278,6 +279,30 @@ class AuthController {
     } catch (error) {
       console.error('Error completing onboarding:', error);
       res.status(400).json({ error: 'Error completing onboarding' });
+    }
+  }
+
+  async deleteAccount(req: Request, res: Response) {
+    try {
+      const user = await User.findById(req.user._id);
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Soft delete by setting deletedAt
+      user.deletedAt = new Date();
+      await user.save();
+
+      // Remove push token if exists
+      if (user.expoPushToken) {
+        await User.findByIdAndUpdate(user._id, { $unset: { expoPushToken: 1 } });
+      }
+
+      res.json({ message: 'Account deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      res.status(400).json({ error: 'Error deleting account' });
     }
   }
 }
