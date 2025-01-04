@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
@@ -22,12 +23,13 @@ export default function Home() {
   const { searchAlerts, isLoading: isLoadingAlerts, mutate: mutateAlerts } = useSearchAlerts();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const deleteAlertSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = useMemo(() => ['75%','90%'], []);
+  const snapPoints = useMemo(() => ['60%'], []);
   const deleteSnapPoints = useMemo(() => ['25%'], []);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
   const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
   const [isAdLoaded, setIsAdLoaded] = useState(false);
+  const [currentSnapPointIndex, setCurrentSnapPointIndex] = useState(0);
 
   const maxDate = useMemo(() => {
     const date = new Date();
@@ -62,6 +64,9 @@ export default function Home() {
   const [cabinClasses, setCabinClasses] = useState<CabinClass[]>([]);
   const [isLoadingCabinClasses, setIsLoadingCabinClasses] = useState(false);
   const [cabinClassesError, setCabinClassesError] = useState<string | null>(null);
+
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const fetchCabinClasses = async () => {
     try {
@@ -183,10 +188,15 @@ export default function Home() {
   
   const handleSearchPress = () => {
     if (isAdLoaded) {
-      // Show the ad if it's loaded
-      interstitial.show();
+      try {
+        interstitial.show();
+      } catch (error) {
+        console.warn('Failed to show ad, opening bottom sheet directly:', error);
+        setIsBottomSheetOpen(true);
+        bottomSheetRef.current?.expand();
+      }
     } else {
-      // If ad isn't loaded, just show the search sheet directly
+      // If ad is not loaded, just show the bottom sheet
       setIsBottomSheetOpen(true);
       bottomSheetRef.current?.expand();
     }
@@ -274,24 +284,29 @@ export default function Home() {
     []
   );
 
-  // Load the ad when component mounts
   useEffect(() => {
     const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
       setIsAdLoaded(true);
     });
 
     const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+      setIsAdLoaded(false);
+      interstitial.load();
       setIsBottomSheetOpen(true);
       bottomSheetRef.current?.expand();
     });
 
-    // Start loading the interstitial straight away
+    const unsubscribeError = interstitial.addAdEventListener(AdEventType.ERROR, (error) => {
+      console.warn('Ad failed to load:', error);
+      setIsAdLoaded(false);
+    });
+
     interstitial.load();
 
-    // Cleanup
     return () => {
       unsubscribeLoaded();
       unsubscribeClosed();
+      unsubscribeError();
     };
   }, []);
 
@@ -371,9 +386,9 @@ export default function Home() {
         <View className="p-6 border-t border-border">
           <TouchableOpacity
             onPress={handleSearchPress}
-            className="bg-primary w-full h-14 rounded-xl items-center justify-center shadow-sm flex-row gap-4"
+            className="bg-primary w-full h-14 rounded-xl items-center justify-center shadow-sm flex-row gap-6"
           >
-            <Ionicons name="search" size={20} color="white" />
+            <Ionicons name="search" size={22} color={isDark ? '#000' : '#fff'}  />
             <Text className="text-primary-foreground font-semibold text-base">
               Start Searching
             </Text>
@@ -427,26 +442,25 @@ export default function Home() {
         index={-1}
         enablePanDownToClose={true}
         onClose={() => setIsBottomSheetOpen(false)}
-        enableOverDrag={false}
+        onChange={(index) => setCurrentSnapPointIndex(index)}
         backdropComponent={renderBackdrop}
         backgroundStyle={{
-          backgroundColor: 'hsl(0 0% 100%)',
+          backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)',
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
-          borderTopWidth: 1,
-          borderTopColor: 'hsl(240 5.9% 90%)',
-          shadowColor: '#000',
+          borderTopWidth: 2,
+          borderColor: isDark ? 'hsl(240 3.7% 15.9%)' : 'hsl(240 5.9% 90%)',
+          shadowColor: isDark ? 'hsl(240 3.7% 15.9%)' : '#000',
           shadowOffset: {
             width: 0,
             height: -4,
           },
-          shadowOpacity: 0.1,
+          shadowOpacity: isDark ? 0.5 : 0.1,
           shadowRadius: 8,
-          elevation: 16,
         }}
         handleIndicatorStyle={{
-          backgroundColor: '#999',
-          width: 40,
+          backgroundColor: isDark ? 'hsl(240 5% 64.9%)' : 'hsl(240 3.8% 46.1%)',
+          width: 60,
         }}
         handleStyle={{
           backgroundColor: 'transparent',
@@ -455,7 +469,14 @@ export default function Home() {
           borderTopRightRadius: 24,
         }}
       >
-        <BottomSheetView style={styles.contentContainer}>
+        <BottomSheetScrollView
+          style={[
+            styles.contentContainer, 
+            { 
+              backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)',
+            }
+          ]}
+        >
           <View className="flex-1 w-full">
             <View className="flex-row items-center justify-between mb-8">
               <Text className="text-2xl font-bold text-foreground">
@@ -465,26 +486,33 @@ export default function Home() {
                 onPress={handleCloseBottomSheet}
                 className="p-2"
               >
-                <Ionicons name="close" size={24} color="#666" />
+                <Ionicons 
+                  name="close" 
+                  size={24} 
+                  color={isDark ? '#fff' : '#000'} 
+                />
               </TouchableOpacity>
             </View>
             
-            <SearchForm
-              searchForm={searchForm}
-              onStationSelect={handleStationSelect}
-              onShowStationModal={setShowStationModal}
-              onShowDatePicker={() => setShowDatePicker(true)}
-              onShowTimePicker={setShowTimePicker}
-              onSwapStations={handleSwapStations}
-              onToggleHighSpeed={(value) => setSearchForm(prev => ({ ...prev, wantHighSpeedTrain: value }))}
-              onDateChange={(date) => setSearchForm(prev => ({ ...prev, date }))}
-              spin={spin}
-              arrivalStations={arrivalStations}
-              closeBottomSheet={handleCloseBottomSheet}
-              resetSearchForm={resetSearchForm}
-            />
+            <BottomSheetScrollView className="flex-1 w-full">
+              <SearchForm
+                searchForm={searchForm}
+                onStationSelect={handleStationSelect}
+                onShowStationModal={setShowStationModal}
+                onShowDatePicker={() => setShowDatePicker(true)}
+                onShowTimePicker={setShowTimePicker}
+                onSwapStations={handleSwapStations}
+                onToggleHighSpeed={(value) => setSearchForm(prev => ({ ...prev, wantHighSpeedTrain: value }))}
+                onDateChange={(date) => setSearchForm(prev => ({ ...prev, date }))}
+                spin={spin}
+                arrivalStations={arrivalStations}
+                closeBottomSheet={handleCloseBottomSheet}
+                resetSearchForm={resetSearchForm}
+              />
+            </BottomSheetScrollView>
+
           </View>
-        </BottomSheetView>
+        </BottomSheetScrollView>
       </BottomSheet>
 
       <BottomSheet
@@ -493,25 +521,44 @@ export default function Home() {
         snapPoints={deleteSnapPoints}
         enablePanDownToClose
         backdropComponent={renderBackdrop}
+        backgroundStyle={{
+          backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)',
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          borderTopWidth: 2,
+          borderTopColor: isDark ? 'hsl(240 3.7% 15.9%)' : 'hsl(240 5.9% 90%)',
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: -4,
+          },
+          shadowOpacity: isDark ? 0.5 : 0.1,
+          shadowRadius: 8,
+          elevation: 16,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: isDark ? 'hsl(240 5% 64.9%)' : 'hsl(240 3.8% 46.1%)',
+          width: 40,
+        }}
       >
-        <BottomSheetView style={styles.deleteSheetContent}>
-          <Text style={styles.deleteTitle}>Delete Alert</Text>
-          <Text style={styles.deleteDescription}>Are you sure you want to delete this alert?</Text>
-          <View style={styles.deleteButtons}>
+        <BottomSheetView style={[styles.deleteSheetContent, { backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)' }]}>
+          <Text className="text-xl font-bold text-foreground mb-2">Delete Alert</Text>
+          <Text className="text-base text-muted-foreground mb-6">Are you sure you want to delete this alert?</Text>
+          <View className="flex-row justify-between gap-3">
             <TouchableOpacity 
-              style={[styles.deleteButton, styles.cancelButton]} 
+              className="flex-1 bg-secondary py-3 rounded-lg items-center"
               onPress={() => {
                 deleteAlertSheetRef.current?.close();
                 setSelectedAlertId(null);
               }}
             >
-              <Text style={styles.buttonText}>Cancel</Text>
+              <Text className="text-secondary-foreground font-semibold">Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.deleteButton, styles.confirmButton]} 
+              className="flex-1 bg-destructive py-3 rounded-lg items-center"
               onPress={handleDeleteAlert}
             >
-              <Text style={[styles.buttonText, styles.confirmText]}>Delete</Text>
+              <Text className="text-destructive-foreground font-semibold">Delete</Text>
             </TouchableOpacity>
           </View>
         </BottomSheetView>
@@ -523,8 +570,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    padding: 20,
   },
   deleteSheetContent: {
     padding: 20,

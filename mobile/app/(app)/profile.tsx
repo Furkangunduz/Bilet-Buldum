@@ -1,10 +1,11 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Bell, ChevronRight, LogOut, Settings, User } from 'lucide-react-native';
+import { Bell, ChevronRight, LogOut, Palette, Settings, User } from 'lucide-react-native';
 import { useCallback, useRef, useState } from 'react';
 import { SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { NotificationsForm } from '../../components/profile/NotificationsForm';
 import { PasswordForm } from '../../components/profile/PasswordForm';
 import { PersonalInfoForm } from '../../components/profile/PersonalInfoForm';
+import { ThemeToggle } from '../../components/ThemeToggle';
 import { authApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 
@@ -13,6 +14,7 @@ interface ProfileItem {
   label: string;
   color: string;
   onPress: () => void;
+  rightContent?: () => React.ReactNode;
 }
 
 interface ProfileSectionData {
@@ -124,6 +126,13 @@ export default function Profile() {
             bottomSheetRef.current?.expand();
           }
         },
+        {
+          icon: Palette,
+          label: 'Theme',
+          color: '#F59E0B',
+          rightContent: () => <ThemeToggle />,
+          onPress: () => {}
+        }
       ]
     }
   ];
@@ -187,7 +196,9 @@ export default function Profile() {
               <item.icon size={18} color={item.color} />
             </View>
             <Text className="flex-1 ml-3 text-foreground">{item.label}</Text>
-            <ChevronRight size={20} className="text-muted-foreground" />
+            {item.rightContent ? item.rightContent() : (
+              <ChevronRight size={20} className="text-muted-foreground" />
+            )}
           </TouchableOpacity>
         ))}
       </View>

@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import { ThemeToggle } from '../../components/ThemeToggle';
 import { useAuth } from '../../lib/auth';
 
 export default function SignIn() {
@@ -28,18 +28,20 @@ export default function SignIn() {
 
   return (
     <KeyboardAvoidingView 
+      key="sign-in-screen"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background"
     >
+      <View className="absolute top-28 right-10 z-10">
+        <ThemeToggle />
+      </View>
+      
       <View className="flex-1 px-6">
         <Animated.View 
           entering={FadeInUp.delay(200).duration(1000)}
           className="flex-1 justify-center"
         >
           <View className="items-center mb-8">
-            <View className="w-20 h-20 bg-primary rounded-2xl items-center justify-center mb-4">
-              <Ionicons name="train-outline" size={40} color="white" />
-            </View>
             <Text className="text-3xl font-bold text-foreground">Bilet Buldum</Text>
             <Text className="text-base text-muted-foreground mt-1">Sign in to your account</Text>
           </View>
@@ -59,18 +61,16 @@ export default function SignIn() {
               className="gap-2"
             >
               <Text className="text-sm font-medium text-foreground ml-1">Email</Text>
-              <View className="flex-row items-center bg-card border border-input rounded-xl px-4">
-                <Ionicons name="mail-outline" size={20} color="#666" />
-                <TextInput
-                  className="flex-1 h-12 ml-4 text-base pb-2.5"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChangeText={setEmail}
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  placeholderTextColor="#666"
-                />
-              </View>
+              <TextInput
+                placeholder="Enter your email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className="bg-card text-foreground px-4 py-3 rounded-lg border border-border"
+                placeholderTextColor="#666"
+                editable={!isLoading}
+              />
             </Animated.View>
 
             <Animated.View 
@@ -78,40 +78,45 @@ export default function SignIn() {
               className="gap-2"
             >
               <Text className="text-sm font-medium text-foreground ml-1">Password</Text>
-              <View className="flex-row items-center bg-card border border-input rounded-xl px-4">
-                <Ionicons name="lock-closed-outline" size={20} color="#666" />
-                <TextInput
-                  className="flex-1 h-12 ml-4 text-base pb-2.5"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                  placeholderTextColor="#666"
-                />
-              </View>
+              <TextInput
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                className="bg-card text-foreground px-4 py-3 rounded-lg border border-border"
+                placeholderTextColor="#666"
+                editable={!isLoading}
+              />
             </Animated.View>
 
-            <Animated.View entering={FadeInDown.delay(800).duration(1000)}>
+            <Animated.View 
+              entering={FadeInDown.delay(800).duration(1000)}
+            >
               <TouchableOpacity
-                className="bg-primary h-12 rounded-xl items-center justify-center mt-4"
                 onPress={handleSignIn}
                 disabled={isLoading}
+                className={`bg-primary h-12 rounded-lg items-center justify-center mt-4 flex-row ${isLoading ? 'opacity-70' : ''}`}
               >
                 {isLoading ? (
-                  <ActivityIndicator color="white" />
+                  <>
+                    <ActivityIndicator color="hsl(var(--primary-foreground))" size="small" />
+                    <Text className="text-primary-foreground text-lg font-semibold ml-2">Signing in...</Text>
+                  </>
                 ) : (
-                  <Text className="text-primary-foreground font-semibold text-base">Sign In</Text>
+                  <Text className="text-primary-foreground text-lg font-semibold">Sign In</Text>
                 )}
               </TouchableOpacity>
             </Animated.View>
 
             <Animated.View 
               entering={FadeInDown.delay(1000).duration(1000)}
-              className="flex-row justify-center gap-1 mt-4"
+              className="flex-row justify-center mt-4"
             >
               <Text className="text-muted-foreground">Don't have an account?</Text>
-              <Link href="/(auth)/sign-up" className="text-primary font-medium">
-                Sign up
+              <Link href="/sign-up" asChild>
+                <TouchableOpacity disabled={isLoading}>
+                  <Text className={`text-primary font-semibold ml-1 ${isLoading ? 'opacity-50' : ''}`}>Sign Up</Text>
+                </TouchableOpacity>
               </Link>
             </Animated.View>
           </View>

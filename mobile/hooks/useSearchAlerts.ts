@@ -6,7 +6,7 @@ export function useSearchAlerts() {
     '/search-alerts',
     () => searchAlertsApi.getSearchAlerts().then(res => res.data.data),
     {
-      refreshInterval: 60 * 1000, // 1 minutes
+      refreshInterval: 30 * 1000, // 30 seconds
     }
   );
 
