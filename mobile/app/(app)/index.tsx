@@ -15,7 +15,7 @@ import { StatusFilter } from '~/components/home/StatusFilter';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useSearchAlerts } from '~/hooks/useSearchAlerts';
 import { CabinClass, Station, searchAlertsApi, tcddApi } from '~/lib/api';
-import { AD_UNIT_IDS } from '~/lib/constants';
+import { AD_CONFIG, AD_UNIT_IDS } from '~/lib/constants';
 
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -55,6 +55,34 @@ export default function Home() {
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [isAdLoaded, setIsAdLoaded] = useState(false);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>(['PENDING']);
+
+  const [adLoadError, setAdLoadError] = useState<string | null>(null);
+
+  const [lastAdShowTime, setLastAdShowTime] = useState<number>(0);
+  const [adShowCount, setAdShowCount] = useState<number>(0);
+
+  const shouldShowAd = useCallback(() => {
+    const now = Date.now();
+    const timeSinceLastAd = now - lastAdShowTime;
+    const randomChance = Math.random() < AD_CONFIG.SHOW_AD_PROBABILITY;
+
+    if (adShowCount >= AD_CONFIG.MAX_ADS_PER_SESSION) {
+      console.log('Max ads per session reached');
+      return false;
+    }
+
+    if (timeSinceLastAd < AD_CONFIG.MIN_TIME_BETWEEN_ADS) {
+      console.log('Not enough time passed since last ad');
+      return false;
+    }
+
+    if (!randomChance) {
+      console.log('Random chance prevented ad show');
+      return false;
+    }
+
+    return true;
+  }, [lastAdShowTime, adShowCount]);
 
   const filteredAlerts = useMemo(() => {
     return searchAlerts.filter(alert => selectedStatuses.includes(alert.status));
@@ -218,14 +246,22 @@ export default function Home() {
   }, [showStationModal, departureStations, arrivalStations, debouncedSearch]);
   
   const handleSearchPress = () => {
-    if (isAdLoaded) {
+    if (isAdLoaded && shouldShowAd()) {
       try {
-        interstitial.show();
+        console.log('Showing ad...');
+        interstitial.show().then(() => {
+          setLastAdShowTime(Date.now());
+          setAdShowCount(prev => prev + 1);
+        }).catch(error => {
+          console.error('Failed to show ad:', error);
+          bottomSheetRef.current?.expand();
+        });
       } catch (error) {
-        console.warn('Failed to show ad, opening bottom sheet directly:', error);
+        console.error('Failed to show ad:', error);
         bottomSheetRef.current?.expand();
       }
     } else {
+      console.log('Ad not shown, showing bottom sheet directly');
       bottomSheetRef.current?.expand();
     }
   };
@@ -315,21 +351,32 @@ export default function Home() {
 
   useEffect(() => {
     const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+      console.log('Ad loaded successfully');
       setIsAdLoaded(true);
+      setAdLoadError(null);
     });
 
     const unsubscribeClosed = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+      console.log('Ad closed, loading next ad');
       setIsAdLoaded(false);
       interstitial.load();
       bottomSheetRef.current?.expand();
     });
 
     const unsubscribeError = interstitial.addAdEventListener(AdEventType.ERROR, (error) => {
-      console.warn('Ad failed to load:', error);
+      console.error('Ad failed to load:', error);
       setIsAdLoaded(false);
+      setAdLoadError(error.message);
+      bottomSheetRef.current?.expand();
     });
 
-    interstitial.load();
+    try {
+      console.log('Loading initial ad...');
+      interstitial.load()
+    } catch (error: any) {
+      console.error('Failed to load initial ad:', error);
+      setAdLoadError(error.message);
+    }
 
     return () => {
       unsubscribeLoaded();
@@ -431,6 +478,11 @@ export default function Home() {
   const setSwipeableRef = (alertId: string, ref: Swipeable | null) => {
     swipeableRefs[alertId] = ref;
   };
+
+  useEffect(() => {
+    setAdShowCount(0);
+    setLastAdShowTime(0);
+  }, []);
 
   return (
     <SafeAreaView className='flex-1 bg-background'>

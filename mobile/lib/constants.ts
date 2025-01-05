@@ -12,6 +12,13 @@ export const AD_UNIT_IDS = {
   }
 };
 
+// Ad frequency control settings
+export const AD_CONFIG = {
+  MIN_TIME_BETWEEN_ADS: 3 * 60 * 1000, // 3 minutes in milliseconds
+  MAX_ADS_PER_SESSION: 5,
+  SHOW_AD_PROBABILITY: 0.3, // 30% chance to show ad
+} as const;
+
 export const ONBOARDING_STEPS = [
   {
     id: 1,

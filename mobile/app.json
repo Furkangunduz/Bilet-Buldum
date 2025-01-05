@@ -17,7 +17,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.furkan-gunduz.biletbuldum",
       "config": {
-        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~1458002511"
+        "googleMobileAdsAppId": "ca-app-pub-7425995753039606~5349762157"
       },
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you and improve your ticket search experience.",
