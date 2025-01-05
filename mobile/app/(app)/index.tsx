@@ -605,7 +605,12 @@ export default function Home() {
               </TouchableOpacity>
             </View>
             
-            <BottomSheetScrollView className="flex-1 w-full">
+            <BottomSheetScrollView className="flex-1 w-full" 
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingBottom: 15,
+              }}
+            >
               <SearchForm
                 searchForm={searchForm}
                 onStationSelect={handleStationSelect}
