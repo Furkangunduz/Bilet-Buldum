@@ -12,7 +12,6 @@ dotenv.config();
 async function startServer() {
   try {
     connectDatabase().then(() => {
-      console.log('Database connected');
       const app = express();
 
       app.use(morgan('dev')); 
@@ -43,11 +42,11 @@ async function startServer() {
 
   } catch (error) {
     console.error('Failed to start server:', error);
+    searchAlertsCron.stop();
     process.exit(1);
   }
 }
 
-// Handle graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received. Closing crawler and shutting down...');
   searchAlertsCron.stop();
