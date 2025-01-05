@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import * as Haptics from 'expo-haptics';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
+import { ActivityIndicator, Alert, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 import { AdEventType, InterstitialAd } from 'react-native-google-mobile-ads';
 import { AlertItem } from '~/components/home/AlertItem';
 import { DateTimePickers } from '~/components/home/DateTimePickers';
@@ -349,6 +350,64 @@ export default function Home() {
     startSpinning();
   }, []);
 
+  const handleBulkDecline = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      Alert.alert(
+        'Decline All Alerts',
+        'Are you sure you want to decline all processing alerts? This action cannot be undone.',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+          },
+          {
+            text: 'Decline All',
+            style: 'destructive',
+            onPress: async () => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+              await searchAlertsApi.bulkDeclineSearchAlerts('PROCESSING');
+              LayoutAnimation.configureNext(CustomLayoutAnimation);
+              await mutateAlerts();
+            },
+          },
+        ],
+      );
+    } catch (error) {
+      console.error('Error declining alerts:', error);
+    }
+  };
+
+  const handleBulkDelete = async (status: string) => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      Alert.alert(
+        'Delete All Alerts',
+        `Are you sure you want to delete all ${status.toLowerCase()} alerts? This action cannot be undone.`,
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+            onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+          },
+          {
+            text: 'Delete All',
+            style: 'destructive',
+            onPress: async () => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+              await searchAlertsApi.bulkDeleteSearchAlerts(status);
+              LayoutAnimation.configureNext(CustomLayoutAnimation);
+              await mutateAlerts();
+            },
+          },
+        ],
+      );
+    } catch (error) {
+      console.error('Error deleting alerts:', error);
+    }
+  };
+
   return (
     <SafeAreaView className='flex-1 bg-background'>
       <View className="flex-1 bg-background">
@@ -370,15 +429,7 @@ export default function Home() {
                 <View className="flex-row gap-2">
                   {selectedStatuses.includes('PROCESSING') && filteredAlerts.length > 0 && (
                     <TouchableOpacity
-                      onPress={async () => {
-                        try {
-                          await searchAlertsApi.bulkDeclineSearchAlerts('PROCESSING');
-                          LayoutAnimation.configureNext(CustomLayoutAnimation);
-                          await mutateAlerts();
-                        } catch (error) {
-                          console.error('Error declining alerts:', error);
-                        }
-                      }}
+                      onPress={handleBulkDecline}
                       className="bg-muted/80 px-3 py-1.5 rounded-lg flex-row items-center gap-1.5"
                     >
                       <Ionicons name="close-circle-outline" size={16} color={isDark ? '#fff' : '#000'} />
@@ -387,15 +438,7 @@ export default function Home() {
                   )}
                   {(selectedStatuses.includes('COMPLETED') || selectedStatuses.includes('FAILED')) && filteredAlerts.length > 0 && (
                     <TouchableOpacity
-                      onPress={async () => {
-                        try {
-                          await searchAlertsApi.bulkDeleteSearchAlerts(selectedStatuses[0]);
-                          LayoutAnimation.configureNext(CustomLayoutAnimation);
-                          await mutateAlerts();
-                        } catch (error) {
-                          console.error('Error deleting alerts:', error);
-                        }
-                      }}
+                      onPress={() => handleBulkDelete(selectedStatuses[0])}
                       className="bg-destructive/90 px-3 py-1.5 rounded-lg flex-row items-center gap-1.5 shadow-sm"
                     >
                       <Ionicons name="trash-outline" size={16} color="#fff" />
