@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import { AdEventType, InterstitialAd } from 'react-native-google-mobile-ads';
 import { AlertItem } from '~/components/home/AlertItem';
 import { DateTimePickers } from '~/components/home/DateTimePickers';
@@ -48,6 +49,8 @@ const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
 export default function Home() {
   const { searchAlerts, isLoading: isLoadingAlerts, mutate: mutateAlerts } = useSearchAlerts();
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const currentSwipeableRef = useRef<string | null>(null);
+  const swipeableRefs = useRef<{ [key: string]: Swipeable | null }>({}).current;
   const snapPoints = useMemo(() => ['85%'], []);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [isAdLoaded, setIsAdLoaded] = useState(false);
@@ -408,6 +411,27 @@ export default function Home() {
     }
   };
 
+  const handleSwipeStart = (alertId: string) => {
+    if (currentSwipeableRef.current && currentSwipeableRef.current !== alertId) {
+      // Close the previously opened swipeable
+      const prevSwipeable = swipeableRefs[currentSwipeableRef.current];
+      if (prevSwipeable) {
+        prevSwipeable.close();
+      }
+    }
+    currentSwipeableRef.current = alertId;
+  };
+
+  const handleSwipeClose = (alertId: string) => {
+    if (currentSwipeableRef.current === alertId) {
+      currentSwipeableRef.current = null;
+    }
+  };
+
+  const setSwipeableRef = (alertId: string, ref: Swipeable | null) => {
+    swipeableRefs[alertId] = ref;
+  };
+
   return (
     <SafeAreaView className='flex-1 bg-background'>
       <View className="flex-1 bg-background">
@@ -457,6 +481,9 @@ export default function Home() {
                       onDecline={() => handleDeclineAlert(alert._id)}
                       spinAnim={spinAnim}
                       isDark={isDark}
+                      onSwipeStart={() => handleSwipeStart(alert._id)}
+                      onSwipeClose={() => handleSwipeClose(alert._id)}
+                      setSwipeableRef={(ref) => setSwipeableRef(alert._id, ref)}
                     />
                   ))
                 ) : (

@@ -11,12 +11,29 @@ interface AlertItemProps {
   onDecline: () => Promise<void>;
   spinAnim: Animated.Value;
   isDark: boolean;
+  onSwipeStart: () => void;
+  onSwipeClose: () => void;
+  setSwipeableRef: (ref: Swipeable | null) => void;
 }
 
-export const AlertItem = React.memo(({ alert, onDelete, onDecline, spinAnim, isDark }: AlertItemProps) => {
-  const swipeableRef = useRef<Swipeable>(null);
+export const AlertItem = React.memo(({ 
+  alert, 
+  onDelete, 
+  onDecline, 
+  spinAnim, 
+  isDark, 
+  onSwipeStart, 
+  onSwipeClose,
+  setSwipeableRef 
+}: AlertItemProps) => {
+  const swipeableRef = useRef<Swipeable | null>(null);
   const translateY = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(1)).current;
+
+  const handleRef = useCallback((ref: Swipeable | null) => {
+    swipeableRef.current = ref;
+    setSwipeableRef(ref);
+  }, [setSwipeableRef]);
 
   const animate = useCallback(() => {
     return new Promise<void>((resolve) => {
@@ -55,6 +72,7 @@ export const AlertItem = React.memo(({ alert, onDelete, onDecline, spinAnim, isD
 
   const handleAction = async () => {
     swipeableRef.current?.close();
+    onSwipeClose();
     await animate();
     if (alert.status === 'PENDING') {
       await onDecline();
@@ -66,9 +84,15 @@ export const AlertItem = React.memo(({ alert, onDelete, onDecline, spinAnim, isD
   const renderRightActions = () => (
     <TouchableOpacity
       onPress={handleAction}
-      className={`w-[90px] justify-center items-center ${
+      className={`w-[95px] justify-center items-center ${
         alert.status === 'PENDING' ? 'bg-yellow-600' : 'bg-destructive'
       }`}
+      style={
+        {
+          borderTopRightRadius: 5,
+          borderBottomRightRadius: 5,
+        }
+      }
       activeOpacity={0.8}
     >
       <View className="items-center">
@@ -93,9 +117,11 @@ export const AlertItem = React.memo(({ alert, onDelete, onDecline, spinAnim, isD
       }}
     >
       <Swipeable
-        ref={swipeableRef}
+        ref={handleRef}
         renderRightActions={renderRightActions}
         overshootRight={false}
+        onSwipeableWillOpen={onSwipeStart}
+        onSwipeableClose={onSwipeClose}
       >
         <View className="bg-card p-4 rounded-lg border border-border">
           <View className="flex-row items-center justify-between mb-2">
