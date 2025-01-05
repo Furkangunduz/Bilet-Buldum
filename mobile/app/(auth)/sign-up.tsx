@@ -10,10 +10,10 @@ import { ThemeToggle } from '../../components/ThemeToggle';
 import { useAuth } from '../../lib/auth';
 
 export default function SignUp() {
-  const [name, setName] = useState('kral');
-  const [lastName, setLastName] = useState('kral');
-  const [email, setEmail] = useState('kral@kral.com');
-  const [password, setPassword] = useState('123123');
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signUp } = useAuth();

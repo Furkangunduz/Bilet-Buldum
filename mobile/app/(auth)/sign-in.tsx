@@ -7,8 +7,8 @@ import { ThemeToggle } from '../../components/ThemeToggle';
 import { useAuth } from '../../lib/auth';
 
 export default function SignIn() {
-  const [email, setEmail] = useState('kral@kral.com');
-  const [password, setPassword] = useState('123123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
