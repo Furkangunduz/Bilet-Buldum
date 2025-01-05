@@ -116,6 +116,16 @@ export default function SignIn() {
               entering={FadeInDown.delay(1000).duration(1000)}
               className="flex-row justify-center mt-4"
             >
+              <Link href="/forgot-password" asChild>
+              <TouchableOpacity>
+                <Text className="text-center text-primary">Forgot Password?</Text>
+              </TouchableOpacity>
+            </Link>
+            </Animated.View>
+            <Animated.View 
+              entering={FadeInDown.delay(1000).duration(1000)}
+              className="flex-row justify-center mt-4"
+            >
               <Text className="text-muted-foreground">Don't have an account?</Text>
               <Link href="/sign-up" asChild>
                 <TouchableOpacity disabled={isLoading}>

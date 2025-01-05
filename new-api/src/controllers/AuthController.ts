@@ -18,6 +18,8 @@ class AuthController {
     this.testNotification = this.testNotification.bind(this);
     this.completeOnboarding = this.completeOnboarding.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
+    this.forgotPassword = this.forgotPassword.bind(this);
+    this.resetPassword = this.resetPassword.bind(this);
   }
 
   async register(req: Request, res: Response) {
@@ -329,6 +331,59 @@ class AuthController {
     } catch (error) {
       console.error('Error deleting account:', error);
       res.status(400).json({ error: 'Error deleting account' });
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+      const resetTokenExpiry = new Date(Date.now() + 3600000); 
+
+      user.resetToken = resetToken;
+      user.resetTokenExpiry = resetTokenExpiry;
+      await user.save();
+
+      // TODO: Send email with reset code
+      // For now, just return the code in response (in production, this should be sent via email)
+      res.json({ 
+        message: 'Password reset code has been sent to your email',
+        resetToken // Remove this in production
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const { resetToken, newPassword } = req.body;
+
+      const user = await User.findOne({
+        resetToken,
+        resetTokenExpiry: { $gt: Date.now() }
+      });
+
+      if (!user) {
+        return res.status(400).json({ error: 'Invalid or expired reset token' });
+      }
+
+      user.password = newPassword;
+      user.resetToken = undefined;
+      user.resetTokenExpiry = undefined;
+      await user.save();
+
+      res.json({ message: 'Password has been reset successfully' });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   }
 }

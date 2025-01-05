@@ -10,6 +10,8 @@ export interface IUser extends Document {
   hasCompletedOnboarding: boolean;
   onboardingCompletedAt?: Date;
   deletedAt?: Date;
+  resetToken?: string;
+  resetTokenExpiry?: Date;
   notificationPreferences: {
     email: boolean;
     push: boolean;
@@ -60,6 +62,14 @@ const userSchema = new Schema<IUser>(
     deletedAt: {
       type: Date,
       default: null,
+    },
+    resetToken: {
+      type: String,
+      default: undefined,
+    },
+    resetTokenExpiry: {
+      type: Date,
+      default: undefined,
     },
     notificationPreferences: {
       email: {

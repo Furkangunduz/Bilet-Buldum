@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
+router.post('/forgot-password', AuthController.forgotPassword);
+router.post('/reset-password', AuthController.resetPassword);
 router.get('/profile', authenticateToken, AuthController.getProfile);
 router.put('/profile', authenticateToken, AuthController.updateProfile);
 router.put('/profile/notifications', authenticateToken, AuthController.updateNotificationPreferences);
