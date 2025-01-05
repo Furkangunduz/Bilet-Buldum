@@ -106,7 +106,6 @@ class CronJobService {
           continue;
         }
 
-
         if(!currentAlert.departureTimeRange) {
           console.log(`[SearchAlerts] Alert ${alert._id} skipped - no departure time range`);
 
@@ -202,15 +201,20 @@ class CronJobService {
             };
 
             const availableSeats = train.cabinClassAvailabilities[0]?.availabilityCount || 0;
+            const cabinClassName = train.cabinClassAvailabilities[0]?.cabinClass || 'Unknown';
+            const duration = Math.round((arrivalTime.getTime() - departureTime.getTime()) / (1000 * 60)); // Duration in minutes
 
             await NotificationService.sendPushNotification(
               alert.userId,
               `🎫 ${availableSeats} seats found: ${fromStationNameCapitalized} → ${toStationNameCapitalized}`,
               `✨ Great news! We found tickets for your journey!\n\n` +
               `🚄 Train: ${train.trainNumber}\n\n` +
-              `🎫 Available Seats: ${availableSeats}\n\n` +
+              `🎫 Available Seats: ${availableSeats}\n` +
+              `💺 Class: ${cabinClassName}\n\n` +
               `🚉 Route: ${fromStationNameCapitalized} → ${toStationNameCapitalized}\n\n` +
-              `🕒 Time: ${formatTime(departureTime)} → ${formatTime(arrivalTime)}\n\n` +
+              `🕒 Departure: ${formatTime(departureTime)}\n` +
+              `🕒 Arrival: ${formatTime(arrivalTime)}\n` +
+              `⏱️ Duration: ${Math.floor(duration / 60)}h ${duration % 60}m\n\n` +
               `📅 Date: ${this.formatDate(alert.date)}`,
               {
                 type: 'SEATS_FOUND',
@@ -221,13 +225,15 @@ class CronJobService {
                 trainNumber: train.trainNumber,
                 departureTime: train.departureTime,
                 arrivalTime: train.arrivalTime,
-                availableSeats
+                availableSeats,
+                cabinClassName,
+                duration
               }
             );
             await SearchAlert.findByIdAndUpdate(alert._id, {
               isActive: false,
               status: 'COMPLETED',
-              statusReason: 'Seats found',
+              statusReason: `🎫 ${availableSeats} seats found: ${fromStationNameCapitalized} → ${toStationNameCapitalized} at time ${formatTime(departureTime)}`,
             });
             
           }
