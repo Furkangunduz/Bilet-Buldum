@@ -187,15 +187,9 @@ class CronJobService {
 
 
           if(foundTrains.length > 0) {
-            const firstTrain = foundTrains[0];
             const fromStationName = this.getStationName(alert.fromStationId);
             const toStationName = this.getStationName(alert.toStationId);
-            const trainDateTime = firstTrain.departureTime
-            const trainTimeHumanReadable = `${trainDateTime.split('T')[1].split(':')[0]}:${trainDateTime.split('T')[1].split(':')[1]}`
-
             const train = foundTrains[0];
-            console.log('--------------------------------')
-            console.log(train)
 
             const departureTime = new Date(train.departureTime);
             const arrivalTime = new Date(train.arrivalTime);
