@@ -4,7 +4,6 @@ import { z } from 'zod';
 dotenv.config({ path: '.env' });
 
 const envSchema = z.object({
-  ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().transform(Number).pipe(z.number().positive()),
   MONGODB_URI: z.string().url(),
   MONGODB_LOCAL_URI: z.string().url(),
