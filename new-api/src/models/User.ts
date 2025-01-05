@@ -45,9 +45,9 @@ const userSchema = new Schema<IUser>(
     },
     expoPushToken: {
       type: String,
-      default: null,
       unique: true,
       sparse: true,
+      default: undefined
     },
     hasCompletedOnboarding: {
       type: Boolean,

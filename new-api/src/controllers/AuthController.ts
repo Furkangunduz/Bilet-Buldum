@@ -14,6 +14,7 @@ class AuthController {
     this.updateNotificationPreferences = this.updateNotificationPreferences.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.updatePushToken = this.updatePushToken.bind(this);
+    this.removePushToken = this.removePushToken.bind(this);
     this.testNotification = this.testNotification.bind(this);
     this.completeOnboarding = this.completeOnboarding.bind(this);
     this.deleteAccount = this.deleteAccount.bind(this);
@@ -216,6 +217,31 @@ class AuthController {
     } catch (error) {
       console.error('Error updating push token:', error);
       res.status(400).json({ error: 'Error updating push token' });
+    }
+  }
+
+  async removePushToken(req: Request, res: Response) {
+    try {
+      const { pushToken } = req.body;
+
+      if (!pushToken) {
+        return res.status(400).json({ error: 'Push token is required' });
+      }
+
+      // Find and update user with matching push token
+      const user = await User.findOneAndUpdate(
+        { expoPushToken: pushToken },
+        { $unset: { expoPushToken: 1 } }
+      );
+
+      if (!user) {
+        return res.status(404).json({ error: 'No user found with this push token' });
+      }
+
+      res.json({ message: 'Push token removed successfully' });
+    } catch (error) {
+      console.error('Error removing push token:', error);
+      res.status(400).json({ error: 'Error removing push token' });
     }
   }
 

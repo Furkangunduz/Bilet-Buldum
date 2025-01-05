@@ -171,7 +171,6 @@ export const authApi = {
 
   register: (email: string, password: string, name: string, lastName: string) => {
     try {
-      console.log('🔍 Attempting registration for:', email);
       return api
         .post<LoginResponse>('/auth/register', { email, password, name, lastName })
         .then((response) => {
@@ -437,8 +436,24 @@ export const crawlerApi = {
 };
 
 export const updatePushToken = async (pushToken: string) => {
-  const response = await api.put('/auth/push-token', { pushToken });
-  return response.data;
+  try {
+    if (pushToken === '') {
+      const lastToken = await AsyncStorage.getItem('lastPushToken');
+      if (!lastToken) {
+        // If no token was stored, just return successfully
+        return Promise.resolve({ data: { message: 'No token to remove' } });
+      }
+      // Use DELETE endpoint for removing token
+      return api.delete('/auth/push-token', { data: { pushToken: lastToken } });
+    }
+
+    // Store the token for later removal
+    await AsyncStorage.setItem('lastPushToken', pushToken);
+    return api.put('/auth/push-token', { pushToken });
+  } catch (error) {
+    console.error('Error updating push token:', error);
+    throw error;
+  }
 };
 
 api.updatePushToken = updatePushToken;

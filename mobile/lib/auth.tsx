@@ -124,10 +124,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      router.replace('/(auth)/sign-in');
-      await AsyncStorage.removeItem('token');
+      // First update push token while we still have auth token
       await updatePushToken('');
+      // Then remove the token and reset user state
+      await AsyncStorage.removeItem('token');
       setUser(null);
+      // Finally redirect to sign in
+      router.replace('/(auth)/sign-in');
     } catch (error) {
       console.error('Error during logout:', error);
       throw error;

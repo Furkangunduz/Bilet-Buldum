@@ -11,6 +11,7 @@ router.put('/profile', authenticateToken, AuthController.updateProfile);
 router.put('/profile/notifications', authenticateToken, AuthController.updateNotificationPreferences);
 router.put('/profile/password', authenticateToken, AuthController.updatePassword);
 router.put('/push-token', authenticateToken, AuthController.updatePushToken);
+router.delete('/push-token', AuthController.removePushToken);
 router.post('/test-notification', AuthController.testNotification);
 router.post('/complete-onboarding', authenticateToken, AuthController.completeOnboarding);
 router.delete('/profile', authenticateToken, AuthController.deleteAccount);
