@@ -4,7 +4,7 @@
     "slug": "bilet-buldum",
     "version": "1.0.8",
     "orientation": "portrait",
-    "icon": "./assets/biletbuldum-icon.png",
+    "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -29,7 +29,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/biletbuldum-icon.png",
+        "foregroundImage": "./assets/images.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.furkan_gunduz.biletbuldum",
@@ -47,7 +47,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/biletbuldum-icon.png",
+          "icon": "./assets/images.png",
           "color": "#ffffff",
           "mode": "production"
         }
@@ -58,7 +58,7 @@
       "typedRoutes": true
     },
     "notification": {
-      "icon": "./assets/biletbuldum-icon.png",
+      "icon": "./assets/images.png",
       "color": "#ffffff",
       "androidMode": "default",
       "androidCollapsedTitle": "New Notification",
