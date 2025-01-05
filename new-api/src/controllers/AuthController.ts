@@ -53,7 +53,7 @@ class AuthController {
         token,
       });
     } catch (error) {
-      res.status(400).json({ error: 'Error creating user' });
+      res.status(400).json({ error: 'Error creating user' + error });
     }
   }
 

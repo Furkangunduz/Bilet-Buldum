@@ -3,7 +3,7 @@ import CronJobService from '../services/CronJobService';
 
 // Run every 10 seconds
 const schedule = '*/10 * * * * *';
-
+//TODO DYNAMİCALLY SCHEDULE
 let isRunning = false;
 
 const searchAlertsCron = cron.schedule(schedule, async () => {
