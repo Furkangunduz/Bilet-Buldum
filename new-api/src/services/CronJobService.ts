@@ -141,8 +141,8 @@ class CronJobService {
 
           await NotificationService.sendPushNotification(
             alert.userId,
-            'Search Alert Expired',
-            `Your search alert for ${fromStationName} to ${toStationName} on ${this.formatDate(alert.date)} has expired.`
+            `❌ ${fromStationName} → ${toStationName} Alert Expired`,
+            `❌ Your search alert has expired\n\n🚉 Route: ${fromStationName} → ${toStationName}\n📅 Date: ${this.formatDate(alert.date)}`
           );
           console.log(`[SearchAlerts] Alert ${alert._id} expired - past date`);
           continue;
@@ -201,8 +201,13 @@ class CronJobService {
 
             await NotificationService.sendPushNotification(
               alert.userId,
-              'Seats Available!',
-              `We found ${availableSeats} seats on train ${train.trainNumber} from ${fromStationName} to ${toStationName}.\n\nDeparture: ${formatTime(departureTime)}\nArrival: ${formatTime(arrivalTime)}\n\nDate: ${this.formatDate(alert.date)}`,
+              `🎫 ${availableSeats} seats found: ${fromStationName} → ${toStationName}`,
+              `✨ Great news! We found tickets for your journey!\n\n` +
+              `🚄 Train: ${train.trainNumber}\n` +
+              `🎫 Available Seats: ${availableSeats}\n\n` +
+              `🚉 Route: ${fromStationName} → ${toStationName}\n` +
+              `🕒 Time: ${formatTime(departureTime)} → ${formatTime(arrivalTime)}\n` +
+              `📅 Date: ${this.formatDate(alert.date)}`,
               {
                 type: 'SEATS_FOUND',
                 fromStationId: alert.fromStationId,
