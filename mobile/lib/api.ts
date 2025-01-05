@@ -467,5 +467,17 @@ export const searchAlertsApi = {
 
   deleteSearchAlert: (alertId: string) => {
     return api.delete<ApiResponse<SearchAlert>>(`/search-alerts/${alertId}`);
+  },
+
+  bulkDeclineSearchAlerts: (status: string) => {
+    return api.post<ApiResponse<{ modifiedCount: number }>>('/search-alerts/bulk/decline', null, {
+      params: { status }
+    });
+  },
+
+  bulkDeleteSearchAlerts: (status: string) => {
+    return api.delete<ApiResponse<{ modifiedCount: number }>>('/search-alerts/bulk', {
+      params: { status }
+    });
   }
 };

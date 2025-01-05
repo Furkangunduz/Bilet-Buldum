@@ -70,14 +70,19 @@ export class TCDDController extends BaseController {
 
   private readonly AVAILABLE_CABIN_CLASSES = [
     {
-      id: 1,
+      id: 2,
       code: 'Y1',
       name: 'EKONOMİ',
     },
     {
-      id: 2,
+      id: 1,
       code: 'C',
       name: 'BUSİNESS',
+    },
+    {
+      id: 3,
+      code: 'B',
+      name: 'YATAKLI',
     },
   ];
 
@@ -133,9 +138,12 @@ export class TCDDController extends BaseController {
 
   private validateSearchDate(dateStr: string): { isValid: boolean; error?: string } {
     const searchDate = new Date(dateStr.replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
+    searchDate.setDate(searchDate.getDate() + 1);
+    
     const now = new Date();
     const tenDaysFromNow = new Date();
     tenDaysFromNow.setDate(now.getDate() + 10);
+
 
     if (searchDate.toDateString() === now.toDateString()) {
       const currentHour = now.getHours();
@@ -408,76 +416,61 @@ export class TCDDController extends BaseController {
       const trainLegs = data.trainLegs;
       const trainAvailabilities = trainLegs.flatMap((leg) => leg.trainAvailabilities);
 
-      const trains = trainAvailabilities.flatMap((trainAvailability) => {
-        return trainAvailability.trains.map((train) => {
-          const firstSegment = train.segments[0];
-          const lastSegment = train.segments[train.segments.length - 1];
+      let trains = trainAvailabilities
+        .filter(ta => ta.trains.length > 0)
+        .flatMap((trainAvailability) => 
+          trainAvailability.trains
+            .filter(train => train.cabinClassAvailabilities.length > 0)
+            .filter(train => train.cabinClassAvailabilities.some(cabin => cabin.cabinClass.id === parseInt(preferredCabinClass)))
+            .map((train) => {
+              const firstSegment = train.segments[0];
+              const lastSegment = train.segments[train.segments.length - 1];
 
-          return {
-            trainNumber: train.trainNumber,
-            departureStationName: firstSegment.segment.departureStation.name,
-            arrivalStationName: lastSegment.segment.arrivalStation.name,
-            departureTime: this.formatTimestamp(firstSegment.departureTime),
-            arrivalTime: this.formatTimestamp(lastSegment.arrivalTime),
-            cabinClassAvailabilities: train.cabinClassAvailabilities.map((cabin) => ({
-              cabinClass: cabin.cabinClass,
-              availabilityCount: cabin.availabilityCount,
-            })),
-            isHighSpeed: this.isHighSpeedTrain(train),
-          };
-        });
-      });
+              return {
+                trainNumber: train.trainNumber,
+                departureStationName: firstSegment.segment.departureStation.name,
+                arrivalStationName: lastSegment.segment.arrivalStation.name,
+                departureTime: this.formatTimestamp(firstSegment.departureTime),
+                arrivalTime: this.formatTimestamp(lastSegment.arrivalTime),
+                cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin => cabin.cabinClass.id === parseInt(preferredCabinClass))   ,
+                isHighSpeed: this.isHighSpeedTrain(train),
+              };
+            })
+        );
+     
 
-      let filteredTrains = trains;
-      console.log('----------[[FILTERS]]----------');
-      console.log('Preferred Cabin Class:', preferredCabinClass);
-
-      if (preferredCabinClass) {
-        filteredTrains = filteredTrains
-          .filter((train) => {
-            return train.cabinClassAvailabilities.some((cabin) => {
-              return cabin.cabinClass.id === parseInt(preferredCabinClass) && cabin.availabilityCount >= 1;
-            });
-          })
-          .map((train) => ({
-            ...train,
-            cabinClassAvailabilities: train.cabinClassAvailabilities.filter((cabin) => cabin.cabinClass.name === preferredCabinClass),
-          }));
+      if (trains.length > 0 && wantHighSpeedTrain !== undefined) {
+        trains = trains.filter((train) => train.isHighSpeed === wantHighSpeedTrain);
       }
 
-      if (wantHighSpeedTrain !== undefined) {
-        filteredTrains = filteredTrains.filter((train) => train.isHighSpeed === wantHighSpeedTrain);
-      }
-
-      if (departureTimeRange) {
-        console.log('---------- Departure Time Range ----------');
-        console.log('Departure time range:', departureTimeRange);
+      if (trains.length > 0 && departureTimeRange) {
         const [startHour, startMinute] = departureTimeRange.start.split(':').map(Number);
         const [endHour, endMinute] = departureTimeRange.end.split(':').map(Number);
         const startMinutes = startHour * 60 + startMinute;
         const endMinutes = endHour * 60 + endMinute;
 
-        filteredTrains = filteredTrains.filter((train) => {
+        trains = trains.filter((train) => {
           const departureDate = new Date(train.departureTime);
-
           const localHours = departureDate.getHours();
           const localMinutes = departureDate.getMinutes();
           const trainMinutes = localHours * 60 + localMinutes;
-
-          console.log(`Train: ${train.trainNumber}`);
-          console.log(`Departure Time (Local): ${localHours}:${localMinutes}`);
-          console.log(`Calculated Train Minutes: ${trainMinutes}`);
-          console.log(`Start Minutes: ${startMinutes}, End Minutes: ${endMinutes}`);
-          console.log('---------[[RESULT]]----------');
-          console.log(trainMinutes >= startMinutes && trainMinutes <= endMinutes);
 
           return trainMinutes >= startMinutes && trainMinutes <= endMinutes;
         });
       }
 
+
+      if(trains.length === 0) {
+        return {
+          success: false,
+          data: [],
+          error: 'No trains found',
+        };
+      }
+
       return {
         success: true,
-        data: filteredTrains,
+        data: trains,
       };
     } catch (error: any) {
       if (axios.isAxiosError(error)) {

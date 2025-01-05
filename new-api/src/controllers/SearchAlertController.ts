@@ -9,6 +9,8 @@ class SearchAlertController {
     this.declineSearchAlert = this.declineSearchAlert.bind(this);
     this.deleteSearchAlert = this.deleteSearchAlert.bind(this);
     this.getUserSearchAlerts = this.getUserSearchAlerts.bind(this);
+    this.bulkDeclineSearchAlerts = this.bulkDeclineSearchAlerts.bind(this);
+    this.bulkDeleteSearchAlerts = this.bulkDeleteSearchAlerts.bind(this);
   }
 
   async createSearchAlert(req: Request, res: Response) {
@@ -26,11 +28,10 @@ class SearchAlertController {
 
       if (activeAlerts.length >= 2) {
         return res.status(400).json({ 
-          message: 'You can only have 2 active alerts at a time. Please delete an existing alert to create a new one.' 
+          message: 'You can only have 2 active alerts at a time. Please decline an existing alert to create a new one.' 
         });
       }
 
-      // Check if user already has an active alert for the same route
       const existingAlert = await SearchAlert.findOne({
         userId,
         fromStationId: req.body.fromStationId,
@@ -64,7 +65,7 @@ class SearchAlertController {
         if (fromStationName !== req.body.fromStationId && toStationName !== req.body.toStationId) break;
       }
 
-      const cabinClassName = req.body.preferredCabinClass === '1' ? 'EKONOMİ' : 'BUSINESS';
+      const cabinClassName = req.body.preferredCabinClass 
 
       const searchAlert = await SearchAlertService.createSearchAlert(userId, {
         fromStationId: req.body.fromStationId,
@@ -76,7 +77,7 @@ class SearchAlertController {
         cabinClassName,
         departureTimeRange: req.body.departureTimeRange
       });
-
+     
       res.status(201).json({
         message: 'Search alert created successfully',
         data: searchAlert
@@ -96,7 +97,6 @@ class SearchAlertController {
 
       const { alertId } = req.params;
       
-      // Validate ObjectId
       if (!mongoose.Types.ObjectId.isValid(alertId)) {
         return res.status(400).json({ message: 'Invalid alert ID format' });
       }
@@ -216,6 +216,79 @@ class SearchAlertController {
       });
     } catch (error) {
       console.error('Error retrieving search alerts:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async bulkDeclineSearchAlerts(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const { status } = req.query;
+      if (status !== 'PROCESSING') {
+        return res.status(400).json({ message: 'Can only bulk decline processing alerts' });
+      }
+
+      const result = await SearchAlert.updateMany(
+        { 
+          userId,
+          status: 'PROCESSING',
+          deletedAt: null,
+          isActive: true
+        },
+        {
+          $set: {
+            status: 'FAILED',
+            isActive: false,
+            statusReason: 'User declined the alert (bulk action)'
+          }
+        }
+      );
+
+      res.json({ 
+        message: 'Search alerts declined successfully',
+        data: { modifiedCount: result.modifiedCount }
+      });
+    } catch (error) {
+      console.error('Error declining search alerts:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
+
+  async bulkDeleteSearchAlerts(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const { status } = req.query;
+      if (!status || !['COMPLETED', 'FAILED'].includes(status as string)) {
+        return res.status(400).json({ message: 'Can only bulk delete completed or failed alerts' });
+      }
+
+      const result = await SearchAlert.updateMany(
+        { 
+          userId,
+          status,
+          deletedAt: null
+        },
+        {
+          $set: {
+            deletedAt: new Date()
+          }
+        }
+      );
+
+      res.json({ 
+        message: 'Search alerts deleted successfully',
+        data: { modifiedCount: result.modifiedCount }
+      });
+    } catch (error) {
+      console.error('Error deleting search alerts:', error);
       res.status(500).json({ message: 'Internal server error' });
     }
   }

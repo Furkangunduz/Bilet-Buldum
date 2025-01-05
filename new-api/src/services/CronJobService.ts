@@ -2,6 +2,7 @@ import { groupBy } from 'lodash';
 import { Types } from 'mongoose';
 import { TCDDController } from '../controllers/TCDDController';
 import SearchAlert from '../models/SearchAlert';
+import { CabinClassAvailability } from '../types/tcdd.types';
 import NotificationService from './NotificationService';
 
 interface SearchAlertDocument {
@@ -89,39 +90,43 @@ class CronJobService {
   }
 
   private async processSearchGroup(alerts: SearchAlertDocument[]) {
-    const firstAlert = alerts[0];
-    if (!firstAlert.departureTimeRange) return;
-
-    console.log(
-      `[SearchAlerts] Processing ${alerts.length} alerts for ${firstAlert.fromStationId} -> ${firstAlert.toStationId} (${firstAlert.date})`
-    );
-
+    if (!alerts.length) return;
     try {
-      const dateParts = firstAlert.date.split(' ')[0].split('-');
-      const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]} 00:00:00`;
-
-      const searchPayload = {
-        fromStationId: firstAlert.fromStationId,
-        toStationId: firstAlert.toStationId,
-        date: formattedDate,
-        passengerCount: 1,
-        departureTimeRange: firstAlert.departureTimeRange,
-        preferredCabinClass: firstAlert.cabinClass,
-        wantHighSpeedTrain: true,
-      };
-
-      const searchResult = await this.tcddController.searchTrainsDirectly(searchPayload);
-
       for (const alert of alerts) {
-        // Skip if alert has been deleted or declined
         const currentAlert = await SearchAlert.findById(alert._id);
-        if (!currentAlert || currentAlert.deletedAt || currentAlert.status !== 'PENDING') {
-          console.log(`[SearchAlerts] Alert ${alert._id} skipped - deleted or not pending`);
+       
+        if (!currentAlert) {
+          console.log(`[SearchAlerts] Alert ${alert._id} skipped - invalid data`);
+          await SearchAlert.findByIdAndUpdate(alert._id, {
+            isActive: false,
+            status: 'FAILED',
+            lastChecked: new Date(),
+            statusReason: 'Invalid data provided',
+          });
           continue;
         }
 
+
+        if(!currentAlert.departureTimeRange) {
+          console.log(`[SearchAlerts] Alert ${alert._id} skipped - no departure time range`);
+
+          await SearchAlert.findByIdAndUpdate(alert._id, {
+            isActive: false,
+            status: 'FAILED',
+            lastChecked: new Date(),
+            statusReason: 'No departure time range provided',
+          });
+          continue;
+        }
+
+
+        const dateParts = currentAlert.date.split(' ')[0].split('-');
+        const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]} 00:00:00`;
         const now = new Date();
-        const searchDate = new Date(alert.date.replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
+        const [datePart] = alert.date.split(' ');
+        const [year, month, day] = datePart.split('-');
+        const searchDate = new Date(Number(year), Number(month) - 1, Number(day) + 1 );
+  
 
         if (searchDate < now) {
           await SearchAlert.findByIdAndUpdate(alert._id, {
@@ -143,36 +148,91 @@ class CronJobService {
           continue;
         }
 
-        await SearchAlert.findByIdAndUpdate(alert._id, { lastChecked: now });
 
+        const searchPayload = {
+          fromStationId: currentAlert.fromStationId,
+          toStationId: currentAlert.toStationId,
+          date: formattedDate,
+          passengerCount: 1,
+          departureTimeRange: currentAlert.departureTimeRange,
+          preferredCabinClass: currentAlert.cabinClass,
+          wantHighSpeedTrain: true,
+        };
+  
+    
+        const searchResult = await this.tcddController.searchTrainsDirectly(searchPayload);
+
+        if(searchResult.error) {
+          console.log(`[SearchAlerts] Alert ${alert._id}  - ${searchResult.error}`);
+        }
+        
+        await SearchAlert.findByIdAndUpdate(alert._id, { lastChecked: now });
         if (searchResult?.data && searchResult?.data.length > 0) {
-          await SearchAlert.findByIdAndUpdate(alert._id, {
-            isActive: false,
-            status: 'COMPLETED',
-            statusReason: 'Seats found',
+        
+          let foundTrains: {
+            trainNumber: string;
+            departureStationName: string;
+            arrivalStationName: string;
+            departureTime: string;
+            arrivalTime: string;
+            cabinClassAvailabilities: CabinClassAvailability[];
+            isHighSpeed: boolean;
+        } [] = [];
+
+          searchResult.data.forEach((train: any) => {
+            if(train?.cabinClassAvailabilities?.length > 0) {
+              foundTrains.push(train);
+            }
           });
 
-          const fromStationName = this.getStationName(alert.fromStationId);
-          const toStationName = this.getStationName(alert.toStationId);
 
-          await NotificationService.sendPushNotification(
-            alert.userId,
-            'Seats Available!',
-            `We found seats for your journey from ${fromStationName} to ${toStationName} on ${this.formatDate(alert.date)}. Book now!`,
-            {
-              type: 'SEATS_FOUND',
-              fromStationId: alert.fromStationId,
-              toStationId: alert.toStationId,
-              date: alert.date,
-              cabinClass: alert.cabinClass,
-            }
-          );
+          if(foundTrains.length > 0) {
+            const firstTrain = foundTrains[0];
+            const fromStationName = this.getStationName(alert.fromStationId);
+            const toStationName = this.getStationName(alert.toStationId);
+            const trainDateTime = firstTrain.departureTime
+            const trainTimeHumanReadable = `${trainDateTime.split('T')[1].split(':')[0]}:${trainDateTime.split('T')[1].split(':')[1]}`
+
+            const train = foundTrains[0];
+            console.log('--------------------------------')
+            console.log(train)
+
+            const departureTime = new Date(train.departureTime);
+            const arrivalTime = new Date(train.arrivalTime);
+            const formatTime = (date: Date) => {
+              return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            };
+
+            const availableSeats = train.cabinClassAvailabilities[0]?.availabilityCount || 0;
+
+            await NotificationService.sendPushNotification(
+              alert.userId,
+              'Seats Available!',
+              `We found ${availableSeats} seats on train ${train.trainNumber} from ${fromStationName} to ${toStationName}.\n\nDeparture: ${formatTime(departureTime)}\nArrival: ${formatTime(arrivalTime)}\n\nDate: ${this.formatDate(alert.date)}`,
+              {
+                type: 'SEATS_FOUND',
+                fromStationId: alert.fromStationId,
+                toStationId: alert.toStationId,
+                date: alert.date,
+                cabinClass: alert.cabinClass,
+                trainNumber: train.trainNumber,
+                departureTime: train.departureTime,
+                arrivalTime: train.arrivalTime,
+                availableSeats
+              }
+            );
+            await SearchAlert.findByIdAndUpdate(alert._id, {
+              isActive: false,
+              status: 'COMPLETED',
+              statusReason: 'Seats found',
+            });
+            
+          }
         }
       }
     } catch (error) {
       console.error('[SearchAlerts] Error processing search group:', error);
       for (const alert of alerts) {
-        // Skip if alert has been deleted or declined
         const currentAlert = await SearchAlert.findById(alert._id);
         if (!currentAlert || currentAlert.deletedAt || currentAlert.status !== 'PENDING') {
           console.log(`[SearchAlerts] Alert ${alert._id} skipped - deleted or not pending`);
@@ -203,6 +263,7 @@ class CronJobService {
       let groupIndex = 1;
       const totalGroups = Object.keys(groupedAlerts).length;
 
+      
       for (const [key, alerts] of Object.entries(groupedAlerts)) {
         console.log(`[SearchAlerts] Processing group ${groupIndex}/${totalGroups}`);
         await this.processSearchGroup(alerts as SearchAlertDocument[]);

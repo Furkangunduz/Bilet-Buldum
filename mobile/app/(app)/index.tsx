@@ -23,7 +23,7 @@ if (Platform.OS === 'android') {
 
 
 const CustomLayoutAnimation = {
-  duration: 300,
+  duration: 150,
   create: {
     type: LayoutAnimation.Types.easeInEaseOut,
     property: LayoutAnimation.Properties.opacity,
@@ -70,7 +70,7 @@ export default function Home() {
     to: '',
     toId: '',
     date: '',
-    cabinClass: '1',
+    cabinClass: '2',
     cabinClassName: 'EKONOMİ',
     departureTimeRange: {
       start: '00:00',
@@ -362,10 +362,48 @@ export default function Home() {
               <Text className="text-lg font-semibold text-foreground mb-4 mt-6">
                 Your Active Alerts
               </Text>
-              <StatusFilter 
-                selectedStatuses={selectedStatuses}
-                onStatusChange={setSelectedStatuses}
-              />
+              <View className="flex-row items-center justify-between mb-4">
+                <StatusFilter 
+                  selectedStatuses={selectedStatuses}
+                  onStatusChange={setSelectedStatuses}
+                />
+                <View className="flex-row gap-2">
+                  {selectedStatuses.includes('PROCESSING') && filteredAlerts.length > 0 && (
+                    <TouchableOpacity
+                      onPress={async () => {
+                        try {
+                          await searchAlertsApi.bulkDeclineSearchAlerts('PROCESSING');
+                          LayoutAnimation.configureNext(CustomLayoutAnimation);
+                          await mutateAlerts();
+                        } catch (error) {
+                          console.error('Error declining alerts:', error);
+                        }
+                      }}
+                      className="bg-muted/80 px-3 py-1.5 rounded-lg flex-row items-center gap-1.5"
+                    >
+                      <Ionicons name="close-circle-outline" size={16} color={isDark ? '#fff' : '#000'} />
+                      <Text className="text-foreground font-medium text-xs">Decline All</Text>
+                    </TouchableOpacity>
+                  )}
+                  {(selectedStatuses.includes('COMPLETED') || selectedStatuses.includes('FAILED')) && filteredAlerts.length > 0 && (
+                    <TouchableOpacity
+                      onPress={async () => {
+                        try {
+                          await searchAlertsApi.bulkDeleteSearchAlerts(selectedStatuses[0]);
+                          LayoutAnimation.configureNext(CustomLayoutAnimation);
+                          await mutateAlerts();
+                        } catch (error) {
+                          console.error('Error deleting alerts:', error);
+                        }
+                      }}
+                      className="bg-destructive/90 px-3 py-1.5 rounded-lg flex-row items-center gap-1.5 shadow-sm"
+                    >
+                      <Ionicons name="trash-outline" size={16} color="#fff" />
+                      <Text className="text-white font-medium text-xs">Delete All</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
               <ScrollView className="flex-1 gap-4">
                 {filteredAlerts.length > 0 ? (
                   filteredAlerts.map((alert) => (

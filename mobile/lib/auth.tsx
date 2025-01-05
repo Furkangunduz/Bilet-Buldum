@@ -124,11 +124,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Clear push token from the server before logging out
-      await updatePushToken('');
-      await AsyncStorage.removeItem('token');
-      // Navigate first, then clear user state
       router.replace('/(auth)/sign-in');
+      await AsyncStorage.removeItem('token');
+      await updatePushToken('');
       setUser(null);
     } catch (error) {
       console.error('Error during logout:', error);

@@ -111,6 +111,7 @@ export default function Profile() {
     try {
       await signOut();
     } catch (error) {
+      console.error('Error during logout:', error);
       setIsSigningOut(false);
       Alert.alert('Error', 'Failed to sign out. Please try again.');
     }
