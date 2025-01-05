@@ -22,11 +22,14 @@
         "NSCameraUsageDescription": "We need camera access to let you scan tickets and upload profile pictures.",
         "NSPhotoLibraryUsageDescription": "We need photo library access to let you upload profile pictures.",
         "NSNotificationsUsageDescription": "We'll send you notifications about ticket availability and updates on your saved searches."
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.furkan_gunduz.biletbuldum"
@@ -51,7 +54,7 @@
         {
           "androidAppId": "ca-app-pub-7425995753039606~9781931371",
           "iosAppId": "ca-app-pub-7425995753039606~8391692619",
-          "userTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
+          "userTrackingDescription": "This identifier will be used to deliver personalized ads to you and improve your ticket search experience.",
           "skAdNetworkItems": [
             "cstr6suwn9.skadnetwork",
             "4fzdc2evr5.skadnetwork",

@@ -1,13 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
-import { PermissionStatus, getTrackingPermissionsAsync, requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
-import { AdEventType, InterstitialAd, MobileAds } from 'react-native-google-mobile-ads';
+import { AdEventType, AdapterStatus, InterstitialAd, MobileAds } from 'react-native-google-mobile-ads';
 import { AlertItem } from '~/components/home/AlertItem';
 import { DateTimePickers } from '~/components/home/DateTimePickers';
 import { EmptyState } from '~/components/home/EmptyState';
@@ -25,27 +24,12 @@ if (Platform.OS === 'android') {
   }
 }
 
-// Initialize tracking transparency and Mobile Ads SDK
-const initializeAds = async () => {
-  try {
-    if (Platform.OS === 'ios') {
-      const { status } = await getTrackingPermissionsAsync();
-      if (status === PermissionStatus.UNDETERMINED) {
-        await requestTrackingPermissionsAsync();
-      }
-    }
-
-    const adapterStatuses = await MobileAds().initialize();
-    console.log('Mobile Ads initialization complete!', adapterStatuses);
-  } catch (error) {
-    console.error('Error initializing ads:', error);
-  }
-};
-
-// Call initialization on mount
-useEffect(() => {
-  initializeAds();
-}, []);
+// Initialize the Mobile Ads SDK
+MobileAds()
+  .initialize()
+  .then((adapterStatuses: AdapterStatus[]) => {
+    console.log('Initialization complete!', adapterStatuses);
+  });
 
 const CustomLayoutAnimation = {
   duration: 150,

@@ -2,7 +2,7 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   FadeInRight,
   FadeOutLeft,
@@ -13,7 +13,6 @@ import { authApi } from '~/lib/api';
 import { useAuth } from '~/lib/auth';
 import { ONBOARDING_STEPS } from '~/lib/constants';
 
-const { width } = Dimensions.get('window');
 
 const COLORS = {
   step1: ['rgba(59, 130, 246, 0.1)', 'transparent'] as const,

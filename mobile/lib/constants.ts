@@ -32,19 +32,16 @@ export const ONBOARDING_STEPS = [
     id: 1,
     title: 'Find Your Train',
     description: 'Search and compare train tickets across Turkey',
-    image: require('../assets/onboarding/search.webp'),
   },
   {
     id: 2,
     title: 'Get Notified',
     description: 'Receive instant notifications when tickets become available',
-    image: require('../assets/onboarding/search.webp'),
   },
   {
     id: 3,
     title: 'Book Instantly',
     description: 'Secure your tickets as soon as they become available',
-    image: require('../assets/onboarding/search.webp'),
   },
 ];
 
