@@ -135,14 +135,16 @@ class CronJobService {
             lastChecked: now,
             statusReason: 'Search date has passed',
           });
-
-          const fromStationName = this.getStationName(alert.fromStationId);
-          const toStationName = this.getStationName(alert.toStationId);
-
+        
+          const fromStationName = this.getStationName(alert.fromStationId).split(',')[0].trim().toLowerCase();
+          const toStationName = this.getStationName(alert.toStationId).split(',')[0].trim().toLowerCase();
+          const fromStationNameCapitalized = fromStationName.charAt(0).toUpperCase() + fromStationName.slice(1);
+          const toStationNameCapitalized = toStationName.charAt(0).toUpperCase() + toStationName.slice(1);
+            
           await NotificationService.sendPushNotification(
             alert.userId,
-            `❌ ${fromStationName} → ${toStationName} Alert Expired`,
-            `❌ Your search alert has expired\n\n🚉 Route: ${fromStationName} → ${toStationName}\n📅 Date: ${this.formatDate(alert.date)}`
+            `❌ ${fromStationNameCapitalized} → ${toStationNameCapitalized} Alert Expired`,
+            `❌ Your search alert has expired\n\n🚉 Route: ${fromStationNameCapitalized} → ${toStationNameCapitalized}\n📅 Date: ${this.formatDate(alert.date)}`
           );
           console.log(`[SearchAlerts] Alert ${alert._id} expired - past date`);
           continue;
@@ -187,8 +189,10 @@ class CronJobService {
 
 
           if(foundTrains.length > 0) {
-            const fromStationName = this.getStationName(alert.fromStationId);
-            const toStationName = this.getStationName(alert.toStationId);
+            const fromStationName = this.getStationName(alert.fromStationId).split(',')[0].trim().toLowerCase();
+            const toStationName = this.getStationName(alert.toStationId).split(',')[0].trim().toLowerCase();
+            const fromStationNameCapitalized = fromStationName.charAt(0).toUpperCase() + fromStationName.slice(1);
+            const toStationNameCapitalized = toStationName.charAt(0).toUpperCase() + toStationName.slice(1);
             const train = foundTrains[0];
 
             const departureTime = new Date(train.departureTime);
@@ -201,12 +205,12 @@ class CronJobService {
 
             await NotificationService.sendPushNotification(
               alert.userId,
-              `🎫 ${availableSeats} seats found: ${fromStationName} → ${toStationName}`,
+              `🎫 ${availableSeats} seats found: ${fromStationNameCapitalized} → ${toStationNameCapitalized}`,
               `✨ Great news! We found tickets for your journey!\n\n` +
-              `🚄 Train: ${train.trainNumber}\n` +
+              `🚄 Train: ${train.trainNumber}\n\n` +
               `🎫 Available Seats: ${availableSeats}\n\n` +
-              `🚉 Route: ${fromStationName} → ${toStationName}\n` +
-              `🕒 Time: ${formatTime(departureTime)} → ${formatTime(arrivalTime)}\n` +
+              `🚉 Route: ${fromStationNameCapitalized} → ${toStationNameCapitalized}\n\n` +
+              `🕒 Time: ${formatTime(departureTime)} → ${formatTime(arrivalTime)}\n\n` +
               `📅 Date: ${this.formatDate(alert.date)}`,
               {
                 type: 'SEATS_FOUND',
