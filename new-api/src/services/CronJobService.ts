@@ -101,7 +101,7 @@ class CronJobService {
             isActive: false,
             status: 'FAILED',
             lastChecked: new Date(),
-            statusReason: 'Invalid data provided',
+            statusReason: 'Geçersiz veri',
           });
           continue;
         }
@@ -113,11 +113,10 @@ class CronJobService {
             isActive: false,
             status: 'FAILED',
             lastChecked: new Date(),
-            statusReason: 'No departure time range provided',
+            statusReason: 'Kalkış saati aralığı belirtilmemiş',
           });
           continue;
         }
-
 
         const dateParts = currentAlert.date.split(' ')[0].split('-');
         const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]} 00:00:00`;
@@ -126,13 +125,12 @@ class CronJobService {
         const [year, month, day] = datePart.split('-');
         const searchDate = new Date(Number(year), Number(month) - 1, Number(day) + 1 );
   
-
         if (searchDate < now) {
           await SearchAlert.findByIdAndUpdate(alert._id, {
             isActive: false,
             status: 'FAILED',
             lastChecked: now,
-            statusReason: 'Search date has passed',
+            statusReason: 'Arama tarihi geçmiş',
           });
         
           const fromStationName = this.getStationName(alert.fromStationId).split(',')[0].trim().toLowerCase();
@@ -142,13 +140,12 @@ class CronJobService {
             
           await NotificationService.sendPushNotification(
             alert.userId,
-            `❌ ${fromStationNameCapitalized} → ${toStationNameCapitalized} Alert Expired`,
-            `❌ Your search alert has expired\n\n🚉 Route: ${fromStationNameCapitalized} → ${toStationNameCapitalized}\n📅 Date: ${this.formatDate(alert.date)}`
+            `❌ ${fromStationNameCapitalized} → ${toStationNameCapitalized} Alarm Süresi Doldu`,
+            `❌ Arama alarmınızın süresi doldu\n\n🚉 Güzergah: ${fromStationNameCapitalized} → ${toStationNameCapitalized}\n📅 Tarih: ${this.formatDate(alert.date)}`
           );
           console.log(`[SearchAlerts] Alert ${alert._id} expired - past date`);
           continue;
         }
-
 
         const searchPayload = {
           fromStationId: currentAlert.fromStationId,
@@ -201,20 +198,20 @@ class CronJobService {
             };
 
             const availableSeats = train.cabinClassAvailabilities[0]?.availabilityCount || 0;
-            const cabinClassName = train.cabinClassAvailabilities[0]?.cabinClass || 'Unknown';
+            const cabinClassName = train.cabinClassAvailabilities[0]?.cabinClass || 'Bilinmiyor';
             const duration = Math.round((arrivalTime.getTime() - departureTime.getTime()) / (1000 * 60)); // Duration in minutes
 
             await NotificationService.sendPushNotification(
               alert.userId,
-              `🎫 ${availableSeats} seats found: ${fromStationNameCapitalized} → ${toStationNameCapitalized}`,
-              `✨ Great news! We found tickets for your journey!\n\n` +
-              `🚄 Train: ${train.trainNumber}\n\n` +
-              `🎫 Available Seats: ${availableSeats}\n` +
-              `🚉 Route: ${fromStationNameCapitalized} → ${toStationNameCapitalized}\n\n` +
-              `🕒 Departure: ${formatTime(departureTime)}\n` +
-              `🕒 Arrival: ${formatTime(arrivalTime)}\n` +
-              `⏱️ Duration: ${Math.floor(duration / 60)}h ${duration % 60}m\n\n` +
-              `📅 Date: ${alert.date.split(' ')[0]}`,
+              `🎫 ${availableSeats} adet bilet bulundu: ${fromStationNameCapitalized} → ${toStationNameCapitalized}`,
+              `✨ Harika haber! Yolculuğunuz için bilet bulduk!\n\n` +
+              `🚄 Tren: ${train.trainNumber}\n\n` +
+              `🎫 Müsait Koltuk: ${availableSeats}\n` +
+              `🚉 Güzergah: ${fromStationNameCapitalized} → ${toStationNameCapitalized}\n\n` +
+              `🕒 Kalkış: ${formatTime(departureTime)}\n` +
+              `🕒 Varış: ${formatTime(arrivalTime)}\n` +
+              `⏱️ Süre: ${Math.floor(duration / 60)}s ${duration % 60}dk\n\n` +
+              `📅 Tarih: ${alert.date.split(' ')[0]}`,
               {
                 type: 'SEATS_FOUND',
                 fromStationId: alert.fromStationId,
@@ -232,7 +229,7 @@ class CronJobService {
             await SearchAlert.findByIdAndUpdate(alert._id, {
               isActive: false,
               status: 'COMPLETED',
-              statusReason: `🎫 ${availableSeats} seats found: ${fromStationNameCapitalized} → ${toStationNameCapitalized} at time ${formatTime(departureTime)}`,
+              statusReason: `🎫 ${availableSeats} adet bilet bulundu: ${fromStationNameCapitalized} → ${toStationNameCapitalized} saat ${formatTime(departureTime)} için`,
             });
             
           }
@@ -250,7 +247,7 @@ class CronJobService {
         await SearchAlert.findByIdAndUpdate(alert._id, {
           isActive: false,
           status: 'FAILED',
-          statusReason: 'Search failed due to technical error',
+          statusReason: 'Teknik bir hata nedeniyle arama başarısız oldu',
         });
         console.log(`[SearchAlerts] Alert ${alert._id} failed - technical error`);
       }
