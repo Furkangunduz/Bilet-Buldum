@@ -210,12 +210,11 @@ class CronJobService {
               `✨ Great news! We found tickets for your journey!\n\n` +
               `🚄 Train: ${train.trainNumber}\n\n` +
               `🎫 Available Seats: ${availableSeats}\n` +
-              `💺 Class: ${train.cabinClassAvailabilities[0]?.cabinClass || cabinClassName}\n\n` +
               `🚉 Route: ${fromStationNameCapitalized} → ${toStationNameCapitalized}\n\n` +
               `🕒 Departure: ${formatTime(departureTime)}\n` +
               `🕒 Arrival: ${formatTime(arrivalTime)}\n` +
               `⏱️ Duration: ${Math.floor(duration / 60)}h ${duration % 60}m\n\n` +
-              `📅 Date: ${alert.date.split(' ')[0].split('-').reverse().join('/')}`,
+              `📅 Date: ${alert.date.split(' ')[0]}`,
               {
                 type: 'SEATS_FOUND',
                 fromStationId: alert.fromStationId,
