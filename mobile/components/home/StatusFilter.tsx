@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 interface StatusFilterProps {
@@ -7,6 +8,8 @@ interface StatusFilterProps {
 }
 
 export const StatusFilter: React.FC<StatusFilterProps> = ({ selectedStatuses, onStatusChange }) => {
+  const { t } = useTranslation();
+
   return (
     <View className="flex-row gap-2 mb-4">
       <TouchableOpacity
@@ -22,7 +25,7 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({ selectedStatuses, on
           ? 'text-yellow-800'
           : 'text-secondary-foreground'
         }`}>
-          Processing
+          {t('home.alerts.status.PENDING')}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -38,7 +41,7 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({ selectedStatuses, on
           ? 'text-green-800'
           : 'text-secondary-foreground'
         }`}>
-          Found
+          {t('home.alerts.status.COMPLETED')}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -54,7 +57,7 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({ selectedStatuses, on
           ? 'text-red-800'
           : 'text-secondary-foreground'
         }`}>
-          Failed
+          {t('home.alerts.status.FAILED')}
         </Text>
       </TouchableOpacity>
     </View>

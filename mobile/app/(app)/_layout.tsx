@@ -1,9 +1,11 @@
 import { Tabs } from 'expo-router';
 import { Home, User } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
+import { useTranslation } from 'react-i18next';
 
 export default function AppLayout() {
   const { colorScheme } = useColorScheme();
+  const { t } = useTranslation();
   const isDark = colorScheme === 'dark';
 
   return (
@@ -22,14 +24,14 @@ export default function AppLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('navigation.tabs.home'),
           tabBarIcon: ({ color }) => <Home size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('navigation.tabs.profile'),
           tabBarIcon: ({ color }) => <User size={24} color={color} />,
         }}
       />

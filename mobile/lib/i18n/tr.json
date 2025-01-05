@@ -12,7 +12,16 @@
     "back": "Geri",
     "close": "Kapat",
     "loading": "Yükleniyor...",
-    "error": "Hata"
+    "error": "Hata",
+    "success": "Başarılı",
+    "tryAgain": "Tekrar Dene",
+    "done": "Tamam"
+  },
+  "navigation": {
+    "tabs": {
+      "home": "Ana Sayfa",
+      "profile": "Profil"
+    }
   },
   "auth": {
     "signIn": "Giriş Yap",
@@ -21,13 +30,111 @@
     "email": "E-posta",
     "password": "Şifre",
     "confirmPassword": "Şifre Tekrar",
-    "name": "Ad Soyad"
+    "name": "Ad Soyad",
+    "signInToAccount": "Hesabınıza giriş yapın",
+    "enterEmail": "E-posta adresinizi girin",
+    "enterPassword": "Şifrenizi girin",
+    "signingIn": "Giriş yapılıyor...",
+    "noAccount": "Hesabınız yok mu?",
+    "createAccount": "Hesap Oluştur",
+    "creatingAccount": "Hesap oluşturuluyor...",
+    "firstName": "Ad",
+    "lastName": "Soyad",
+    "enterFirstName": "Adınızı girin",
+    "enterLastName": "Soyadınızı girin",
+    "createPassword": "Şifre oluşturun",
+    "agreeToTerms": "Hesap oluşturarak",
+    "and": "ve",
+    "termsOfService": "Kullanım Koşulları",
+    "privacyPolicy": "Gizlilik Politikası",
+    "haveAccount": "Zaten hesabınız var mı?",
+    "errors": {
+      "invalidCredentials": "Geçersiz e-posta veya şifre",
+      "nameRequired": "Lütfen adınızı girin",
+      "lastNameRequired": "Lütfen soyadınızı girin",
+      "emailRequired": "Lütfen e-posta adresinizi girin",
+      "passwordRequired": "Lütfen şifrenizi girin",
+      "registrationFailed": "Kayıt başarısız oldu. Lütfen tekrar deneyin."
+    }
   },
   "home": {
     "title": "Bilet Buldum",
     "searchTickets": "Bilet Ara",
     "notifications": "Bildirimler",
-    "settings": "Ayarlar"
+    "settings": "Ayarlar",
+    "activeAlerts": "Aktif Alarmlarınız",
+    "startSearching": "Aramaya Başla",
+    "createNewAlert": "Yeni Alarm Oluştur",
+    "emptyState": {
+      "title": "Alarm bulunamadı",
+      "description": "Aktif alarmınız bulunmamaktadır. Alarm oluşturmak için bilet aramaya başlayın.",
+      "readyToStart": "Yolculuğa Hazır mısınız?",
+      "noAlertsWithStatus": "{{status}} alarm bulunamadı"
+    },
+    "searchForm": {
+      "from": "Nereden",
+      "to": "Nereye",
+      "date": "Tarih",
+      "selectDate": "Tarih Seçin",
+      "departureTime": "Kalkış Saati",
+      "startTime": "Başlangıç Saati",
+      "endTime": "Bitiş Saati",
+      "cabinClass": "Vagon Sınıfı",
+      "selectCabinClass": "Vagon Sınıfı Seçin",
+      "highSpeedTrain": "Sadece Yüksek Hızlı Tren",
+      "createAlert": "Alarm Oluştur",
+      "searchStations": "İstasyon ara...",
+      "selectDepartureStation": "Kalkış istasyonu seçin",
+      "selectArrivalStation": "Varış istasyonu seçin",
+      "selectDepartureFirst": "Önce kalkış istasyonu seçin",
+      "today": "Bugün",
+      "tomorrow": "Yarın",
+      "daysLater": "{{days}} Gün Sonra",
+      "timeRanges": {
+        "allDay": "Tüm Gün",
+        "morning": "(06:00 - 12:00)",
+        "afternoon": "(12:00 - 18:00)",
+        "night": "(18:00 - 06:00)"
+      },
+      "errors": {
+        "selectDeparture": "Lütfen kalkış istasyonu seçin",
+        "selectArrival": "Lütfen varış istasyonu seçin",
+        "selectDate": "Lütfen tarih seçin",
+        "selectCabinClass": "Lütfen vagon sınıfı seçin",
+        "selectTimeRange": "Lütfen kalkış saati aralığı seçin",
+        "createAlertFailed": "Alarm oluşturulamadı. Lütfen tekrar deneyin."
+      },
+      "alertCreatedSuccess": "Arama alarmı başarıyla oluşturuldu! Biletler müsait olduğunda sizi bilgilendireceğiz.",
+      "viewAlerts": "Alarmları Görüntüle"
+    },
+    "alerts": {
+      "status": {
+        "PENDING": "Beklemede",
+        "PROCESSING": "İşleniyor",
+        "COMPLETED": "Tamamlandı",
+        "FAILED": "Başarısız"
+      },
+      "actions": {
+        "decline": "Reddet",
+        "declineAll": "Tümünü Reddet",
+        "delete": "Sil",
+        "deleteAll": "Tümünü Sil",
+        "confirmDelete": "Bu alarmı silmek istediğinizden emin misiniz?",
+        "confirmDecline": "Bu alarmı reddetmek istediğinizden emin misiniz?",
+        "confirmBulkDelete": "Tüm {status} alarmlarını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+        "confirmBulkDecline": "Tüm işlenen alarmları reddetmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+      }
+    },
+    "stationModal": {
+      "selectDeparture": "Kalkış İstasyonu Seç",
+      "selectArrival": "Varış İstasyonu Seç",
+      "selectCabinClass": "Vagon Sınıfı Seç",
+      "searchStations": "İstasyon ara...",
+      "noStationsFound": "İstasyon bulunamadı",
+      "selectDepartureFirst": "Önce kalkış istasyonu seçin",
+      "noStationsAvailable": "İstasyon bulunamadı",
+      "noCabinClasses": "Vagon sınıfı bulunamadı"
+    }
   },
   "profile": {
     "title": "Profil",
@@ -49,6 +156,13 @@
       "termsOfService": "Kullanım Koşulları",
       "deleteAccount": "Hesabı Sil"
     },
+    "notifications": {
+      "title": "Bildirim Tercihleri",
+      "emailTitle": "E-posta Bildirimleri",
+      "emailDescription": "Güncellemeleri e-posta ile alın",
+      "pushTitle": "Anlık Bildirimler",
+      "pushDescription": "Anlık bildirimler alın"
+    },
     "contact": {
       "title": "Bize Ulaşın",
       "subject": "Konu",
@@ -63,6 +177,105 @@
       "message": "Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir.",
       "cancel": "İptal",
       "confirm": "Sil"
+    },
+    "password": {
+      "title": "Şifre Değiştir",
+      "currentPassword": "Mevcut Şifre",
+      "newPassword": "Yeni Şifre",
+      "confirmNewPassword": "Yeni Şifre Tekrar",
+      "enterCurrentPassword": "Mevcut şifrenizi girin",
+      "enterNewPassword": "Yeni şifrenizi girin",
+      "updatePassword": "Şifreyi Güncelle"
+    },
+    "personalInfo": {
+      "title": "Kişisel Bilgiler",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "enterFirstName": "Adınızı girin",
+      "enterLastName": "Soyadınızı girin"
+    },
+    "privacyPolicy": {
+      "title": "Gizlilik Politikası",
+      "content": [
+        "# Bilet Buldum Gizlilik Politikası",
+        "Son güncelleme: 4 Ocak 2024",
+        "## 1. Topladığımız Bilgiler",
+        "### 1.1 Kişisel Bilgiler",
+        "- E-posta adresi",
+        "- Ad ve soyad",
+        "- Profil bilgileri",
+        "- Konum bilgisi (izin verildiğinde)",
+        "- Cihaz bilgileri",
+        "### 1.2 Kullanım Verileri",
+        "- Uygulama kullanım istatistikleri",
+        "- Arama geçmişi",
+        "- Bilet tercihleri",
+        "- Bildirim ayarları",
+        "## 2. Bilgilerinizi Nasıl Kullanıyoruz",
+        "- Hizmetimizi sağlamak ve sürdürmek için",
+        "- Bilet müsaitliği hakkında bilgilendirme yapmak için",
+        "- Müşteri desteği sağlamak için",
+        "- Kişiselleştirilmiş arama sonuçları sunmak için",
+        "- Hizmetlerimizi geliştirmek için",
+        "## 3. Veri Depolama ve Güvenlik",
+        "Kişisel bilgilerinizi korumak için uygun güvenlik önlemleri uyguluyoruz. Verileriniz güvenli bir şekilde saklanır ve yalnızca hizmetlerimizi sağlamak için gerekli olduğunda erişilir.",
+        "## 4. Üçüncü Taraf Hizmetleri",
+        "Bilgi toplayabilecek üçüncü taraf hizmetleri kullanıyoruz:",
+        "- Google Mobil Reklamlar",
+        "- Kimlik doğrulama hizmetleri",
+        "- Analitik hizmetleri",
+        "## 5. Haklarınız",
+        "Aşağıdaki haklara sahipsiniz:",
+        "- Kişisel verilerinize erişim",
+        "- Kişisel verilerinizi düzeltme",
+        "- Hesabınızı silme",
+        "- Pazarlama iletişimlerinden çıkma",
+        "## 6. Çocukların Gizliliği",
+        "Hizmetimiz 13 yaşın altındaki çocukların kullanımına yönelik değildir. 13 yaşın altındaki çocuklardan bilerek kişisel bilgi toplamıyoruz.",
+        "## 7. Bu Politikadaki Değişiklikler",
+        "Gizlilik Politikamızı zaman zaman güncelleyebiliriz. Değişiklikleri bu sayfada yeni Gizlilik Politikasını yayınlayarak size bildireceğiz.",
+        "## 8. Bize Ulaşın",
+        "Bu Gizlilik Politikası hakkında sorularınız varsa, lütfen bizimle iletişime geçin:",
+        "support@biletbuldum.com"
+      ]
+    },
+    "termsOfService": {
+      "title": "Kullanım Koşulları",
+      "content": [
+        "# Bilet Buldum Kullanım Koşulları",
+        "Son güncelleme: 4 Ocak 2024",
+        "## 1. Koşulların Kabulü",
+        "Bilet Buldum uygulamasına erişerek ve kullanarak, bu Kullanım Koşullarına bağlı olmayı kabul etmiş olursunuz.",
+        "## 2. Hizmet Tanımı",
+        "Bilet Buldum, kullanıcıların çeşitli etkinlikler için müsait biletleri bulmasına yardımcı olan bir bilet arama ve bildirim hizmetidir.",
+        "## 3. Kullanıcı Hesapları",
+        "### 3.1 Kayıt",
+        "- Hesap oluştururken doğru bilgiler vermelisiniz",
+        "- Hesabınızın güvenliğini sağlamaktan siz sorumlusunuz",
+        "- Bu hizmeti kullanmak için en az 13 yaşında olmalısınız",
+        "### 3.2 Hesap Sonlandırma",
+        "Bu koşulları ihlal eden veya dolandırıcılık faaliyetlerinde bulunan hesapları sonlandırma hakkını saklı tutarız.",
+        "## 4. Kullanıcı Davranışı",
+        "Kullanıcılar aşağıdakileri yapmamayı kabul eder:",
+        "- Herhangi bir yasa veya yönetmeliği ihlal etmek",
+        "- Başkalarını taklit etmek",
+        "- Yanlış veya yanıltıcı bilgi paylaşmak",
+        "- Hizmetin yetkisiz alanlarına erişmeye çalışmak",
+        "- Hizmete erişmek için otomatik sistemler kullanmak",
+        "## 5. Fikri Mülkiyet",
+        "Bilet Buldum'da bulunan tüm içerik ve materyaller fikri mülkiyet hakları ile korunmaktadır.",
+        "## 6. Garanti Reddi",
+        "Hizmet, açık veya zımni hiçbir garanti olmaksızın 'olduğu gibi' sunulmaktadır.",
+        "## 7. Sorumluluk Sınırlaması",
+        "Dolaylı, arızi, özel veya sonuç olarak ortaya çıkan zararlardan sorumlu olmayacağız.",
+        "## 8. Koşullarda Değişiklik",
+        "Bu koşulları herhangi bir zamanda değiştirme hakkını saklı tutarız. Önemli değişiklikler hakkında kullanıcılar bilgilendirilecektir.",
+        "## 9. Geçerli Hukuk",
+        "Bu koşullar Türkiye Cumhuriyeti yasalarına tabi olacak ve bunlara göre yorumlanacaktır.",
+        "## 10. İletişim Bilgileri",
+        "Bu Koşullar hakkında sorularınız için lütfen iletişime geçin:",
+        "support@biletbuldum.com"
+      ]
     }
   }
 } 

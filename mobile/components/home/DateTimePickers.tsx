@@ -1,4 +1,5 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useTranslation } from 'react-i18next';
 import { Modal, Platform, Text, TouchableOpacity, View } from 'react-native';
 
 interface DateTimePickersProps {
@@ -28,6 +29,8 @@ export function DateTimePickers({
   onCloseTimePicker,
   maxDate
 }: DateTimePickersProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       {Platform.OS === 'ios' && showTimePicker ? (
@@ -40,10 +43,10 @@ export function DateTimePickers({
             <View className="bg-card p-4">
               <View className="flex-row justify-between items-center mb-4">
                 <TouchableOpacity onPress={onCloseTimePicker}>
-                  <Text className="text-primary text-base">Cancel</Text>
+                  <Text className="text-primary text-base">{t('common.cancel')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={onCloseTimePicker}>
-                  <Text className="text-primary text-base">Done</Text>
+                  <Text className="text-primary text-base">{t('common.done')}</Text>
                 </TouchableOpacity>
               </View>
               <DateTimePicker
@@ -104,7 +107,7 @@ export function DateTimePickers({
             <View className="bg-card p-4">
               <View className="flex-row justify-between items-center mb-4">
                 <TouchableOpacity onPress={onCloseDatePicker}>
-                  <Text className="text-primary text-base">Cancel</Text>
+                  <Text className="text-primary text-base">{t('common.cancel')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   onPress={() => {
@@ -116,7 +119,7 @@ export function DateTimePickers({
                     onCloseDatePicker();
                   }}
                 >
-                  <Text className="text-primary text-base">Done</Text>
+                  <Text className="text-primary text-base">{t('common.done')}</Text>
                 </TouchableOpacity>
               </View>
               <DateTimePicker

@@ -3,6 +3,7 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheet
 import * as Haptics from 'expo-haptics';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { AdEventType, InterstitialAd } from 'react-native-google-mobile-ads';
@@ -47,6 +48,7 @@ const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
 });
 
 export default function Home() {
+  const { t } = useTranslation();
   const { searchAlerts, isLoading: isLoadingAlerts, mutate: mutateAlerts } = useSearchAlerts();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const currentSwipeableRef = useRef<string | null>(null);
@@ -404,16 +406,16 @@ export default function Home() {
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       Alert.alert(
-        'Decline All Alerts',
-        'Are you sure you want to decline all processing alerts? This action cannot be undone.',
+        t('home.alerts.actions.declineAll'),
+        t('home.alerts.actions.confirmBulkDecline'),
         [
           {
-            text: 'Cancel',
+            text: t('common.cancel'),
             style: 'cancel',
             onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
           },
           {
-            text: 'Decline All',
+            text: t('home.alerts.actions.declineAll'),
             style: 'destructive',
             onPress: async () => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -433,16 +435,16 @@ export default function Home() {
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       Alert.alert(
-        'Delete All Alerts',
-        `Are you sure you want to delete all ${status.toLowerCase()} alerts? This action cannot be undone.`,
+        t('home.alerts.actions.deleteAll'),
+        t('home.alerts.actions.confirmBulkDelete', { status: status.toLowerCase() }),
         [
           {
-            text: 'Cancel',
+            text: t('common.cancel'),
             style: 'cancel',
             onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
           },
           {
-            text: 'Delete All',
+            text: t('home.alerts.actions.deleteAll'),
             style: 'destructive',
             onPress: async () => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -495,7 +497,7 @@ export default function Home() {
           ) : searchAlerts.length > 0 ? (
             <View className="flex-1">
               <Text className="text-lg font-semibold text-foreground mb-4 mt-6">
-                Your Active Alerts
+                {t('home.activeAlerts')}
               </Text>
               <View className="flex-row items-center justify-between mb-4">
                 <StatusFilter 
@@ -509,7 +511,7 @@ export default function Home() {
                       className="bg-muted/80 px-3 py-1.5 rounded-lg flex-row items-center gap-1.5"
                     >
                       <Ionicons name="close-circle-outline" size={16} color={isDark ? '#fff' : '#000'} />
-                      <Text className="text-foreground font-medium text-xs">Decline All</Text>
+                      <Text className="text-foreground font-medium text-xs">{t('home.alerts.actions.declineAll')}</Text>
                     </TouchableOpacity>
                   )}
                   {(selectedStatuses.includes('COMPLETED') || selectedStatuses.includes('FAILED')) && filteredAlerts.length > 0 && (
@@ -518,7 +520,7 @@ export default function Home() {
                       className="bg-destructive/90 px-3 py-1.5 rounded-lg flex-row items-center gap-1.5 shadow-sm"
                     >
                       <Ionicons name="trash-outline" size={16} color="#fff" />
-                      <Text className="text-white font-medium text-xs">Delete All</Text>
+                      <Text className="text-white font-medium text-xs">{t('home.alerts.actions.deleteAll')}</Text>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -544,7 +546,7 @@ export default function Home() {
               </ScrollView>
             </View>
           ) : (
-            <EmptyState  />
+            <EmptyState />
           )}
         </View>
 
@@ -555,7 +557,7 @@ export default function Home() {
           >
             <Ionicons name="search" size={22} color={isDark ? '#000' : '#fff'}  />
             <Text className="text-primary-foreground font-semibold text-base">
-              Start Searching
+              {t('home.startSearching')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -643,7 +645,7 @@ export default function Home() {
           <View className="flex-1 w-full">
             <View className="flex-row items-center justify-between mb-8">
               <Text className="text-2xl font-bold text-foreground">
-                Create New Alert
+                {t('home.createNewAlert')}
               </Text>
               <TouchableOpacity 
                 onPress={handleCloseBottomSheet}

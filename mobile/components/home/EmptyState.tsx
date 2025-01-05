@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 interface EmptyStateProps {
@@ -7,15 +8,17 @@ interface EmptyStateProps {
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({ selectedStatuses }) => {
+  const { t } = useTranslation();
+
   if (!selectedStatuses || selectedStatuses.length === 0) {
     return <View className="flex-1 items-center justify-center">
     <View className="items-center gap-4 mb-12">
       <Ionicons name="train" size={64} color="#666" />
       <Text className="text-xl font-semibold text-foreground text-center">
-        Ready to Start Your Journey?
+        {t('home.emptyState.readyToStart')}
       </Text>
       <Text className="text-muted-foreground text-center">
-        Search for train tickets and set alerts for your preferred routes
+        {t('home.emptyState.description')}
       </Text>
     </View>
   </View>;
@@ -25,11 +28,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ selectedStatuses }) => {
     return (
       <View className="flex-1 items-center justify-center py-8">
         <Text className="text-muted-foreground text-base text-center">
-          {`No ${selectedStatuses[0] === 'PENDING' 
-            ? 'processing' 
-            : selectedStatuses[0] === 'COMPLETED'
-            ? 'found'
-            : 'failed'} alerts`}
+          {t('home.emptyState.noAlertsWithStatus', {
+            status: selectedStatuses[0] === 'PENDING' 
+              ? t('home.alerts.status.PENDING').toLowerCase()
+              : selectedStatuses[0] === 'COMPLETED'
+              ? t('home.alerts.status.COMPLETED').toLowerCase()
+              : t('home.alerts.status.FAILED').toLowerCase()
+          })}
         </Text>
       </View>
     );
@@ -40,10 +45,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ selectedStatuses }) => {
       <View className="items-center gap-4 mb-12">
         <Ionicons name="train" size={64} color="#666" />
         <Text className="text-xl font-semibold text-foreground text-center">
-          Ready to Start Your Journey?
+          {t('home.emptyState.readyToStart')}
         </Text>
         <Text className="text-muted-foreground text-center">
-          Search for train tickets and set alerts for your preferred routes
+          {t('home.emptyState.description')}
         </Text>
       </View>
     </View>

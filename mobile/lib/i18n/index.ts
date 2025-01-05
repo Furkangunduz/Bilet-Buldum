@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Localization from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -20,7 +19,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'tr',
-    lng: 'tr', // default language
+    lng: 'tr',
     defaultNS: 'translation',
     fallbackNS: 'translation',
     react: {
@@ -31,7 +30,6 @@ i18n
     },
   });
 
-// Handle language detection and changes
 const setupLanguage = async () => {
   try {
     const savedLanguage = await AsyncStorage.getItem('user-language');
@@ -40,9 +38,7 @@ const setupLanguage = async () => {
       return;
     }
     
-    // Get device language
-    const deviceLang = Localization.locale.split('-')[0];
-    const languageToUse = ['en', 'tr'].includes(deviceLang) ? deviceLang : 'tr';
+    const languageToUse = 'tr';
     
     await AsyncStorage.setItem('user-language', languageToUse);
     await i18n.changeLanguage(languageToUse);

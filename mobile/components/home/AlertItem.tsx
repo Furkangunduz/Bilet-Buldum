@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Loader2 } from 'lucide-react-native';
 import React, { useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Animated, Easing, LayoutAnimation, Text, TouchableOpacity, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { SearchAlert } from '~/lib/api';
@@ -26,6 +27,7 @@ export const AlertItem = React.memo(({
   onSwipeClose,
   setSwipeableRef 
 }: AlertItemProps) => {
+  const { t, i18n } = useTranslation();
   const swipeableRef = useRef<Swipeable | null>(null);
   const translateY = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(1)).current;
@@ -102,7 +104,7 @@ export const AlertItem = React.memo(({
           color="#fff" 
         />
         <Text className="text-white text-xs mt-1">
-          {alert.status === 'PENDING' ? 'Decline' : 'Delete'}
+          {alert.status === 'PENDING' ? t('home.alerts.actions.decline') : t('home.alerts.actions.delete')}
         </Text>
       </View>
     </TouchableOpacity>
@@ -136,7 +138,7 @@ export const AlertItem = React.memo(({
               {alert.status === 'PENDING' ? (
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xs font-medium text-yellow-800">
-                    Searching
+                    {t('home.alerts.status.PENDING')}
                   </Text>
                   <Animated.View 
                     style={{
@@ -159,7 +161,7 @@ export const AlertItem = React.memo(({
               ) : alert.status === 'COMPLETED' ? (
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xs font-medium text-green-800">
-                    Found
+                    {t('home.alerts.status.COMPLETED')}
                   </Text>
                   <Ionicons 
                     name="checkmark-circle" 
@@ -170,7 +172,7 @@ export const AlertItem = React.memo(({
               ) : (
                 <View className="flex-row items-center gap-2">
                   <Text className="text-xs font-medium text-red-800">
-                    Failed
+                    {t('home.alerts.status.FAILED')}
                   </Text>
                   <Ionicons 
                     name="alert-circle" 
@@ -182,7 +184,7 @@ export const AlertItem = React.memo(({
             </View>
           </View>
           <Text className="text-sm text-muted-foreground">
-            {new Date(alert.date).toLocaleDateString('tr-TR', { 
+            {new Date(alert.date).toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US', { 
               weekday: 'long',
               year: 'numeric',
               month: 'long',

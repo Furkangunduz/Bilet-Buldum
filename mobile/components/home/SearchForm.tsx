@@ -3,6 +3,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Animated, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useSearchAlerts } from '~/hooks/useSearchAlerts';
 import { api, Station } from '~/lib/api';
@@ -56,6 +57,7 @@ export function SearchForm({
   const isDark = colorScheme === 'dark';
   const { user } = useAuth();
   const { mutate: mutateAlerts } = useSearchAlerts();
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -99,31 +101,31 @@ export function SearchForm({
 
     if (!searchForm.fromId) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      setError('Please select a departure station');
+      setError(t('home.searchForm.errors.selectDeparture'));
       return false;
     }
 
     if (!searchForm.toId) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      setError('Please select an arrival station');
+      setError(t('home.searchForm.errors.selectArrival'));
       return false;
     }
 
     if (!searchForm.date) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      setError('Please select a date');
+      setError(t('home.searchForm.errors.selectDate'));
       return false;
     }
 
     if (!searchForm.cabinClass) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      setError('Please select a cabin class');
+      setError(t('home.searchForm.errors.selectCabinClass'));
       return false;
     }
 
     if (!searchForm.departureTimeRange.start || !searchForm.departureTimeRange.end) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      setError('Please select departure time range');
+      setError(t('home.searchForm.errors.selectTimeRange'));
       return false;
     }
 
@@ -152,11 +154,11 @@ export function SearchForm({
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       resetSearchForm();
       Alert.alert(
-        'Success',
-        'Search alert created successfully! We will notify you when tickets become available.',
+        t('common.success'),
+        t('home.searchForm.alertCreatedSuccess'),
         [
           {
-            text: 'View Alerts',
+            text: t('home.searchForm.viewAlerts'),
             onPress: () => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               closeBottomSheet();
@@ -168,7 +170,7 @@ export function SearchForm({
     } catch (error: any) {
       console.error('Error creating alert:', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      setError(error.response?.data?.message || 'Failed to create alert. Please try again.');
+      setError(error.response?.data?.message || t('home.searchForm.errors.createAlertFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -178,7 +180,7 @@ export function SearchForm({
     <View className="flex-1">
       <View className="relative ">
         <View>
-          <Text className="text-sm font-medium text-foreground my-2">From</Text>
+          <Text className="text-sm font-medium text-foreground my-2">{t('home.searchForm.from')}</Text>
           <TouchableOpacity
             onPress={() => handleShowModal('from')}
             className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
@@ -192,7 +194,7 @@ export function SearchForm({
             <Text 
               className={`flex-1 ml-3 text-base ${searchForm.from ? 'text-foreground' : 'text-muted-foreground'}`}
             >
-              {searchForm.from || 'Select departure station'}
+              {searchForm.from || t('home.searchForm.selectDepartureStation')}
             </Text>
             <Ionicons 
               name="chevron-down" 
@@ -226,7 +228,7 @@ export function SearchForm({
         </View>
 
         <View>
-          <Text className="text-sm font-medium text-foreground my-2">To</Text>
+          <Text className="text-sm font-medium text-foreground my-2">{t('home.searchForm.to')}</Text>
           <TouchableOpacity
             onPress={() => searchForm.fromId && handleShowModal('to')}
             className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
@@ -242,8 +244,8 @@ export function SearchForm({
               className={`flex-1 ml-3 text-base ${searchForm.to ? 'text-foreground' : 'text-muted-foreground'}`}
             >
               {!searchForm.fromId 
-                ? 'Select departure station first'
-                : searchForm.to || 'Select arrival station'}
+                ? t('home.searchForm.selectDepartureFirst')
+                : searchForm.to || t('home.searchForm.selectArrivalStation')}
             </Text>
             <Ionicons 
               name="chevron-down" 
@@ -278,7 +280,7 @@ export function SearchForm({
         </View>
 
         <View>
-          <Text className="text-sm font-medium text-foreground my-2">Date</Text>
+          <Text className="text-sm font-medium text-foreground my-2">{t('home.searchForm.date')}</Text>
           <Pressable 
             className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
             onPress={handleDatePicker}
@@ -290,7 +292,7 @@ export function SearchForm({
               color={isDark ? '#fff' : '#000'} 
             />
             <Text className={`flex-1 ml-3 text-base ${searchForm.date ? 'text-foreground' : 'text-muted-foreground'}`}>
-              {searchForm.date || 'Select date'}
+              {searchForm.date || t('home.searchForm.selectDate')}
             </Text>
           </Pressable>
           <ScrollView horizontal className="flex-row pt-3 pb-3">
@@ -313,7 +315,7 @@ export function SearchForm({
                     <Text className={`${
                       isTodaySelected ? 'text-primary-foreground' : 'text-secondary-foreground'
                     } text-sm`}>
-                      Today
+                      {t('home.searchForm.today')}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -323,7 +325,7 @@ export function SearchForm({
                 date.setDate(date.getDate() + days);
                 const formattedDate = date.toISOString().split('T')[0];
                 const isSelected = searchForm.date === formattedDate;
-                const label = days === 1 ? 'Tomorrow' : `${days} Days Later`;
+                const label = days === 1 ? t('home.searchForm.tomorrow') : t('home.searchForm.daysLater', { days });
 
                 buttons.push(
                   <TouchableOpacity
@@ -348,7 +350,7 @@ export function SearchForm({
         </View>
 
         <View>
-          <Text className="text-sm font-medium text-foreground my-2">Cabin Class</Text>
+          <Text className="text-sm font-medium text-foreground my-2">{t('home.searchForm.cabinClass')}</Text>
           <TouchableOpacity
             onPress={() => handleShowModal('cabin')}
             className="flex-row items-center bg-card border border-input rounded-xl px-4 h-14"
@@ -362,7 +364,7 @@ export function SearchForm({
             <Text 
               className={`flex-1 ml-3 text-base ${searchForm.cabinClassName ? 'text-foreground' : 'text-muted-foreground'}`}
             >
-              {searchForm.cabinClassName || 'Select cabin class'}
+              {searchForm.cabinClassName || t('home.searchForm.selectCabinClass')}
             </Text>
             <Ionicons 
               name="chevron-down" 
@@ -374,7 +376,7 @@ export function SearchForm({
         </View>
 
         <View>
-          <Text className="text-sm font-medium text-foreground my-2">Departure Time Range</Text>
+          <Text className="text-sm font-medium text-foreground my-2">{t('home.searchForm.departureTime')}</Text>
           <View className="flex-row gap-4">
             <TouchableOpacity
               onPress={() => handleTimePicker('start')}
@@ -387,7 +389,7 @@ export function SearchForm({
                 color={isDark ? '#fff' : '#000'} 
               />
               <Text className={`flex-1 ml-3 text-base ${searchForm.departureTimeRange.start ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {searchForm.departureTimeRange.start || 'Start Time'}
+                {searchForm.departureTimeRange.start || t('home.searchForm.startTime')}
               </Text>
             </TouchableOpacity>
 
@@ -402,16 +404,16 @@ export function SearchForm({
                 color={isDark ? '#fff' : '#000'} 
               />
               <Text className={`flex-1 ml-3 text-base ${searchForm.departureTimeRange.end ? 'text-foreground' : 'text-muted-foreground'}`}>
-                {searchForm.departureTimeRange.end || 'End Time'}
+                {searchForm.departureTimeRange.end || t('home.searchForm.endTime')}
               </Text>
             </TouchableOpacity>
           </View>
           <ScrollView horizontal className="flex-row pt-3 pb-3">
             {[
-              { start: "00:00", end: "23:59", label: "All Day" },
-              { start: "06:00", end: "12:00", label: "(06:00 - 12:00)" },
-              { start: "12:00", end: "18:00", label: "(12:00 - 18:00)" },
-              { start: "18:00", end: "06:00", label: "(18:00 - 06:00)" }
+              { start: "00:00", end: "23:59", label: t('home.searchForm.timeRanges.allDay') },
+              { start: "06:00", end: "12:00", label: t('home.searchForm.timeRanges.morning') },
+              { start: "12:00", end: "18:00", label: t('home.searchForm.timeRanges.afternoon') },
+              { start: "18:00", end: "06:00", label: t('home.searchForm.timeRanges.night') }
             ].map((timeRange) => (
               <TouchableOpacity
                 key={timeRange.label}
@@ -452,7 +454,7 @@ export function SearchForm({
                 />
               )}
             </View>
-            <Text className="text-base text-foreground">High-speed trains only</Text>
+            <Text className="text-base text-foreground">{t('home.searchForm.highSpeedTrain')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -476,7 +478,7 @@ export function SearchForm({
             <ActivityIndicator color={isDark ? '#000' : '#fff'} />
           ) : (
             <Text className="text-primary-foreground font-semibold text-base">
-              Create Alert
+              {t('home.searchForm.createAlert')}
             </Text>
           )}
         </TouchableOpacity>

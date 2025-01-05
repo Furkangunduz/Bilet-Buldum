@@ -1,6 +1,7 @@
 import { Eye, EyeOff, Lock, X } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface PasswordFormProps {
@@ -43,6 +44,7 @@ export function PasswordForm({
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { t } = useTranslation();
 
   useEffect(() => {
     Animated.parallel([
@@ -104,7 +106,7 @@ export function PasswordForm({
       className="p-4 bg-background"
     >
       <View className="flex-row justify-between items-center mb-6">
-        <Text className="text-2xl font-bold text-foreground">Change Password</Text>
+        <Text className="text-2xl font-bold text-foreground">{t('profile.password.title')}</Text>
         <TouchableOpacity 
           onPress={onClose}
           className="p-2 rounded-full bg-muted/10 active:bg-muted/20"
@@ -115,30 +117,30 @@ export function PasswordForm({
 
       <View>
         <PasswordInput
-          label="Current Password"
+          label={t('profile.password.currentPassword')}
           value={passwordForm.currentPassword}
           onChange={(text: string) => onChangePassword({ ...passwordForm, currentPassword: text })}
-          placeholder="Enter current password"
+          placeholder={t('profile.password.enterCurrentPassword')}
           showPassword={showPasswords.current}
           toggleShow={() => setShowPasswords(prev => ({ ...prev, current: !prev.current }))}
           isFirst={true}
         />
 
         <PasswordInput
-          label="New Password"
+          label={t('profile.password.newPassword')}
           value={passwordForm.newPassword}
           onChange={(text: string) => onChangePassword({ ...passwordForm, newPassword: text })}
-          placeholder="Enter new password"
+          placeholder={t('profile.password.enterNewPassword')}
           showPassword={showPasswords.new}
           toggleShow={() => setShowPasswords(prev => ({ ...prev, new: !prev.new }))}
           isFirst={false}
         />
 
         <PasswordInput
-          label="Confirm New Password"
+          label={t('profile.password.confirmNewPassword')}
           value={passwordForm.confirmPassword}
           onChange={(text: string) => onChangePassword({ ...passwordForm, confirmPassword: text })}
-          placeholder="Confirm new password"
+          placeholder={t('profile.password.confirmNewPassword')}
           showPassword={showPasswords.confirm}
           toggleShow={() => setShowPasswords(prev => ({ ...prev, confirm: !prev.confirm }))}
           isFirst={false}
@@ -160,7 +162,7 @@ export function PasswordForm({
           {isLoading ? (
             <ActivityIndicator color={isDark ? '#000' : '#fff'} />
           ) : (
-            <Text className="text-primary-foreground font-semibold">Update Password</Text>
+            <Text className="text-primary-foreground font-semibold">{t('profile.password.updatePassword')}</Text>
           )}
         </TouchableOpacity>
       </View>

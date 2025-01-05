@@ -1,9 +1,11 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Link } from 'expo-router';
 import { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Keyboard, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useColorScheme } from '~/lib/useColorScheme';
+import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { PrivacyPolicy } from '../../components/profile/PrivacyPolicy';
 import { TermsOfService } from '../../components/profile/TermsOfService';
 import { ThemeToggle } from '../../components/ThemeToggle';
@@ -21,6 +23,7 @@ export default function SignUp() {
   const isDark = colorScheme === 'dark';
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [activeSheet, setActiveSheet] = useState<'privacyPolicy' | 'termsOfService' | null>(null);
+  const { t } = useTranslation();
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
@@ -58,22 +61,22 @@ export default function SignUp() {
 
   async function handleSignUp() {
     if (!name.trim()) {
-      setError('Please enter your name');
+      setError(t('auth.errors.nameRequired'));
       return;
     }
     
     if (!lastName.trim()) {
-      setError('Please enter your last name');
+      setError(t('auth.errors.lastNameRequired'));
       return;
     }
 
     if (!email.trim()) {
-      setError('Please enter your email');
+      setError(t('auth.errors.emailRequired'));
       return;
     }
 
     if (!password.trim()) {
-      setError('Please enter your password');
+      setError(t('auth.errors.passwordRequired'));
       return;
     }
     
@@ -86,7 +89,7 @@ export default function SignUp() {
       if (err?.response?.data?.error) {
         setError(err.response.data.error);
       } else {
-        setError('Registration failed. Please try again.');
+        setError(t('auth.errors.registrationFailed'));
       }
     } finally {
       setIsLoading(false);
@@ -99,7 +102,8 @@ export default function SignUp() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1 bg-background"
     >
-      <View className="absolute top-28 right-10 z-10">
+      <View className="absolute top-28 right-10 z-10 flex-row items-center gap-4">
+        <LanguageSwitch />
         <ThemeToggle />
       </View>
 
@@ -110,7 +114,7 @@ export default function SignUp() {
         >
           <View className="items-center mb-8">
             <Text className="text-3xl font-bold text-foreground">Bilet Buldum</Text>
-            <Text className="text-base text-muted-foreground mt-1">Create your account</Text>
+            <Text className="text-base text-muted-foreground mt-1">{t('auth.createAccount')}</Text>
           </View>
 
           {error ? (
@@ -127,9 +131,9 @@ export default function SignUp() {
               entering={FadeInDown.delay(400).duration(1000)}
               className="gap-2"
             >
-              <Text className="text-sm font-medium text-foreground ml-1">First Name</Text>
+              <Text className="text-sm font-medium text-foreground ml-1">{t('auth.firstName')}</Text>
               <TextInput
-                placeholder="Enter your first name"
+                placeholder={t('auth.enterFirstName')}
                 value={name}
                 onChangeText={setName}
                 className="bg-card text-foreground px-4 py-3 rounded-lg border border-border"
@@ -142,9 +146,9 @@ export default function SignUp() {
               entering={FadeInDown.delay(600).duration(1000)}
               className="gap-2"
             >
-              <Text className="text-sm font-medium text-foreground ml-1">Last Name</Text>
+              <Text className="text-sm font-medium text-foreground ml-1">{t('auth.lastName')}</Text>
               <TextInput
-                placeholder="Enter your last name"
+                placeholder={t('auth.enterLastName')}
                 value={lastName}
                 onChangeText={setLastName}
                 className="bg-card text-foreground px-4 py-3 rounded-lg border border-border"
@@ -157,9 +161,9 @@ export default function SignUp() {
               entering={FadeInDown.delay(800).duration(1000)}
               className="gap-2"
             >
-              <Text className="text-sm font-medium text-foreground ml-1">Email</Text>
+              <Text className="text-sm font-medium text-foreground ml-1">{t('auth.email')}</Text>
               <TextInput
-                placeholder="Enter your email"
+                placeholder={t('auth.enterEmail')}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -174,9 +178,9 @@ export default function SignUp() {
               entering={FadeInDown.delay(1000).duration(1000)}
               className="gap-2"
             >
-              <Text className="text-sm font-medium text-foreground ml-1">Password</Text>
+              <Text className="text-sm font-medium text-foreground ml-1">{t('auth.password')}</Text>
               <TextInput
-                placeholder="Create a password"
+                placeholder={t('auth.createPassword')}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -191,17 +195,16 @@ export default function SignUp() {
               className="mt-4"
             >
               <Text className="text-sm text-muted-foreground text-center mb-4">
-                By creating an account, you agree to our{' '}
+                {t('auth.agreeToTerms')}{' '}
                 <TouchableWithoutFeedback
                  className='p-0 m-0' onPress={showTermsOfService} disabled={isLoading}>
-                  <Text className="text-primary font-medium">Terms of Service</Text>
+                  <Text className="text-primary font-medium">{t('auth.termsOfService')}</Text>
                 </TouchableWithoutFeedback>
-                {' '}and{' '}
+                {' '}{t('auth.and')}{' '}
                 <TouchableWithoutFeedback
                  onPress={showPrivacyPolicy} disabled={isLoading}>
-                  <Text className="text-primary font-medium">Privacy Policy</Text>
+                  <Text className="text-primary font-medium">{t('auth.privacyPolicy')}</Text>
                 </TouchableWithoutFeedback>
-                
               </Text>
 
               <TouchableOpacity
@@ -212,10 +215,10 @@ export default function SignUp() {
                 {isLoading ? (
                   <>
                     <ActivityIndicator color={isDark ? '#000' : '#fff'} size="small" />
-                    <Text className="text-primary-foreground text-lg font-semibold ml-2">Creating account...</Text>
+                    <Text className="text-primary-foreground text-lg font-semibold ml-2">{t('auth.creatingAccount')}</Text>
                   </>
                 ) : (
-                  <Text className="text-primary-foreground text-lg font-semibold">Create Account</Text>
+                  <Text className="text-primary-foreground text-lg font-semibold">{t('auth.createAccount')}</Text>
                 )}
               </TouchableOpacity>
             </Animated.View>
@@ -224,10 +227,10 @@ export default function SignUp() {
               entering={FadeInDown.delay(1400).duration(1000)}
               className="flex-row justify-center mt-4"
             >
-              <Text className="text-muted-foreground">Already have an account?</Text>
+              <Text className="text-muted-foreground">{t('auth.haveAccount')}</Text>
               <Link href="/sign-in" asChild>
                 <TouchableOpacity disabled={isLoading}>
-                  <Text className={`text-primary font-semibold ml-1 ${isLoading ? 'opacity-50' : ''}`}>Sign In</Text>
+                  <Text className={`text-primary font-semibold ml-1 ${isLoading ? 'opacity-50' : ''}`}>{t('auth.signIn')}</Text>
                 </TouchableOpacity>
               </Link>
             </Animated.View>

@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { CabinClass, Station } from '../../lib/api';
 
@@ -31,6 +32,8 @@ export function StationModal({
   onCabinClassSelect,
   onRetryLoadCabinClasses
 }: StationModalProps) {
+  const { t } = useTranslation();
+
   const renderStationItem = ({ item }: { item: Station }) => (
     <TouchableOpacity
       onPress={() =>{
@@ -41,7 +44,6 @@ export function StationModal({
       <Text className="text-base text-foreground">{item.name}</Text>
     </TouchableOpacity>
   );
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -55,10 +57,10 @@ export function StationModal({
           </TouchableOpacity>
           <Text className="text-lg font-semibold text-foreground">
             {type === 'from' 
-              ? 'Select Departure' 
+              ? t('home.stationModal.selectDeparture')
               : type === 'to'
-              ? 'Select Arrival'
-              : 'Select Cabin Class'
+              ? t('home.stationModal.selectArrival')
+              : t('home.stationModal.selectCabinClass')
             }
           </Text>
           <View style={{ width: 40 }} />
@@ -77,7 +79,7 @@ export function StationModal({
                   onPress={onRetryLoadCabinClasses}
                   className="bg-primary px-4 py-2 rounded-lg"
                 >
-                  <Text className="text-primary-foreground">Try Again</Text>
+                  <Text className="text-primary-foreground">{t('common.tryAgain')}</Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -95,7 +97,7 @@ export function StationModal({
                 ListEmptyComponent={
                   <View className="flex-1 items-center justify-center p-4">
                     <Text className="text-muted-foreground text-center">
-                      No cabin classes available
+                      {t('home.stationModal.noCabinClasses')}
                     </Text>
                   </View>
                 }
@@ -109,7 +111,7 @@ export function StationModal({
                 <Ionicons name="search" size={20} color="#666" />
                 <TextInput
                   className="flex-1 h-12 ml-2 text-base"
-                  placeholder="Search stations"
+                  placeholder={t('home.stationModal.searchStations')}
                   placeholderTextColor="#666"
                   value={stationSearch}
                   onChangeText={onSearchChange}
@@ -123,8 +125,6 @@ export function StationModal({
                 ) : null}
               </View>
             </View>
-
-           
 
             {isLoading ? (
               <View className="flex-1 items-center justify-center">
@@ -141,10 +141,10 @@ export function StationModal({
                   <View className="flex-1 items-center justify-center p-4">
                     <Text className="text-muted-foreground text-center">
                       {stationSearch 
-                        ? 'No stations found'
+                        ? t('home.stationModal.noStationsFound')
                         : type === 'to' 
-                          ? 'Select a departure station first'
-                          : 'No stations available'}
+                          ? t('home.stationModal.selectDepartureFirst')
+                          : t('home.stationModal.noStationsAvailable')}
                     </Text>
                   </View>
                 }

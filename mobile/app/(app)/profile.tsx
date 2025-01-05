@@ -1,9 +1,10 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Bell, ChevronRight, Coffee, FileText, Globe, LogOut, Mail, Palette, Settings, Shield, User } from 'lucide-react-native';
+import { Bell, ChevronRight, FileText, Globe, LogOut, Mail, Palette, Settings, Shield, User } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Linking, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ContactForm } from '~/components/profile/ContactForm';
 import { PrivacyPolicy } from '~/components/profile/PrivacyPolicy';
 import { TermsOfService } from '~/components/profile/TermsOfService';
 import { ThemeToggle } from '~/components/ThemeToggle';
@@ -189,14 +190,14 @@ export default function Profile() {
     {
       title: t('profile.sections.support'),
       items: [
-        {
-          icon: Coffee,
-          label: t('profile.items.buyMeCoffee'),
-          color: '#FFDD00',
-          onPress: () => {
-            Linking.openURL('https://www.buymeacoffee.com/furkangunduz');
-          }
-        },
+        // {
+        //   icon: Coffee,
+        //   label: t('profile.items.buyMeCoffee'),
+        //   color: '#FFDD00',
+        //   onPress: () => {
+        //     Linking.openURL('https://www.buymeacoffee.com/furkangunduz');
+        //   }
+        // },
         {
           icon: Mail,
           label: t('profile.items.contactUs'),
@@ -313,59 +314,14 @@ export default function Profile() {
 
       case 'contact':
         return (
-          <View className="p-6">
-            <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-xl font-semibold text-foreground">Contact Us</Text>
-              <TouchableOpacity onPress={() => bottomSheetRef.current?.close()}>
-                <Text className="text-primary">Close</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View className="gap-6">
-              <View>
-                <Text className="text-sm font-medium text-foreground mb-2">Subject</Text>
-                <TextInput
-                  className="p-3 rounded-md bg-input border border-border text-foreground"
-                  placeholder="Enter subject"
-                  placeholderTextColor="#666"
-                  value={contactForm.subject}
-                  onChangeText={(text) => setContactForm(prev => ({ ...prev, subject: text }))}
-                />
-              </View>
-
-              <View>
-                <Text className="text-sm font-medium text-foreground mb-2">Message</Text>
-                <TextInput
-                  className="p-3 rounded-md bg-input border border-border text-foreground"
-                  placeholder="Type your message here..."
-                  placeholderTextColor="#666"
-                  multiline
-                  numberOfLines={10}
-                  textAlignVertical="top"
-                  value={contactForm.message}
-                  onChangeText={(text) => setContactForm(prev => ({ ...prev, message: text }))}
-                />
-              </View>
-
-              {error && (
-                <Text className="text-destructive text-sm">{error}</Text>
-              )}
-
-              <TouchableOpacity
-                className="bg-primary p-4 rounded-md"
-                onPress={handleContactSubmit}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="white" />
-                ) : (
-                  <Text className="text-primary-foreground text-center font-semibold">
-                    Send Message
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
+         <ContactForm 
+         contactForm={contactForm}
+         setContactForm={setContactForm}
+         onClose={() => bottomSheetRef.current?.close()}
+         onSubmit={handleContactSubmit}
+         isLoading={isLoading}
+         error={error}
+         />
         );
 
       default:

@@ -1,6 +1,7 @@
 import { User, X } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Animated, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface PersonalInfoFormProps {
@@ -26,6 +27,7 @@ export function PersonalInfoForm({
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { t } = useTranslation();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -38,7 +40,7 @@ export function PersonalInfoForm({
   return (
     <Animated.View style={{ opacity: fadeAnim }} className="p-4 bg-background">
       <View className="flex-row justify-between items-center mb-6">
-        <Text className="text-2xl font-bold text-foreground">Personal Information</Text>
+        <Text className="text-2xl font-bold text-foreground">{t('profile.personalInfo.title')}</Text>
         <TouchableOpacity 
           onPress={onClose}
           className="p-2 rounded-full bg-muted/10 active:bg-muted/20"
@@ -49,7 +51,7 @@ export function PersonalInfoForm({
 
       <View>
         <View className="mb-5">
-          <Text className="text-sm font-semibold text-muted-foreground mb-2">First Name</Text>
+          <Text className="text-sm font-semibold text-muted-foreground mb-2">{t('profile.personalInfo.firstName')}</Text>
           <View className="relative">
             <View className="absolute left-3 top-3 z-10">
               <User size={20} color={isDark ? '#A1A1AA' : '#71717A'} />
@@ -58,14 +60,14 @@ export function PersonalInfoForm({
               className="bg-card border border-input rounded-xl pl-11 pr-4 h-12 text-foreground"
               value={personalInfo.firstName}
               onChangeText={(text) => onChangeInfo({ ...personalInfo, firstName: text })}
-              placeholder="Enter your first name"
+              placeholder={t('profile.personalInfo.enterFirstName')}
               placeholderTextColor={isDark ? '#A1A1AA' : '#71717A'}
             />
           </View>
         </View>
 
         <View className="mb-5">
-          <Text className="text-sm font-semibold text-muted-foreground mb-2">Last Name</Text>
+          <Text className="text-sm font-semibold text-muted-foreground mb-2">{t('profile.personalInfo.lastName')}</Text>
           <View className="relative">
             <View className="absolute left-3 top-3 z-10">
               <User size={20} color={isDark ? '#A1A1AA' : '#71717A'} />
@@ -74,7 +76,7 @@ export function PersonalInfoForm({
               className="bg-card border border-input rounded-xl pl-11 pr-4 h-12 text-foreground"
               value={personalInfo.lastName}
               onChangeText={(text) => onChangeInfo({ ...personalInfo, lastName: text })}
-              placeholder="Enter your last name"
+              placeholder={t('profile.personalInfo.enterLastName')}
               placeholderTextColor={isDark ? '#A1A1AA' : '#71717A'}
             />
           </View>
@@ -94,7 +96,7 @@ export function PersonalInfoForm({
           {isLoading ? (
             <ActivityIndicator color={isDark ? '#000' : '#fff'} />
           ) : (
-            <Text className="text-primary-foreground font-semibold">Save Changes</Text>
+            <Text className="text-primary-foreground font-semibold">{t('common.save')}</Text>
           )}
         </TouchableOpacity>
       </View>
