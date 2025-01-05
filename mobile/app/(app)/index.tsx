@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
+import { PermissionStatus, getTrackingPermissionsAsync, requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
-import { AdEventType, InterstitialAd } from 'react-native-google-mobile-ads';
+import { AdEventType, InterstitialAd, MobileAds } from 'react-native-google-mobile-ads';
 import { AlertItem } from '~/components/home/AlertItem';
 import { DateTimePickers } from '~/components/home/DateTimePickers';
 import { EmptyState } from '~/components/home/EmptyState';
@@ -24,6 +25,27 @@ if (Platform.OS === 'android') {
   }
 }
 
+// Initialize tracking transparency and Mobile Ads SDK
+const initializeAds = async () => {
+  try {
+    if (Platform.OS === 'ios') {
+      const { status } = await getTrackingPermissionsAsync();
+      if (status === PermissionStatus.UNDETERMINED) {
+        await requestTrackingPermissionsAsync();
+      }
+    }
+
+    const adapterStatuses = await MobileAds().initialize();
+    console.log('Mobile Ads initialization complete!', adapterStatuses);
+  } catch (error) {
+    console.error('Error initializing ads:', error);
+  }
+};
+
+// Call initialization on mount
+useEffect(() => {
+  initializeAds();
+}, []);
 
 const CustomLayoutAnimation = {
   duration: 150,
@@ -40,7 +62,13 @@ const CustomLayoutAnimation = {
   },
 };
 
-const adUnitId = AD_UNIT_IDS.INTERSTITIAL[Platform.OS === 'ios' ? 'IOS' : 'ANDROID'];
+// Use test ads when in development or TestFlight
+const isTestEnvironment = __DEV__ || process.env.NODE_ENV !== 'production';
+const adUnitId = isTestEnvironment 
+  ? AD_UNIT_IDS.TEST.INTERSTITIAL 
+  : AD_UNIT_IDS.INTERSTITIAL[Platform.OS === 'ios' ? 'IOS' : 'ANDROID'];
+
+console.log('Using ad unit ID:', adUnitId);
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
