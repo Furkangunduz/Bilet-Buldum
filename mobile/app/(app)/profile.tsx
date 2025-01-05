@@ -1,14 +1,16 @@
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Bell, ChevronRight, Coffee, FileText, LogOut, Mail, Palette, Settings, Shield, User } from 'lucide-react-native';
+import { Bell, ChevronRight, Coffee, FileText, Globe, LogOut, Mail, Palette, Settings, Shield, User } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { ActivityIndicator, Alert, Linking, Pressable, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { PrivacyPolicy } from '~/components/profile/PrivacyPolicy';
 import { TermsOfService } from '~/components/profile/TermsOfService';
+import { ThemeToggle } from '~/components/ThemeToggle';
+import { LanguageToggle } from '../../components/LanguageToggle';
 import { NotificationsForm } from '../../components/profile/NotificationsForm';
 import { PasswordForm } from '../../components/profile/PasswordForm';
 import { PersonalInfoForm } from '../../components/profile/PersonalInfoForm';
-import { ThemeToggle } from '../../components/ThemeToggle';
 import { authApi, contactApi } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 
@@ -26,6 +28,7 @@ interface SectionData {
 }
 
 export default function Profile() {
+  const { t } = useTranslation();
   const { user, signOut, updateUser } = useAuth();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -137,11 +140,11 @@ export default function Profile() {
 
   const sections: SectionData[] = [
     {
-      title: 'Account',
+      title: t('profile.sections.account'),
       items: [
         {
           icon: User,
-          label: 'Personal Information',
+          label: t('profile.items.personalInfo'),
           color: '#3B82F6',
           onPress: () => {
             setActiveSheet('personal');
@@ -150,7 +153,7 @@ export default function Profile() {
         },
         {
           icon: Bell,
-          label: 'Notifications',
+          label: t('profile.items.notifications'),
           color: '#8B5CF6',
           onPress: () => {
             setActiveSheet('notifications');
@@ -159,28 +162,36 @@ export default function Profile() {
         },
         {
           icon: Settings,
-          label: 'Change Password',
+          label: t('profile.items.changePassword'),
           color: '#10B981',
           onPress: () => {
             setActiveSheet('password');
             bottomSheetRef.current?.expand();
           }
         },
+       
+        {
+          icon: Globe,
+          label: t('profile.items.language'),
+          color: '#EC4899',
+          rightContent: () => <LanguageToggle />,
+          onPress: () => {}
+        },
         {
           icon: Palette,
-          label: 'Theme',
+          label: t('profile.items.theme'),
           color: '#F59E0B',
           rightContent: () => <ThemeToggle />,
           onPress: () => {}
-        }
+        },
       ]
     },
     {
-      title: 'Support',
+      title: t('profile.sections.support'),
       items: [
         {
           icon: Coffee,
-          label: 'Buy Me a Coffee',
+          label: t('profile.items.buyMeCoffee'),
           color: '#FFDD00',
           onPress: () => {
             Linking.openURL('https://www.buymeacoffee.com/furkangunduz');
@@ -188,7 +199,7 @@ export default function Profile() {
         },
         {
           icon: Mail,
-          label: 'Contact Us',
+          label: t('profile.items.contactUs'),
           color: '#0EA5E9',
           onPress: () => {
             setActiveSheet('contact');
@@ -198,11 +209,11 @@ export default function Profile() {
       ]
     },
     {
-      title: 'Legal',
+      title: t('profile.sections.legal'),
       items: [
         {
           icon: Shield,
-          label: 'Privacy Policy',
+          label: t('profile.items.privacyPolicy'),
           color: '#EF4444',
           onPress: () => {
             setActiveSheet('privacyPolicy');
@@ -211,7 +222,7 @@ export default function Profile() {
         },
         {
           icon: FileText,
-          label: 'Terms of Service',
+          label: t('profile.items.termsOfService'),
           color: '#6366F1',
           onPress: () => {
             setActiveSheet('termsOfService');
@@ -221,23 +232,23 @@ export default function Profile() {
       ]
     },
     {
-      title: 'Danger Zone',
+      title: t('profile.sections.dangerZone'),
       items: [
         {
           icon: LogOut,
-          label: 'Delete Account',
+          label: t('profile.items.deleteAccount'),
           color: '#DC2626',
           onPress: () => {
             Alert.alert(
-              'Delete Account',
-              'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
+              t('profile.deleteAccount.title'),
+              t('profile.deleteAccount.message'),
               [
                 {
-                  text: 'Cancel',
+                  text: t('profile.deleteAccount.cancel'),
                   style: 'cancel',
                 },
                 {
-                  text: 'Delete',
+                  text: t('profile.deleteAccount.confirm'),
                   style: 'destructive',
                   onPress: async () => {
                     try {
@@ -367,21 +378,25 @@ export default function Profile() {
       <Text className="text-lg font-semibold text-foreground mb-4">{title}</Text>
       <View className="bg-card rounded-lg overflow-hidden">
         {items.map((item, index) => (
-          <TouchableOpacity
+          <Pressable
             key={item.label}
             onPress={item.onPress}
-            className={`flex-row items-center p-4 ${
+            className={`flex-row w-[100%] justify-between items-center py-4 ${
               index !== items.length - 1 ? 'border-b border-border' : ''
             }`}
           >
-            <View className="w-8 h-8 rounded-full bg-opacity-10 items-center justify-center" style={{ backgroundColor: `${item.color}20` }}>
-              <item.icon size={18} color={item.color} />
+           <View className="flex-row items-center flex-1 justify-between">
+            <View className="flex-row items-center">
+              <View className="w-8 h-8 rounded-full bg-opacity-10 items-center justify-center mr-3" style={{ backgroundColor: `${item.color}20` }}>
+                <item.icon size={18} color={item.color} />
+              </View>
+              <Text className="text-foreground">{item.label}</Text>
             </View>
-            <Text className="flex-1 ml-3 text-foreground">{item.label}</Text>
-            {item.rightContent ? item.rightContent() : (
+              {item.rightContent ? item.rightContent() : (
               <ChevronRight size={20} className="text-muted-foreground" />
             )}
-          </TouchableOpacity>
+           </View>
+          </Pressable>
         ))}
       </View>
     </View>
@@ -406,7 +421,7 @@ export default function Profile() {
   </View> :
     <SafeAreaView className='flex-1 bg-background'>
       <View className="flex-row justify-between items-center px-10 pb-1">
-        <Text className="text-xl font-semibold text-foreground">Profile</Text>
+        <Text className="text-xl font-semibold text-foreground">{t('profile.title')}</Text>
         <TouchableOpacity
           onPress={handleSignOut}
           className="p-2 rounded-full bg-destructive/10 active:bg-destructive/20"
@@ -429,9 +444,12 @@ export default function Profile() {
             </View>
           </View>
 
+          <View className="px-4 ">
           {sections.map((section) => (
             <Section key={section.title} {...section} />
           ))}
+          </View>
+
         </View>
       </ScrollView>
 

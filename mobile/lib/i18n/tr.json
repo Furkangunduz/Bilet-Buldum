@@ -1,0 +1,68 @@
+{
+  "common": {
+    "search": "Ara",
+    "from": "Nereden",
+    "to": "Nereye",
+    "date": "Tarih",
+    "submit": "Gönder",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "back": "Geri",
+    "close": "Kapat",
+    "loading": "Yükleniyor...",
+    "error": "Hata"
+  },
+  "auth": {
+    "signIn": "Giriş Yap",
+    "signUp": "Kayıt Ol",
+    "forgotPassword": "Şifremi Unuttum",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifre Tekrar",
+    "name": "Ad Soyad"
+  },
+  "home": {
+    "title": "Bilet Buldum",
+    "searchTickets": "Bilet Ara",
+    "notifications": "Bildirimler",
+    "settings": "Ayarlar"
+  },
+  "profile": {
+    "title": "Profil",
+    "sections": {
+      "account": "Hesap",
+      "support": "Destek",
+      "legal": "Yasal",
+      "dangerZone": "Tehlikeli Bölge"
+    },
+    "items": {
+      "personalInfo": "Kişisel Bilgiler",
+      "notifications": "Bildirimler",
+      "changePassword": "Şifre Değiştir",
+      "theme": "Tema  ",
+      "language": "Dil",
+      "buyMeCoffee": "Kahve Ismarla",
+      "contactUs": "Bize Ulaşın",
+      "privacyPolicy": "Gizlilik Politikası",
+      "termsOfService": "Kullanım Koşulları",
+      "deleteAccount": "Hesabı Sil"
+    },
+    "contact": {
+      "title": "Bize Ulaşın",
+      "subject": "Konu",
+      "message": "Mesaj",
+      "subjectPlaceholder": "Konu giriniz",
+      "messagePlaceholder": "Mesajınızı buraya yazın...",
+      "sendMessage": "Mesaj Gönder",
+      "success": "Mesajınız gönderildi. En kısa sürede size dönüş yapacağız."
+    },
+    "deleteAccount": {
+      "title": "Hesabı Sil",
+      "message": "Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir.",
+      "cancel": "İptal",
+      "confirm": "Sil"
+    }
+  }
+} 

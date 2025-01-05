@@ -1,0 +1,68 @@
+{
+  "common": {
+    "search": "Search",
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "close": "Close",
+    "loading": "Loading...",
+    "error": "Error"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "forgotPassword": "Forgot Password",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Full Name"
+  },
+  "home": {
+    "title": "Bilet Buldum",
+    "searchTickets": "Search Tickets",
+    "notifications": "Notifications",
+    "settings": "Settings"
+  },
+  "profile": {
+    "title": "Profile",
+    "sections": {
+      "account": "Account",
+      "support": "Support",
+      "legal": "Legal",
+      "dangerZone": "Danger Zone"
+    },
+    "items": {
+      "personalInfo": "Personal Information",
+      "notifications": "Notifications",
+      "changePassword": "Change Password",
+      "theme": "Theme",
+      "language": "Language",
+      "buyMeCoffee": "Buy Me a Coffee",
+      "contactUs": "Contact Us",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "deleteAccount": "Delete Account"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "subject": "Subject",
+      "message": "Message",
+      "subjectPlaceholder": "Enter subject",
+      "messagePlaceholder": "Type your message here...",
+      "sendMessage": "Send Message",
+      "success": "Your message has been sent. We will get back to you soon."
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "message": "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  }
+} 
