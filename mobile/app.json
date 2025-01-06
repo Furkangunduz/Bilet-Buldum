@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bilet Buldum",
     "slug": "bilet-buldum",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -14,8 +14,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.gunduz.biletbuldum",
+      "supportsTablet": false,
+      "bundleIdentifier": "com.furkangunduz.biletbuldum",
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you and improve your ticket search experience.",
         "NSLocationWhenInUseUsageDescription": "We need your location to show you relevant ticket events near you.",
@@ -32,7 +32,7 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.gunduz.biletbuldum"
+      "package": "com.furkangunduz.biletbuldum"
     },
     "web": {
       "bundler": "metro",
