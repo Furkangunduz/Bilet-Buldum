@@ -46,13 +46,13 @@ const CustomLayoutAnimation = {
   },
 };
 
-// Use test ads when in development or TestFlight
-const isTestEnvironment = __DEV__ || process.env.NODE_ENV !== 'production';
+const isTestEnvironment = !__DEV__
 const adUnitId = isTestEnvironment 
   ? AD_UNIT_IDS.TEST.INTERSTITIAL 
   : AD_UNIT_IDS.INTERSTITIAL[Platform.OS === 'ios' ? 'IOS' : 'ANDROID'];
 
-console.log('Using ad unit ID:', adUnitId);
+console.log('isTestEnvironment', isTestEnvironment);
+console.log('adUnitId', adUnitId);
 
 const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
@@ -400,19 +400,22 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const startSpinning = () => {
-      Animated.loop(
-        Animated.timing(spinAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-          easing: Easing.linear,
-        })
-      ).start();
-    };
+    const animation = Animated.loop(
+      Animated.timing(spinAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+        easing: Easing.linear,
+        isInteraction: false
+      })
+    );
+    
+    animation.start();
 
-    startSpinning();
-  }, []);
+    return () => {
+      animation.stop();
+    };
+  }, [spinAnim]);
 
   const handleBulkDecline = async () => {
     try {

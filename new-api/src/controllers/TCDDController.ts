@@ -79,11 +79,6 @@ export class TCDDController extends BaseController {
       code: 'C',
       name: 'BUSİNESS',
     },
-    {
-      id: 3,
-      code: 'B',
-      name: 'YATAKLI',
-    },
   ];
 
   private isHighSpeedTrain(train: Train): boolean {
@@ -349,6 +344,7 @@ export class TCDDController extends BaseController {
     date: string;
     departureTimeRange: { start: string; end: string };
     preferredCabinClass: string;
+    preferredCabinClassName: string;
     passengerCount?: number;
     wantHighSpeedTrain?: boolean;
   }) => {
@@ -359,6 +355,7 @@ export class TCDDController extends BaseController {
         date,
         departureTimeRange,
         preferredCabinClass,
+        preferredCabinClassName,
         passengerCount = 1,
         wantHighSpeedTrain = true,
       } = params;
@@ -421,7 +418,8 @@ export class TCDDController extends BaseController {
         .flatMap((trainAvailability) => 
           trainAvailability.trains
             .filter(train => train.cabinClassAvailabilities.length > 0)
-            .filter(train => train.cabinClassAvailabilities.some(cabin => cabin.cabinClass.id === parseInt(preferredCabinClass)))
+            .filter(train => train.cabinClassAvailabilities.some(cabin =>{
+              return  cabin.cabinClass.name === (preferredCabinClassName)}))
             .map((train) => {
               const firstSegment = train.segments[0];
               const lastSegment = train.segments[train.segments.length - 1];
@@ -432,7 +430,9 @@ export class TCDDController extends BaseController {
                 arrivalStationName: lastSegment.segment.arrivalStation.name,
                 departureTime: this.formatTimestamp(firstSegment.departureTime),
                 arrivalTime: this.formatTimestamp(lastSegment.arrivalTime),
-                cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin => cabin.cabinClass.id === parseInt(preferredCabinClass))   ,
+                cabinClassAvailabilities: train.cabinClassAvailabilities.filter(cabin =>{
+                  return cabin.cabinClass.name === preferredCabinClassName}
+                ),
                 isHighSpeed: this.isHighSpeedTrain(train),
               };
             })

@@ -65,7 +65,17 @@ class SearchAlertController {
         if (fromStationName !== req.body.fromStationId && toStationName !== req.body.toStationId) break;
       }
 
-      const cabinClassName = req.body.preferredCabinClass 
+
+      console.log('[SearchAlertController] cabinClassName', {
+        fromStationId: req.body.fromStationId,
+        fromStationName,
+        toStationId: req.body.toStationId,
+        toStationName,
+        date: req.body.date,
+        cabinClass: req.body.preferredCabinClass,
+        cabinClassName: req.body.preferredCabinClassName,
+        departureTimeRange: req.body.departureTimeRange
+      });
 
       const searchAlert = await SearchAlertService.createSearchAlert(userId, {
         fromStationId: req.body.fromStationId,
@@ -74,7 +84,7 @@ class SearchAlertController {
         toStationName,
         date: req.body.date,
         cabinClass: req.body.preferredCabinClass,
-        cabinClassName,
+        cabinClassName: req.body.preferredCabinClassName,
         departureTimeRange: req.body.departureTimeRange
       });
      
@@ -200,13 +210,13 @@ class SearchAlertController {
           if (fromStationName !== alert.fromStationId && toStationName !== alert.toStationId) break;
         }
 
-        const cabinClassName = alert.cabinClass === '1' ? 'EKONOMİ' : 'BUSINESS';
+        
 
         return {
           ...alert,
           fromStationName,
           toStationName,
-          cabinClassName
+          cabinClassName: alert.cabinClassName
         };
       });
 

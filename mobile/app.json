@@ -15,7 +15,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.furkan-gunduz.biletbuldum",
+      "bundleIdentifier": "com.gunduz.biletbuldum",
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you and improve your ticket search experience.",
         "NSLocationWhenInUseUsageDescription": "We need your location to show you relevant ticket events near you.",
@@ -32,7 +32,7 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.furkan_gunduz.biletbuldum"
+      "package": "com.gunduz.biletbuldum"
     },
     "web": {
       "bundler": "metro",

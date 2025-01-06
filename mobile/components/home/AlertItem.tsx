@@ -189,7 +189,7 @@ export const AlertItem = React.memo(({
               year: 'numeric',
               month: 'long',
               day: 'numeric'
-            })} • {alert.cabinClassName || alert.cabinClass}
+            })} • {alert?.cabinClassName}
           </Text>
           <Text className="text-sm text-muted-foreground">
             {alert.departureTimeRange.start.replace(/^(\d{2}):(\d{2})$/, '$1:$2')} - {alert.departureTimeRange.end.replace(/^(\d{2}):(\d{2})$/, '$1:$2')}

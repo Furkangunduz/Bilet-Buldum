@@ -154,6 +154,7 @@ class CronJobService {
           passengerCount: 1,
           departureTimeRange: currentAlert.departureTimeRange,
           preferredCabinClass: currentAlert.cabinClass,
+          preferredCabinClassName: currentAlert.cabinClassName,
           wantHighSpeedTrain: true,
         };
   
@@ -199,6 +200,7 @@ class CronJobService {
 
             const availableSeats = train.cabinClassAvailabilities[0]?.availabilityCount || 0;
             const cabinClassName = train.cabinClassAvailabilities[0]?.cabinClass || 'Bilinmiyor';
+            console.log('[CronJobService] cabinClassName', cabinClassName);
             const duration = Math.round((arrivalTime.getTime() - departureTime.getTime()) / (1000 * 60)); // Duration in minutes
 
             await NotificationService.sendPushNotification(

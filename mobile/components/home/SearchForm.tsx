@@ -148,6 +148,7 @@ export function SearchForm({
         passengerCount: 1,
         departureTimeRange: searchForm.departureTimeRange,
         preferredCabinClass: searchForm.cabinClass,
+        preferredCabinClassName: searchForm.cabinClassName,
         wantHighSpeedTrain: searchForm.wantHighSpeedTrain
       });
       await mutateAlerts();

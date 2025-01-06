@@ -9,7 +9,6 @@ export const API_URL = 'https://bilet-buldum.onrender.com/api/v1';
 
 export const AUTH_TOKEN_KEY = '@bilet_buldum_auth_token';
 
-// Ad Unit IDs for different environments
 export const AD_UNIT_IDS = {
   INTERSTITIAL: {
     IOS: 'ca-app-pub-7425995753039606/5349762157',
@@ -20,7 +19,6 @@ export const AD_UNIT_IDS = {
   }
 };
 
-// Ad frequency control settings
 export const AD_CONFIG = {
   MIN_TIME_BETWEEN_ADS: 1 * 60 * 1000, // 1 minute in milliseconds
   MAX_ADS_PER_SESSION: 10,
