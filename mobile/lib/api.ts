@@ -1,11 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
+import { API_URL } from './constants';
 
 interface CustomAxiosInstance extends AxiosInstance {
   updatePushToken: (pushToken: string) => Promise<any>;
 }
-console.log('__DEV__',__DEV__)
-const API_URL = __DEV__ ? 'http://localhost:3000/api/v1' : 'https://biletbuldum.duckdns.org/api/v1';
 
 export const api = axios.create({
   baseURL: API_URL,

@@ -46,7 +46,7 @@ const CustomLayoutAnimation = {
   },
 };
 
-const isTestEnvironment = !__DEV__
+const isTestEnvironment = __DEV__
 const adUnitId = isTestEnvironment 
   ? AD_UNIT_IDS.TEST.INTERSTITIAL 
   : AD_UNIT_IDS.INTERSTITIAL[Platform.OS === 'ios' ? 'IOS' : 'ANDROID'];

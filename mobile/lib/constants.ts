@@ -5,7 +5,7 @@ export const ADMOB_APP_ID = {
   ANDROID: 'ca-app-pub-7425995753039606~1891009940'
 };
 
-export const API_URL = 'https://bilet-buldum.onrender.com/api/v1';
+export const API_URL = __DEV__ ? 'http://localhost:3000/api/v1' : 'https://bilet-buldum.onrender.com/api/v1';
 
 export const AUTH_TOKEN_KEY = '@bilet_buldum_auth_token';
 
@@ -20,9 +20,9 @@ export const AD_UNIT_IDS = {
 };
 
 export const AD_CONFIG = {
-  MIN_TIME_BETWEEN_ADS: 1 * 60 * 1000, // 1 minute in milliseconds
+  MIN_TIME_BETWEEN_ADS: 4 * 60 * 1000, // 1 minute in milliseconds
   MAX_ADS_PER_SESSION: 10,
-  SHOW_AD_PROBABILITY: 0.5, // 30% chance to show ad
+  SHOW_AD_PROBABILITY: 0.7, // 30% chance to show ad
 } as const;
 
 export const ONBOARDING_STEPS = [
