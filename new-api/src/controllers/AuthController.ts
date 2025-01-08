@@ -86,7 +86,7 @@ class AuthController {
         await User.findByIdAndUpdate(user._id, { $unset: { expoPushToken: 1 } });
       }
 
-      const token = jwt.sign({ userId: user._id }, env.JWT_SECRET, { expiresIn: '7d' });
+      const token = jwt.sign({ userId: user._id }, env.JWT_SECRET, { expiresIn: '30d' });
 
       res.json({
         user: {
