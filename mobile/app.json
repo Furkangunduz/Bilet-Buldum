@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bilet Buldum",
     "slug": "bilet-buldum",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
