@@ -66,8 +66,8 @@
     "startSearching": "Start Searching",
     "createNewAlert": "Create New Alert",
     "emptyState": {
-      "title": "No alerts found",
-      "description": "You don't have any active alerts. Start searching for tickets to create an alert.",
+      "title": "No alerts yet",
+      "description": "Set up your first alert to get notified when train tickets become available.",
       "readyToStart": "Ready to Start Your Journey?",
       "noAlertsWithStatus": "No {{status}} alerts"
     },
