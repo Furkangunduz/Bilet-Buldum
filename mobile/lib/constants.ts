@@ -5,7 +5,7 @@ export const ADMOB_APP_ID = {
   ANDROID: 'ca-app-pub-7425995753039606~1891009940',
 };
 
-export const API_URL = __DEV__ ? 'http://localhost:3000/api/v1' : 'https://biletbuldum.duckdns.org/api/v1';
+export const API_URL = 'https://biletbuldum.duckdns.org/api/v1';
 
 export const AUTH_TOKEN_KEY = '@bilet_buldum_auth_token';
 
