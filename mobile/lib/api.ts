@@ -12,9 +12,8 @@ export const api = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
-  timeout: 10000, 
+  timeout: 10000,
 }) as CustomAxiosInstance;
-
 
 api.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
@@ -38,10 +37,8 @@ api.interceptors.request.use(
   }
 );
 
-// Add response interceptor for logging
 api.interceptors.response.use(
   (response) => {
-    // Log the successful response
     console.log('✅ API Response:', {
       url: response.config.url,
       status: response.status,
@@ -50,7 +47,6 @@ api.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
-    // Log the error response with detailed information
     console.error('❌ API Error:', {
       url: error.config?.url,
       status: error.response?.status,
@@ -485,13 +481,13 @@ export const searchAlertsApi = {
 
   bulkDeclineSearchAlerts: (status: string) => {
     return api.post<ApiResponse<{ modifiedCount: number }>>('/search-alerts/bulk/decline', null, {
-      params: { status }
+      params: { status },
     });
   },
 
   bulkDeleteSearchAlerts: (status: string) => {
     return api.delete<ApiResponse<{ modifiedCount: number }>>('/search-alerts/bulk', {
-      params: { status }
+      params: { status },
     });
-  }
+  },
 };

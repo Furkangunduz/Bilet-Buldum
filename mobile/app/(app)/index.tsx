@@ -4,7 +4,22 @@ import * as Haptics from 'expo-haptics';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Animated, Easing, LayoutAnimation, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, UIManager, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Easing,
+  LayoutAnimation,
+  Modal,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { AdEventType, AdapterStatus, InterstitialAd, MobileAds } from 'react-native-google-mobile-ads';
 import { AlertItem } from '~/components/home/AlertItem';
@@ -24,7 +39,6 @@ if (Platform.OS === 'android') {
   }
 }
 
-// Initialize the Mobile Ads SDK
 MobileAds()
   .initialize()
   .then((adapterStatuses: AdapterStatus[]) => {
@@ -46,10 +60,8 @@ const CustomLayoutAnimation = {
   },
 };
 
-const isTestEnvironment = __DEV__
-const adUnitId = isTestEnvironment 
-  ? AD_UNIT_IDS.TEST.INTERSTITIAL 
-  : AD_UNIT_IDS.INTERSTITIAL[Platform.OS === 'ios' ? 'IOS' : 'ANDROID'];
+const isTestEnvironment = __DEV__;
+const adUnitId = isTestEnvironment ? AD_UNIT_IDS.TEST.INTERSTITIAL : AD_UNIT_IDS.INTERSTITIAL[Platform.OS === 'ios' ? 'IOS' : 'ANDROID'];
 
 console.log('isTestEnvironment', isTestEnvironment);
 console.log('adUnitId', adUnitId);
@@ -99,7 +111,7 @@ export default function Home() {
   }, [lastAdShowTime, adShowCount]);
 
   const filteredAlerts = useMemo(() => {
-    return searchAlerts.filter(alert => selectedStatuses.includes(alert.status));
+    return searchAlerts.filter((alert) => selectedStatuses.includes(alert.status));
   }, [searchAlerts, selectedStatuses]);
 
   const maxDate = useMemo(() => {
@@ -120,9 +132,9 @@ export default function Home() {
     cabinClassName: 'EKONOMİ',
     departureTimeRange: {
       start: '00:00',
-      end: '23:59'
+      end: '23:59',
     },
-    wantHighSpeedTrain: true
+    wantHighSpeedTrain: true,
   });
 
   const [departureStations, setDepartureStations] = useState<Station[]>([]);
@@ -145,9 +157,9 @@ export default function Home() {
     try {
       setIsLoadingCabinClasses(true);
       setCabinClassesError(null);
-      
+
       const response = await tcddApi.getCabinClasses();
-      
+
       if (response?.data?.data) {
         setCabinClasses(response.data.data);
       } else {
@@ -197,7 +209,7 @@ export default function Home() {
         }
       } catch (error) {
         console.error('Error fetching arrival stations:', error);
-        setArrivalStations([]); 
+        setArrivalStations([]);
       } finally {
         setIsLoadingStations(false);
       }
@@ -212,9 +224,9 @@ export default function Home() {
 
   const handleStationSelect = (station: Station, type?: 'from' | 'to') => {
     const selectionType = type || showStationModal;
-    
+
     if (selectionType === 'from') {
-      setSearchForm(prev => ({
+      setSearchForm((prev) => ({
         ...prev,
         from: station.name,
         fromId: station.id,
@@ -222,7 +234,7 @@ export default function Home() {
         toId: '',
       }));
     } else if (selectionType === 'to') {
-      setSearchForm(prev => ({
+      setSearchForm((prev) => ({
         ...prev,
         to: station.name,
         toId: station.id,
@@ -233,10 +245,10 @@ export default function Home() {
   };
 
   const handleCabinClassSelect = (cabinClass: CabinClass) => {
-    setSearchForm(prev => ({
+    setSearchForm((prev) => ({
       ...prev,
       cabinClass: cabinClass.id,
-      cabinClassName: cabinClass.name
+      cabinClassName: cabinClass.name,
     }));
     setShowStationModal(null);
   };
@@ -245,31 +257,32 @@ export default function Home() {
     const stations = showStationModal === 'from' ? departureStations : arrivalStations;
     if (!Array.isArray(stations)) return [];
     if (!debouncedSearch) return stations;
-  
+
     const normalizeString = (str: string) =>
       str
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
         .trim();
-  
+
     const searchLower = normalizeString(debouncedSearch);
-    return stations.filter(station => 
-      normalizeString(station.name).includes(searchLower)
-    );
+    return stations.filter((station) => normalizeString(station.name).includes(searchLower));
   }, [showStationModal, departureStations, arrivalStations, debouncedSearch]);
-  
+
   const handleSearchPress = () => {
     if (isAdLoaded && shouldShowAd()) {
       try {
         console.log('Showing ad...');
-        interstitial.show().then(() => {
-          setLastAdShowTime(Date.now());
-          setAdShowCount(prev => prev + 1);
-        }).catch(error => {
-          console.error('Failed to show ad:', error);
-          bottomSheetRef.current?.expand();
-        });
+        interstitial
+          .show()
+          .then(() => {
+            setLastAdShowTime(Date.now());
+            setAdShowCount((prev) => prev + 1);
+          })
+          .catch((error) => {
+            console.error('Failed to show ad:', error);
+            bottomSheetRef.current?.expand();
+          });
       } catch (error) {
         console.error('Failed to show ad:', error);
         bottomSheetRef.current?.expand();
@@ -297,10 +310,10 @@ export default function Home() {
         toValue: 0,
         duration: 0,
         useNativeDriver: true,
-      })
+      }),
     ]).start();
 
-    setSearchForm(prev => ({
+    setSearchForm((prev) => ({
       ...prev,
       from: prev.to,
       fromId: prev.toId,
@@ -311,7 +324,7 @@ export default function Home() {
 
   const spin = rotateAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '180deg']
+    outputRange: ['0deg', '180deg'],
   });
 
   const handleDeleteAlert = async (alertId: string) => {
@@ -345,21 +358,14 @@ export default function Home() {
       cabinClassName: 'EKONOMİ',
       departureTimeRange: {
         start: '00:00',
-        end: '23:59'
+        end: '23:59',
       },
-      wantHighSpeedTrain: true
+      wantHighSpeedTrain: true,
     });
   };
 
   const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5}
-      />
-    ),
+    (props: BottomSheetBackdropProps) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5} />,
     []
   );
 
@@ -386,7 +392,7 @@ export default function Home() {
 
     try {
       console.log('Loading initial ad...');
-      interstitial.load()
+      interstitial.load();
     } catch (error: any) {
       console.error('Failed to load initial ad:', error);
       setAdLoadError(error.message);
@@ -406,10 +412,10 @@ export default function Home() {
         duration: 1000,
         useNativeDriver: true,
         easing: Easing.linear,
-        isInteraction: false
+        isInteraction: false,
       })
     );
-    
+
     animation.start();
 
     return () => {
@@ -420,27 +426,23 @@ export default function Home() {
   const handleBulkDecline = async () => {
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      Alert.alert(
-        t('home.alerts.actions.declineAll'),
-        t('home.alerts.actions.confirmBulkDecline'),
-        [
-          {
-            text: t('common.cancel'),
-            style: 'cancel',
-            onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+      Alert.alert(t('home.alerts.actions.declineAll'), t('home.alerts.actions.confirmBulkDecline'), [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+          onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+        },
+        {
+          text: t('home.alerts.actions.declineAll'),
+          style: 'destructive',
+          onPress: async () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            await searchAlertsApi.bulkDeclineSearchAlerts('PROCESSING');
+            LayoutAnimation.configureNext(CustomLayoutAnimation);
+            await mutateAlerts();
           },
-          {
-            text: t('home.alerts.actions.declineAll'),
-            style: 'destructive',
-            onPress: async () => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-              await searchAlertsApi.bulkDeclineSearchAlerts('PROCESSING');
-              LayoutAnimation.configureNext(CustomLayoutAnimation);
-              await mutateAlerts();
-            },
-          },
-        ],
-      );
+        },
+      ]);
     } catch (error) {
       console.error('Error declining alerts:', error);
     }
@@ -449,27 +451,23 @@ export default function Home() {
   const handleBulkDelete = async (status: string) => {
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      Alert.alert(
-        t('home.alerts.actions.deleteAll'),
-        t('home.alerts.actions.confirmBulkDelete', { status: status.toLowerCase() }),
-        [
-          {
-            text: t('common.cancel'),
-            style: 'cancel',
-            onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+      Alert.alert(t('home.alerts.actions.deleteAll'), t('home.alerts.actions.confirmBulkDelete', { status: status.toLowerCase() }), [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+          onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+        },
+        {
+          text: t('home.alerts.actions.deleteAll'),
+          style: 'destructive',
+          onPress: async () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            await searchAlertsApi.bulkDeleteSearchAlerts(status);
+            LayoutAnimation.configureNext(CustomLayoutAnimation);
+            await mutateAlerts();
           },
-          {
-            text: t('home.alerts.actions.deleteAll'),
-            style: 'destructive',
-            onPress: async () => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-              await searchAlertsApi.bulkDeleteSearchAlerts(status);
-              LayoutAnimation.configureNext(CustomLayoutAnimation);
-              await mutateAlerts();
-            },
-          },
-        ],
-      );
+        },
+      ]);
     } catch (error) {
       console.error('Error deleting alerts:', error);
     }
@@ -503,44 +501,39 @@ export default function Home() {
 
   return (
     <SafeAreaView className='flex-1 bg-background'>
-      <View className="flex-1 bg-background">
-        <View className="flex-1 px-6">
+      <View className='flex-1 bg-background'>
+        <View className='flex-1 px-6'>
           {isLoadingAlerts ? (
-            <View className="flex-1 items-center justify-center">
-              <ActivityIndicator size="large" color="#666" />
+            <View className='flex-1 items-center justify-center'>
+              <ActivityIndicator size='large' color='#666' />
             </View>
           ) : searchAlerts.length > 0 ? (
-            <View className="flex-1">
-              <Text className="text-lg font-semibold text-foreground mb-4 mt-6">
-                {t('home.activeAlerts')}
-              </Text>
-              <View className="flex-row items-center justify-between mb-4">
-                <StatusFilter 
-                  selectedStatuses={selectedStatuses}
-                  onStatusChange={setSelectedStatuses}
-                />
-                <View className="flex-row gap-2">
+            <View className='flex-1'>
+              <Text className='mb-4 mt-6 text-lg font-semibold text-foreground'>{t('home.activeAlerts')}</Text>
+              <View className='mb-4 flex-row items-center justify-between'>
+                <StatusFilter selectedStatuses={selectedStatuses} onStatusChange={setSelectedStatuses} />
+                <View className='flex-row gap-2'>
                   {selectedStatuses.includes('PROCESSING') && filteredAlerts.length > 0 && (
                     <TouchableOpacity
                       onPress={handleBulkDecline}
-                      className="bg-muted/80 px-3 py-1.5 rounded-lg flex-row items-center gap-1.5"
+                      className='flex-row items-center gap-1.5 rounded-lg bg-muted/80 px-3 py-1.5'
                     >
-                      <Ionicons name="close-circle-outline" size={16} color={isDark ? '#fff' : '#000'} />
-                      <Text className="text-foreground font-medium text-xs">{t('home.alerts.actions.declineAll')}</Text>
+                      <Ionicons name='close-circle-outline' size={16} color={isDark ? '#fff' : '#000'} />
+                      <Text className='text-xs font-medium text-foreground'>{t('home.alerts.actions.declineAll')}</Text>
                     </TouchableOpacity>
                   )}
                   {(selectedStatuses.includes('COMPLETED') || selectedStatuses.includes('FAILED')) && filteredAlerts.length > 0 && (
                     <TouchableOpacity
                       onPress={() => handleBulkDelete(selectedStatuses[0])}
-                      className="bg-destructive/90 px-3 py-1.5 rounded-lg flex-row items-center gap-1.5 shadow-sm"
+                      className='flex-row items-center gap-1.5 rounded-lg bg-destructive/90 px-3 py-1.5 shadow-sm'
                     >
-                      <Ionicons name="trash-outline" size={16} color="#fff" />
-                      <Text className="text-white font-medium text-xs">{t('home.alerts.actions.deleteAll')}</Text>
+                      <Ionicons name='trash-outline' size={16} color='#fff' />
+                      <Text className='text-xs font-medium text-white'>{t('home.alerts.actions.deleteAll')}</Text>
                     </TouchableOpacity>
                   )}
                 </View>
               </View>
-              <ScrollView className="flex-1 gap-4">
+              <ScrollView className='flex-1 gap-4'>
                 {filteredAlerts.length > 0 ? (
                   filteredAlerts.map((alert) => (
                     <AlertItem
@@ -565,22 +558,20 @@ export default function Home() {
           )}
         </View>
 
-        <View className="p-6">
+        <View className='p-6'>
           <TouchableOpacity
             onPress={handleSearchPress}
-            className="bg-primary w-full h-14 rounded-xl items-center justify-center shadow-sm flex-row gap-6"
+            className='h-14 w-full flex-row items-center justify-center gap-6 rounded-xl bg-primary shadow-sm'
           >
-            <Ionicons name="search" size={22} color={isDark ? '#000' : '#fff'}  />
-            <Text className="text-primary-foreground font-semibold text-base">
-              {t('home.startSearching')}
-            </Text>
+            <Ionicons name='search' size={22} color={isDark ? '#000' : '#fff'} />
+            <Text className='text-base font-semibold text-primary-foreground'>{t('home.startSearching')}</Text>
           </TouchableOpacity>
         </View>
 
         <Modal
           visible={showStationModal !== null}
-          animationType="slide"
-          presentationStyle="pageSheet"
+          animationType='slide'
+          presentationStyle='pageSheet'
           onRequestClose={() => setShowStationModal(null)}
         >
           <StationModal
@@ -603,14 +594,14 @@ export default function Home() {
           showDatePicker={showDatePicker}
           showTimePicker={showTimePicker}
           searchForm={searchForm}
-          onDateChange={(date) => setSearchForm(prev => ({ ...prev, date }))}
-          onTimeChange={(time, type) => 
-            setSearchForm(prev => ({
+          onDateChange={(date) => setSearchForm((prev) => ({ ...prev, date }))}
+          onTimeChange={(time, type) =>
+            setSearchForm((prev) => ({
               ...prev,
               departureTimeRange: {
                 ...prev.departureTimeRange,
-                [type]: time
-              }
+                [type]: time,
+              },
             }))
           }
           onCloseDatePicker={() => setShowDatePicker(false)}
@@ -651,30 +642,22 @@ export default function Home() {
       >
         <View
           style={[
-            styles.contentContainer, 
-            { 
+            styles.contentContainer,
+            {
               backgroundColor: isDark ? 'hsl(224 71% 4%)' : 'hsl(0 0% 100%)',
-            }
+            },
           ]}
         >
-          <View className="flex-1 w-full">
-            <View className="flex-row items-center justify-between mb-8">
-              <Text className="text-2xl font-bold text-foreground">
-                {t('home.createNewAlert')}
-              </Text>
-              <TouchableOpacity 
-                onPress={handleCloseBottomSheet}
-                className="p-2"
-              >
-                <Ionicons 
-                  name="close" 
-                  size={24} 
-                  color={isDark ? '#fff' : '#000'} 
-                />
+          <View className='w-full flex-1'>
+            <View className='mb-8 flex-row items-center justify-between'>
+              <Text className='text-2xl font-bold text-foreground'>{t('home.createNewAlert')}</Text>
+              <TouchableOpacity onPress={handleCloseBottomSheet} className='p-2'>
+                <Ionicons name='close' size={24} color={isDark ? '#fff' : '#000'} />
               </TouchableOpacity>
             </View>
-            
-            <BottomSheetScrollView className="flex-1 w-full" 
+
+            <BottomSheetScrollView
+              className='w-full flex-1'
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{
                 paddingBottom: 15,
@@ -687,23 +670,20 @@ export default function Home() {
                 onShowDatePicker={() => setShowDatePicker(true)}
                 onShowTimePicker={setShowTimePicker}
                 onSwapStations={handleSwapStations}
-                onDateChange={(date) => setSearchForm(prev => ({ ...prev, date }))}
+                onDateChange={(date) => setSearchForm((prev) => ({ ...prev, date }))}
                 closeBottomSheet={handleCloseBottomSheet}
                 resetSearchForm={resetSearchForm}
-                onToggleHighSpeed={(value) => setSearchForm(prev => ({ ...prev, wantHighSpeedTrain: value }))}
+                onToggleHighSpeed={(value) => setSearchForm((prev) => ({ ...prev, wantHighSpeedTrain: value }))}
                 spin={spin}
                 arrivalStations={arrivalStations}
-                setDepartureTimeRange={
-                  (timeRange) => {
-                    setSearchForm(prev => ({
-                      ...prev,
-                      departureTimeRange: timeRange
-                    }));
-                  }
-                }
+                setDepartureTimeRange={(timeRange) => {
+                  setSearchForm((prev) => ({
+                    ...prev,
+                    departureTimeRange: timeRange,
+                  }));
+                }}
               />
             </BottomSheetScrollView>
-
           </View>
         </View>
       </BottomSheet>
