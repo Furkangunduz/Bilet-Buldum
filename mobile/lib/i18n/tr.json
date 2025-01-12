@@ -55,7 +55,9 @@
       "emailRequired": "Lütfen e-posta adresinizi girin",
       "passwordRequired": "Lütfen şifrenizi girin",
       "registrationFailed": "Kayıt başarısız oldu. Lütfen tekrar deneyin."
-    }
+    },
+    "loginRequired": "Giriş Gerekli",
+    "loginRequiredForAlerts": "Bilet alarmı oluşturmak için giriş yapmanız gerekiyor. Şimdi giriş yapmak ister misiniz?"
   },
   "home": {
     "title": "Bilet Buldum",
@@ -278,4 +280,4 @@
       ]
     }
   }
-} 
+}

@@ -21,7 +21,7 @@ export interface User {
 interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  signUp: (email: string, password: string,name:string,lastName:string) => Promise<void>;
+  signUp: (email: string, password: string, name: string, lastName: string) => Promise<void>;
   user: User | null;
   updateUser: (user: User) => void;
   isLoading: boolean;
@@ -51,44 +51,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const inAuthGroup = segments[0] === '(auth)';
     const inOnboarding = segments[0] === 'onboarding';
-    
-    if (!user && !inAuthGroup) {
-      console.log('➡️ Redirecting to sign in');
+    const inProtectedRoute = segments[0] === '(app)';
+
+    if (!user && inProtectedRoute) {
       router.replace('/(auth)/sign-in');
+      return;
     } else if (user && !user.onboardingCompletedAt && !inOnboarding) {
-      console.log('➡️ Redirecting to onboarding');
       router.replace('/onboarding');
+      return;
     } else if (user && user.onboardingCompletedAt && (inAuthGroup || inOnboarding)) {
-      console.log('➡️ Redirecting to main app');
       router.replace('/(app)');
+      return;
     }
   }, [user, segments, isLoading]);
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        console.log('🔍 Checking for auth token...');
         const token = await AsyncStorage.getItem('token');
-        console.log('Token exists:', !!token);
-        
+
         if (token) {
-          console.log('🔄 Fetching user profile...');
           const response = await authApi.getProfile();
-          console.log('✅ Profile loaded successfully:', response.data);
           setUser(response.data);
         } else {
-          console.log('ℹ️ No token found, user is not authenticated');
+          setUser(null);
         }
       } catch (error: any) {
-        console.error('❌ Error loading user:', {
-          name: error?.name,
-          message: error?.message,
-          response: error?.response?.data,
-          status: error?.response?.status
-        });
         if (error?.response?.status === 401) {
-          console.log('🗑️ Clearing invalid token');
           await AsyncStorage.removeItem('token');
+          setUser(null);
         }
       } finally {
         setIsLoading(false);
@@ -101,8 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       let pushToken;
-      
-      // Get push token if available
+
       if (Device.isDevice) {
         const { status } = await Notifications.getPermissionsAsync();
         if (status === 'granted') {
@@ -124,22 +114,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      // First update push token while we still have auth token
       await updatePushToken('');
-      // Then remove the token and reset user state
       await AsyncStorage.removeItem('token');
       setUser(null);
-      // Finally redirect to sign in
       router.replace('/(auth)/sign-in');
     } catch (error) {
-      console.error('Error during logout:', error);
       throw error;
     }
   };
 
-  const signUp = async (email: string, password: string,name:string,lastName:string) => {
+  const signUp = async (email: string, password: string, name: string, lastName: string) => {
     try {
-      const response = await authApi.register(email, password,name,lastName);
+      const response = await authApi.register(email, password, name, lastName);
       await AsyncStorage.setItem('token', response.data.token);
       const userProfile = await authApi.getProfile();
       setUser(userProfile.data);
@@ -152,9 +138,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(updatedUser);
   };
 
-  return (
-    <AuthContext.Provider value={{ signIn, signOut, signUp, user, updateUser, isLoading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-} 
+  return <AuthContext.Provider value={{ signIn, signOut, signUp, user, updateUser, isLoading }}>{children}</AuthContext.Provider>;
+}

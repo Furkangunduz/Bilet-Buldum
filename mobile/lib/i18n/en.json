@@ -55,7 +55,9 @@
       "emailRequired": "Please enter your email",
       "passwordRequired": "Please enter your password",
       "registrationFailed": "Registration failed. Please try again."
-    }
+    },
+    "loginRequired": "Login Required",
+    "loginRequiredForAlerts": "You need to be logged in to create ticket alerts. Would you like to sign in now?"
   },
   "home": {
     "title": "Bilet Buldum",
@@ -278,4 +280,4 @@
       ]
     }
   }
-} 
+}

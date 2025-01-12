@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import BottomSheet, { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
+import { useRouter } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,6 +32,7 @@ import { StatusFilter } from '~/components/home/StatusFilter';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useSearchAlerts } from '~/hooks/useSearchAlerts';
 import { CabinClass, Station, searchAlertsApi, tcddApi } from '~/lib/api';
+import { useAuth } from '~/lib/auth';
 import { AD_CONFIG, AD_UNIT_IDS } from '~/lib/constants';
 
 if (Platform.OS === 'android') {
@@ -86,6 +88,9 @@ export default function Home() {
 
   const [lastAdShowTime, setLastAdShowTime] = useState<number>(0);
   const [adShowCount, setAdShowCount] = useState<number>(0);
+
+  const { user } = useAuth();
+  const router = useRouter();
 
   const shouldShowAd = useCallback(() => {
     const now = Date.now();
@@ -498,6 +503,24 @@ export default function Home() {
     setAdShowCount(0);
     setLastAdShowTime(0);
   }, []);
+
+  const handleCreateAlert = async () => {
+    if (!user) {
+      Alert.alert(t('auth.loginRequired'), t('auth.loginRequiredForAlerts'), [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('auth.signIn'),
+          onPress: () => router.push('/(auth)/sign-in'),
+        },
+      ]);
+      return;
+    }
+
+    // ... existing alert creation code ...
+  };
 
   return (
     <SafeAreaView className='flex-1 bg-background'>

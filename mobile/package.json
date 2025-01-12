@@ -1,7 +1,7 @@
 {
   "name": "biletbuldum",
   "main": "index.js",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "scripts": {
     "dev": "expo start -c --ios",
     "dev:web": "expo start -c --web",
@@ -50,6 +50,7 @@
     "react-dom": "18.3.1",
     "react-i18next": "^15.4.0",
     "react-native": "0.76.5",
+    "react-native-advertising-id": "^1.0.11",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-google-mobile-ads": "^14.8.0",
     "react-native-reanimated": "~3.16.1",
