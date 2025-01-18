@@ -20,9 +20,9 @@ export const AD_UNIT_IDS = {
 };
 
 export const AD_CONFIG = {
-  MIN_TIME_BETWEEN_ADS: 4 * 60 * 1000, // 1 minute in milliseconds
+  MIN_TIME_BETWEEN_ADS: 4 * 60 * 1000,
   MAX_ADS_PER_SESSION: 10,
-  SHOW_AD_PROBABILITY: 0.7, // 30% chance to show ad
+  SHOW_AD_PROBABILITY: 0.7,
 } as const;
 
 export const ONBOARDING_STEPS = [
